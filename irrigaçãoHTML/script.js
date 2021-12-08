@@ -12,9 +12,17 @@ setTimeout(() => {
         POTvalRequest.send();
     }
 
-    var valorSemanaBina = () => {
-        
-    }
+    
+    document.querySelector('#envioForm').addEventListener('click', () => {
+        var vet = []
+        for(let check of document.querySelectorAll('.checkboxSemana1')){
+            if(check.checked){
+                vet.push(check.value);
+            }
+        }
+            console.log(vet);
+    })
+    
 
     var mostraTime = () => {
         var nD = new Date();
