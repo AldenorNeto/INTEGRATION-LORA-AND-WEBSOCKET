@@ -1,0 +1,8 @@
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
+
+const char* ssid     = "Caetano";
+const char* password = "992920940";
+
+
+

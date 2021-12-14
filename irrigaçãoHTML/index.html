@@ -418,11 +418,6 @@ setInterval(() => {
 <body onselectstart="return false">
     <div class="container">
         <h1><span>Grendene</span>IRRIGAÇÃO 4.0<div><i class="gg-drop-invert"></i></div></h1>
-        <form method="get" action="/">
-        <div id="containerButton">
-            <input type="submit" id="envioForm" value="✓">
-            <input type="submit" id="cancel" value="✖">
-        </div>
         <TABLE>
             <tr id="cabecalho">
                 <td>LOCAL</td>
@@ -446,31 +441,31 @@ setInterval(() => {
                     <div  class="DATA">
                         <div  class="semana">
                             <label>
-                                <input type="checkbox" value="0" class="S1" name="S1">
+                                <input type="checkbox" id="S1_0" class="S1" name="S1">
                                 <div class="dom">D</div>
                             </label>
                             <label>
-                                <input type="checkbox" value="1" class="S1" name="S1">
+                                <input type="checkbox" id="S1_1" class="S1" name="S1">
                                 <div class="seg">S</div>
                             </label>
                             <label>
-                                <input type="checkbox" value="2" class="S1" name="S1">
+                                <input type="checkbox" id="S1_2" class="S1" name="S1">
                                 <div class="ter">T</div>
                             </label>
                             <label>
-                                <input type="checkbox" value="3" class="S1" name="S1">
+                                <input type="checkbox" id="S1_3" class="S1" name="S1">
                                 <div class="qua">Q</div>
                             </label>
                         </div>
                         <div  class="semana">
                             <label>
-                                <input type="checkbox" value="4" class="S1" name="S1">
+                                <input type="checkbox" id="S1_4" class="S1" name="S1">
                                 <div class="qui">Q</div>
                             </label><label>
-                                <input type="checkbox" value="5" class="S1" name="S1">
+                                <input type="checkbox" id="S1_5" class="S1" name="S1">
                                 <div class="sex">S</div>
                             </label><label>
-                                <input type="checkbox" value="6" class="S1" name="S1">
+                                <input type="checkbox" id="S1_6" class="S1" name="S1">
                                 <div class="sab">S</div>
                             </label>
                         </div>
@@ -670,7 +665,7 @@ setInterval(() => {
                 </label></td>
             </tr>
         </TABLE>
-    </form>
+
         <div><div class="relogio">
             <div id="relogioD">Carregando...</div>
             <div id="relogioH"></div>

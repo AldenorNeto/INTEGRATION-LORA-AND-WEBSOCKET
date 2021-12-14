@@ -5,14 +5,21 @@
 #define LED LED_BUILTIN
 #define SW     23
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
 WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-boolean LEDonoff=false;
+String LEDonoff;
 boolean faustino=false;
+String duracao;
+String hora;
+String s1_0, s1_1, s1_2, s1_3, s1_4, s1_5, s1_6;
+String umidade;
+String bomba;
+
+
 String JSONtxt;
 
 #include "webpage.h"
@@ -30,15 +37,38 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     byte separator=payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
+
+    if(var == "DURACAO"){
+          duracao = val;
+    }
+    if(var == "HORA"){
+          hora = val;
+    }
     
-    if(var == "LEDonoff"){
-      LEDonoff = false;
-      if(val == "ON") LEDonoff = true;
+    if(var == "S1_0"){
+          s1_0 = val;
     }
-    if(var == "faustino"){
-      faustino = false;
-      if(val == "ON") faustino = true;
+    if(var == "S1_1"){
+          s1_1 = val;
     }
+    if(var == "S1_2"){
+          s1_2 = val;
+    }
+    if(var == "S1_3"){
+          s1_3 = val;
+    }
+    if(var == "S1_4"){
+          s1_4 = val;
+    }
+    if(var == "S1_5"){
+          s1_5 = val;
+    }
+    if(var == "S1_6"){
+          s1_6 = val;
+    }
+
+    
+    
   }
 }
 
@@ -71,18 +101,13 @@ void loop() {
   
   if((t-l) > 1000){
     
-    if(LEDonoff == false || faustino == false) digitalWrite(LED, LOW);
-    else digitalWrite(LED, HIGH);
-    String LEDstatus = "OFF";
-    String oloko = "baixo";
-    if(LEDonoff == true) LEDstatus = "ON";
-    if(faustino == true) oloko = "ON";
-    
-    String TEMPvalString = String(analogRead(A0));
+    umidade = String(analogRead(A0));
 
-    JSONtxt  = "{\"TEMP\":\""+TEMPvalString+"\",";
-    JSONtxt += "\"LEDonoff\":\""+LEDstatus+"\",";
-    JSONtxt += "\"faustino\":\""+oloko+"\"}";
+    JSONtxt  = "{\"DURACAO\":\""+duracao+"\",";
+    JSONtxt += "\"HORA\":\""+hora+"\",";
+    JSONtxt += "\"S1_0\":\""+s1_0+"\","+"\"S1_1\":\""+s1_1+"\","+"\"S1_2\":\""+s1_2+"\","+"\"S1_3\":\""+s1_3+"\","+"\"S1_4\":\""+s1_4+"\","+"\"S1_5\":\""+s1_5+"\","+"\"S1_6\":\""+s1_6+"\",";
+    JSONtxt += "\"UMIDADE\":\""+umidade+"\",";
+    JSONtxt += "\"BOMBA\":\""+bomba+"\"}";
 
     Serial.println(JSONtxt);
     webSocket.broadcastTXT(JSONtxt);
