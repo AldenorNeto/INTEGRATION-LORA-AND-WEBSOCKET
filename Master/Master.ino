@@ -7,8 +7,8 @@
 #include "webpage.h"
 
 WebServer server(80);
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+const char* ssid     = "Caetano";
+const char* password = "992920940";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -92,7 +92,7 @@ void loop() {
 
   server.handleClient(); delay(1);
  
-  // parse for a packet, and call onReceive with the result:
+
   onReceive(LoRa.parsePacket());
 }
  
@@ -151,3 +151,44 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 }
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+#include <iostream>
+#include <cstring>
+using namespace std;
+void setup(){
+  
+Serial.begin(9600);
+Serial.println();
+    string s = "geeksforgeeks";
+
+    int n = s.length();
+ 
+    // declaring character array
+    char char_array[n + 1];
+ 
+    // copying the contents of the
+    // string to char array
+    strcpy(char_array, s.c_str());
+ 
+    for (int i = 0; i < n; i++)
+        Serial.println(char_array[i]);
+}
+
+void loop() {
+
+}*/
+
+ 

@@ -9,13 +9,47 @@ String webpageCode = R"***(
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRRIGAÇÃO</title>
-    <style> 
-        #cabecalho td{
+    <style>
+#cabecalho td{ 
     background-color: #bdf0ff;
     padding: 5px 0px;
     height: 150%;
     max-width: min-content;
     font-size: calc(1vw + 5px);
+}
+
+#containerButton{
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    width: 96%;
+    left: 2%;
+    bottom:10px;
+    align-self: start;
+    /*background-color: blueviolet;*/
+}
+
+option{
+    background-color: #00000036;
+}
+
+#containerButton *{
+    color: white;
+    font-size: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+
+#containerButton #envioForm{
+    background-image: linear-gradient(to bottom right, #00ff00 50%, #00db00 50%);
+    font-weight: bold;
+}
+
+#containerButton #cancel{
+    background-image: linear-gradient(to bottom right, red  50%, #c70000  50%);
 }
 
 table{
@@ -49,7 +83,8 @@ td{
 }
 
 .umidade, .estadoBomba input + div
-{font-size: calc(2.7vw + 10px)}
+{font-size: calc(2.7vw + 10px);
+    padding: 0px 4px;}
 
 .titulo, input[type="time"]{
     font-size: calc(2.6vw + 5px);
@@ -150,6 +185,7 @@ input[type="time"]:hover{background-color: #bfbfbf50}
 
 .estadoBomba input + div{
     display: flex;
+    padding: 0px 4px;
     background-color: #c2c2c2;
     height: 100%;
     justify-content: center;
@@ -268,58 +304,177 @@ td span:hover{background-color: #00000003}
     padding: 0px;
 }
 
-input{
+table input{
     border: none;
     width: 100%;
     height: 100%;
 }
+
+
     </style>
+    <script defer>
+setTimeout(() => {
+
+var getVal = () => {
+    var POTvalRequest = new XMLHttpRequest();
+    POTvalRequest.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == 200){
+            document.querySelector("#umidade1").innerHTML = this.responseText
+        }
+    }
+    POTvalRequest.open("GET", "readPOT", true);
+    POTvalRequest.send();
+}
+
+var vet1 = []
+var vet2 = []
+var vet3 = []
+var vet4 = []
+var vet5 = []
+
+const guardaVariaveis = (checkboxSemana,timeSemana) => {
+    let vet = []
+    for(let check of document.querySelectorAll(checkboxSemana)){
+        if(check.checked){
+            vet.push(check.value);
+        }
+    }
+    vet.push(document.querySelector(timeSemana).value)
+
+    return vet
+}
+
+const queDiaEHoje = valor => valor ==  new Date().getDay()
+
+const ligaBombaAutomatico = (vetor,bomba) => {
+    let horarioAtual = new Date().getHours()
+    if(horarioAtual < 9){
+        horarioAtual = 0 + horarioAtual;
+    }
+    //console.log(vetor, new Date().getDay());
+    console.log(vetor[vetor.length - 1] , horarioAtual+":"+new Date().getMinutes());
+    if((vetor.some(queDiaEHoje)) && (vetor[vetor.length - 1] == horarioAtual+":"+new Date().getMinutes())){
+        document.querySelector(bomba).checked = true
+    setTimeout(()=>document.querySelector(bomba).checked = false,10000)
+        
+    }
+}
+
+document.querySelector('#envioForm').addEventListener('click', () => {
+    vet1 = guardaVariaveis('.S1','#timeSemana1')
+    vet2 = guardaVariaveis('.S2','#timeSemana2')
+    vet3 = guardaVariaveis('.S3','#timeSemana3')
+    vet4 = guardaVariaveis('.S4','#timeSemana4')
+    vet5 = guardaVariaveis('.S5','#timeSemana5')
     
+    ligaBombaAutomatico(vet1,"#bomba1")
+    ligaBombaAutomatico(vet2,"#bomba2")
+    ligaBombaAutomatico(vet3,"#bomba3")
+    ligaBombaAutomatico(vet4,"#bomba4")
+    ligaBombaAutomatico(vet5,"#bomba5")
+})
+
+document.querySelector('#cancel').addEventListener('click', () => document.location.reload(true))
+
+
+var mostraTime = () => {
+    var nD = new Date();
+    var dia = nD.getDate();
+    var mes = (nD.getMonth() + 1);
+    var ano = nD.getFullYear(); 
+    var hora = nD.getHours();
+    var minuto = nD.getMinutes();
+    var semana = nD.getDay();
+    
+    if(dia < 10)dia = "0" + dia
+    if(mes < 10)mes = "0" + mes
+    if(hora < 10)hora = "0" + hora
+    if(minuto < 10)minuto = "0" + minuto
+    
+    if(semana == 0)StrigSemana = "Domingo"
+    else if(semana == 1)StrigSemana = "Segunda"
+    else if(semana == 2)StrigSemana = "Terça"
+    else if(semana == 3)StrigSemana = "Quarta"
+    else if(semana == 4)StrigSemana = "Quinta"
+    else if(semana == 5)StrigSemana = "Sexta"
+    else if(semana == 6)StrigSemana = "Sabado"
+    
+    document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
+    document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
+    document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
+}
+
+setTimeout(mostraTime,10)
+//setInterval(getVal,2000)
+setInterval(mostraTime,100)
+setInterval(() => {
+    ligaBombaAutomatico(vet1,"#bomba1")
+    ligaBombaAutomatico(vet2,"#bomba2")
+    ligaBombaAutomatico(vet3,"#bomba3")
+    ligaBombaAutomatico(vet4,"#bomba4")
+    ligaBombaAutomatico(vet5,"#bomba5")
+},1000)
+})
+
+
+    </script>
 </head>
 <body onselectstart="return false">
     <div class="container">
         <h1><span>Grendene</span>IRRIGAÇÃO 4.0<div><i class="gg-drop-invert"></i></div></h1>
-
+        <form method="get" action="/">
+        <div id="containerButton">
+            <input type="submit" id="envioForm" value="✓">
+            <input type="submit" id="cancel" value="✖">
+        </div>
         <TABLE>
             <tr id="cabecalho">
                 <td>LOCAL</td>
+                <td>DURAÇÃO</td>
                 <td>HORARIO</td>
                 <td>DIA</td>
                 <td>UMIDADE</td>
                 <td>IRRIGAR</td>
             </tr>
             <tr>
-                <td class="titulo">Fab 01</td>
-                <td><input type="time"></div></td>
+                <td class="titulo">Fab 01 jard esq</td>
+                <td><select name="du1" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                    <option value="5">5:00</option>
+                    <option value="10">10:00</option>
+                    <option value="15">15:00</option>
+                    <option value="20">20:00</option>
+                    <option value="25">25:00</option>
+                </select></td>
+                <td><input type="time" name="hora1" id="timeSemana1"></div></td>
                 <td>
                     <div  class="DATA">
                         <div  class="semana">
                             <label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="0" class="S1" name="S1">
                                 <div class="dom">D</div>
                             </label>
                             <label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="1" class="S1" name="S1">
                                 <div class="seg">S</div>
                             </label>
                             <label>
-                                <input type="checkbox">
-                                <div class="ter" >T</div>
+                                <input type="checkbox" value="2" class="S1" name="S1">
+                                <div class="ter">T</div>
                             </label>
                             <label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="3" class="S1" name="S1">
                                 <div class="qua">Q</div>
                             </label>
                         </div>
                         <div  class="semana">
                             <label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="4" class="S1" name="S1">
                                 <div class="qui">Q</div>
                             </label><label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="5" class="S1" name="S1">
                                 <div class="sex">S</div>
                             </label><label>
-                                <input type="checkbox">
+                                <input type="checkbox" value="6" class="S1" name="S1">
                                 <div class="sab">S</div>
                             </label>
                         </div>
@@ -327,230 +482,205 @@ input{
                 </td>
                 <td><span class="umidade" id="umidade1">0.69%</span></div></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox"><div></div>
+                    <input type="checkbox" id="bomba1"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 02</div></td>
-                <td><input type="time"></td>
+                <td><select name="du2" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                    <option value="5">5:00</option>
+                    <option value="10">10:00</option>
+                    <option value="15">15:00</option>
+                    <option value="20">20:00</option>
+                    <option value="25">25:00</option>
+                </select></td>
+                <td><input type="time" name="hora2" id="timeSemana2"></td>
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="0" class="S2" name="S2">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="1" class="S2" name="S2">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox">
-                            <div class="ter" >T</div>
+                            <input type="checkbox" value="2" class="S2" name="S2">
+                            <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="3" class="S2" name="S2">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="4" class="S2" name="S2">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="5" class="S2" name="S2">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="6" class="S2" name="S2">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
                 <td><span class="umidade">0.75%</span></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox"><div></div>
+                    <input type="checkbox" id="bomba2"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 03</div></td>
-                <!--td><select name="cars" class="cars"></td-->
-                <td><input type="time"></td>
+                <td><select name="du3" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                    <option value="5">5:00</option>
+                    <option value="10">10:00</option>
+                    <option value="15">15:00</option>
+                    <option value="20">20:00</option>
+                    <option value="25">25:00</option>
+                </select></td>
+                <td><input type="time" name="hora3" id="timeSemana3"></td>
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="0" class="S3" name="S3">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="1" class="S3" name="S3">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox">
-                            <div class="ter" >T</div>
+                            <input type="checkbox" value="2" class="S3" name="S3">
+                            <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="3" class="S3" name="S3">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="4" class="S3" name="S3">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="5" class="S3" name="S3">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="6" class="S3" name="S3">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
                 <td><span class="umidade">0.73%</span></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox" ><div></div>
+                    <input type="checkbox" id="bomba3"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 04</div></td>
-                <!--td><select name="cars" class="cars"></td-->
-                <td><input type="time"></td>
+                <td><select name="du4" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                    <option value="5">5:00</option>
+                    <option value="10">10:00</option>
+                    <option value="15">15:00</option>
+                    <option value="20">20:00</option>
+                    <option value="25">25:00</option>
+                </select></td>
+                <td><input type="time" name="hora4" id="timeSemana4"></td>
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="0" class="S4" name="S4">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="1" class="S4" name="S4">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox">
-                            <div class="ter" >T</div>
+                            <input type="checkbox" value="2" class="S4" name="S4">
+                            <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="3" class="S4" name="S4">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="4" class="S4" name="S4">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="5" class="S4" name="S4">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="6" class="S4" name="S4">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
                 <td><span class="umidade">0.75%</span></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox" ><div></div>
+                    <input type="checkbox" id="bomba4"><div></div>
                 </label></td>
             </tr>
             <tr> 
                 <td class="titulo"><div>Fab 05</div></td>
-                <!--td><select name="cars" class="cars"></td-->
-                <td><input type="time"></td>
+                <td><select name="du5" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                    <option value="5">5:00</option>
+                    <option value="10">10:00</option>
+                    <option value="15">15:00</option>
+                    <option value="20">20:00</option>
+                    <option value="25">25:00</option>
+                </select></td>
+                <td><input type="time" name="hora5" id="timeSemana5"></td>
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="0" class="S5" name="S5">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="1" class="S5" name="S5">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox">
-                            <div class="ter" >T</div>
+                            <input type="checkbox" value="2" class="S5" name="S5">
+                            <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="3" class="S5" name="S5">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="4" class="S5" name="S5">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="5" class="S5" name="S5">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox">
+                            <input type="checkbox" value="6" class="S5" name="S5">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
                 <td><span class="umidade">0.80%</span></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox" ><div></div>
+                    <input type="checkbox" id="bomba5"><div></div>
                 </label></td>
             </tr>
         </TABLE>
-
+    </form>
         <div><div class="relogio">
             <div id="relogioD">Carregando...</div>
             <div id="relogioH"></div>
             <div id="relogioS"></div>
         </div></div>
-
     </div>
-
-    <script>
-      setTimeout(() => {
-
-    var getval = () => {
-        var POTvalRequest = new XMLHttpRequest();
-        POTvalRequest.onreadystatechange = function(){
-        
-            if(this.readyState == 4 && this.status == 200){
-                document.querySelector("#umidade1").innerHTML = this.responseText
-            }
-        }
-        POTvalRequest.open("GET", "readPOT", true);
-        POTvalRequest.send();
-    }
-
-
-    var mostraTime = () => {
-        var nD = new Date();
-        var dia = nD.getDate();
-        var mes = (nD.getMonth() + 1);
-        var ano = nD.getFullYear(); 
-        var hora = nD.getHours();
-        var minuto = nD.getMinutes();
-        var semana = nD.getDay();
-        
-        if(dia < 10)dia = "0" + String(dia)
-        if(mes < 10)mes = "0" + String(mes)
-        if(hora < 10)hora = "0" + String(hora)
-        if(minuto < 10)minuto = "0" + String(minuto)
-        
-        if(semana == 0)StrigSemana = "Domingo"
-        else if(semana == 1)StrigSemana = "Segunda"
-        else if(semana == 2)StrigSemana = "Terça"
-        else if(semana == 3)StrigSemana = "Quarta"
-        else if(semana == 4)StrigSemana = "Quinta"
-        else if(semana == 5)StrigSemana = "Sexta"
-        else if(semana == 6)StrigSemana = "Sabado"
-        
-        document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
-        document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
-        document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
-    }
-
-    setTimeout(() => mostraTime(),10)
-    setInterval(() => getval(),2000)
-    setInterval(() => mostraTime(),60000)
-})
-    </script>
 
 </body>
 )***";
