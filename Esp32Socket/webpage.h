@@ -1,7 +1,7 @@
 //=====================
 //HTML code for webpage
 //=====================
-const char webpageCont[] PROGMEM = 
+const char webpageCont[] PROGMEM =
 R"=====(
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -11,9 +11,9 @@ R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRRIGAÇÃO</title>
     <style>
-#cabecalho td{ 
+#cabecalho td{
     background-color: #bdf0ff;
-    padding: 5px 0px;
+    padding: 5px 5px;
     height: 150%;
     max-width: min-content;
     font-size: calc(1vw + 5px);
@@ -61,7 +61,8 @@ table{
     align-items: center;
     border-collapse: collapse;
     font-family: 'Trebuchet MS';
-    min-width: 90%;
+    width: 90%;
+    max-width: 1500px;
 }
 
 td{
@@ -77,17 +78,24 @@ td{
 }
 
 .container{
-    min-width: 80%;
+    display: flex;
+    min-width: calc(90% + 70px);
     display: flex;
     flex-direction: column;
-    max-width: min-content;
+    justify-content: center;
+    align-items: center;
+}
+
+#conteiner_relogio{
+    height: min-content;
+    width: 100%;
 }
 
 .umidade, .estadoBomba input + div
 {font-size: calc(2.7vw + 10px);
     padding: 0px 4px;}
 
-.titulo, input[type="time"]{
+.titulo, input[type="time"], select{
     font-size: calc(2.6vw + 5px);
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -107,7 +115,7 @@ body{
     border:3px double #afffa107;
 }
 
-h1{ 
+h1{
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -242,7 +250,7 @@ input[type="time"]:hover{background-color: #bfbfbf50}
     width: min-content;
     align-items: center;
     margin: 1px 0px;
-    
+   
 }
 
 .DATA{
@@ -310,27 +318,25 @@ table input{
     width: 100%;
     height: 100%;
 }
-
-
     </style>
 </head>
 <body onselectstart="return false">
     <div class="container">
         <h1><span>Grendene</span>IRRIGAÇÃO 4.0<div><i class="gg-drop-invert"></i></div></h1>
-        
-        <button onclick="fanONOFF()">log</button>
+       
+        <button onclick="fanONOFF()">log</button><div id="farofa">f</div>
         <TABLE>
             <tr id="cabecalho">
                 <td>LOCAL</td>
-                <td>DURAÇÃO</td>
+                <td>MINUTOS</td>
                 <td>HORARIO</td>
                 <td>DIA</td>
                 <td>UMIDADE</td>
                 <td>IRRIGAR</td>
             </tr>
             <tr>
-                <td class="titulo">Fab 01 jard esq</td>
-                <td><select name="du1" id="duracao" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                <td class="titulo">Fab 01</td>
+                <td><select name="du1" id="duracao1" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -379,7 +385,7 @@ table input{
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 02</div></td>
-                <td><select name="du2" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                <td><select name="du2" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -426,7 +432,7 @@ table input{
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 03</div></td>
-                <td><select name="du3" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                <td><select name="du3" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -473,7 +479,7 @@ table input{
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 04</div></td>
-                <td><select name="du4" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                <td><select name="du4" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -518,9 +524,9 @@ table input{
                     <input type="checkbox" id="bomba4"><div></div>
                 </label></td>
             </tr>
-            <tr> 
+            <tr>
                 <td class="titulo"><div>Fab 05</div></td>
-                <td><select name="du5" id="" style="width: 100%; height: 100%; border: none; font-size: 25px;">
+                <td><select name="du5" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -566,12 +572,13 @@ table input{
                 </label></td>
             </tr>
         </TABLE>
-
-        <div><div class="relogio">
-            <div id="relogioD">Carregando...</div>
-            <div id="relogioH"></div>
-            <div id="relogioS"></div>
-        </div></div>
+        <div id="conteiner_relogio">
+            <div><div class="relogio">
+                <div id="relogioD">Carregando...</div>
+                <div id="relogioH"></div>
+                <div id="relogioS"></div>
+            </div></div>
+        </div>
     </div>
 
 </body>
@@ -581,16 +588,16 @@ table input{
       var nD = new Date();
       var dia = nD.getDate();
       var mes = (nD.getMonth() + 1);
-      var ano = nD.getFullYear(); 
+      var ano = nD.getFullYear();
       var hora = nD.getHours();
       var minuto = nD.getMinutes();
       var semana = nD.getDay();
-      
+     
       if(dia < 10)dia = "0" + dia
       if(mes < 10)mes = "0" + mes
       if(hora < 10)hora = "0" + hora
       if(minuto < 10)minuto = "0" + minuto
-      
+     
       if(semana == 0)StrigSemana = "Domingo"
       else if(semana == 1)StrigSemana = "Segunda"
       else if(semana == 2)StrigSemana = "Terça"
@@ -598,7 +605,7 @@ table input{
       else if(semana == 4)StrigSemana = "Quinta"
       else if(semana == 5)StrigSemana = "Sexta"
       else if(semana == 6)StrigSemana = "Sabado"
-      
+     
       document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
       document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
       document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
@@ -607,18 +614,6 @@ table input{
   mostraTime()
   setInterval(mostraTime,10000)
 
-
-  const setVariaveisPag = () => {
-    document.getElementById('S1_0').checked = true;
-    document.getElementById('S1_1').checked = false;
-    document.getElementById('S1_2').checked = true;
-    document.getElementById('S1_3').checked = true;
-    document.getElementById('S1_4').checked = false;
-    document.getElementById('S1_5').checked = true;
-    document.getElementById('S1_6').checked = false;
-  }
-
-  
   let firtScanf = 0
   InitWebSocket()
   function InitWebSocket(){
@@ -628,8 +623,14 @@ table input{
         jsonEsp = JSON.parse(jsonMaster.data);
 
         if(!firtScanf){
+            
+            
 
-            document.getElementById('timeSemana1').value = jsonEsp.HORA
+            document.getElementById('farofa').style.color = 'red';
+
+
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
             document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
             document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
@@ -638,23 +639,110 @@ table input{
             document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
             document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
             document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+           
+            document.getElementById('duracao1').value = jsonEsp.DURACAO2
+            document.getElementById('timeSemana1').value = jsonEsp.HORA2
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+
+
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+           
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+           
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+           
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+           
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
+
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+           
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+
+
+
+
+
             firtScanf=1
         }
-  
+       
+ 
     }
   }
 
   //setTimeout(setVariaveisPag,1000)
 
   function fanONOFF(){
-    
-    websock.send('DURACAO=' + String(document.getElementById('duracao').value))
+   
+    websock.send('DURACAO=' + String(document.getElementById('duracao1').value))
     websock.send('HORA=' + String(document.getElementById('timeSemana1').value))
 
     for(let i = 0; i < 7; i++){
         websock.send('S1_'+ i+'='+(document.getElementById('S1_'+ i).checked))
     }
-    
+   
 
 
 
@@ -667,4 +755,4 @@ table input{
 
 </script>
 </html>
-)=====";
+)====="; 
