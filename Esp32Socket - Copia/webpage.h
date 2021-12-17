@@ -1,7 +1,7 @@
 //=====================
 //HTML code for webpage
 //=====================
-const char webpageCont[] PROGMEM =
+const char webpageCont[] PROGMEM = 
 R"=====(
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -11,7 +11,7 @@ R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRRIGAÇÃO</title>
     <style>
-#cabecalho td{
+#cabecalho td{ 
     background-color: #bdf0ff;
     padding: 5px 5px;
     height: 150%;
@@ -34,10 +34,7 @@ option{
     background-color: #00000036;
 }
 
-button{
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
+#containerButton *{
     color: white;
     font-size: 30px;
     width: 50px;
@@ -47,7 +44,7 @@ button{
 }
 
 
-#envioForm{
+#containerButton #envioForm{
     background-image: linear-gradient(to bottom right, #00ff00 50%, #00db00 50%);
     font-weight: bold;
 }
@@ -94,15 +91,6 @@ td{
     width: 100%;
 }
 
-#farofa{
-    position: absolute;
-    background-color: #daf6ff60;
-    top: 10%;
-    width: 100%;
-    height: 80%;
-    z-index: 10;
-}
-
 .umidade, .estadoBomba input + div
 {font-size: calc(2.7vw + 10px);
     padding: 0px 4px;}
@@ -127,7 +115,7 @@ body{
     border:3px double #afffa107;
 }
 
-h1{
+h1{ 
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -262,7 +250,7 @@ input[type="time"]:hover{background-color: #bfbfbf50}
     width: min-content;
     align-items: center;
     margin: 1px 0px;
-   
+    
 }
 
 .DATA{
@@ -335,8 +323,8 @@ table input{
 <body onselectstart="return false">
     <div class="container">
         <h1><span>Grendene</span>IRRIGAÇÃO 4.0<div><i class="gg-drop-invert"></i></div></h1>
-       
-        <button id="envioForm" onclick="fanONOFF()">✓</button><div id="farofa"></div>
+        
+        <button onclick="fanONOFF()">log</button><div id="farofa">f</div>
         <TABLE>
             <tr id="cabecalho">
                 <td>LOCAL</td>
@@ -390,14 +378,14 @@ table input{
                         </div>
                     </div></div>
                 </td>
-                <td><div class="umidade"><span id="umidade1">0.69</span>%</div></td>
+                <td><span class="umidade" id="umidade1">0.69%</span></div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba1"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 02</div></td>
-                <td><select name="du2" id="duracao2" style="width: 100%; height: 100%; border: none;">
+                <td><select name="du2" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -408,43 +396,43 @@ table input{
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="0" id="S2_0" class="S2" name="S2">
+                            <input type="checkbox" value="0" class="S2" name="S2">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="1" id="S2_1" class="S2" name="S2">
+                            <input type="checkbox" value="1" class="S2" name="S2">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="2" id="S2_2" class="S2" name="S2">
+                            <input type="checkbox" value="2" class="S2" name="S2">
                             <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="3" id="S2_3" class="S2" name="S2">
+                            <input type="checkbox" value="3" class="S2" name="S2">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="4" id="S2_4" class="S2" name="S2">
+                            <input type="checkbox" value="4" class="S2" name="S2">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox" value="5" id="S2_5" class="S2" name="S2">
+                            <input type="checkbox" value="5" class="S2" name="S2">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox" value="6" id="S2_6" class="S2" name="S2">
+                            <input type="checkbox" value="6" class="S2" name="S2">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade2">0.75</span>%</div></td>
+                <td><span class="umidade">0.75%</span></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba2"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 03</div></td>
-                <td><select name="du3" id="duracao3" style="width: 100%; height: 100%; border: none;">
+                <td><select name="du3" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -455,43 +443,43 @@ table input{
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="0" id="S3_0" class="S3" name="S3">
+                            <input type="checkbox" value="0" class="S3" name="S3">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="1" id="S3_1" class="S3" name="S3">
+                            <input type="checkbox" value="1" class="S3" name="S3">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="2" id="S3_2" class="S3" name="S3">
+                            <input type="checkbox" value="2" class="S3" name="S3">
                             <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="3" id="S3_3" class="S3" name="S3">
+                            <input type="checkbox" value="3" class="S3" name="S3">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="4" id="S3_4" class="S3" name="S3">
+                            <input type="checkbox" value="4" class="S3" name="S3">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox" value="5" id="S3_5" class="S3" name="S3">
+                            <input type="checkbox" value="5" class="S3" name="S3">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox" value="6" id="S3_6" class="S3" name="S3">
+                            <input type="checkbox" value="6" class="S3" name="S3">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade3">0.73</span>%</div></td>
+                <td><span class="umidade">0.73%</span></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba3"><div></div>
                 </label></td>
             </tr>
             <tr>
                 <td class="titulo"><div>Fab 04</div></td>
-                <td><select name="du4" id="duracao4" style="width: 100%; height: 100%; border: none;">
+                <td><select name="du4" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -502,43 +490,43 @@ table input{
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="0" id="S4_0" class="S4" name="S4">
+                            <input type="checkbox" value="0" class="S4" name="S4">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="1" id="S4_1" class="S4" name="S4">
+                            <input type="checkbox" value="1" class="S4" name="S4">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="2" id="S4_2" class="S4" name="S4">
+                            <input type="checkbox" value="2" class="S4" name="S4">
                             <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="3" id="S4_3" class="S4" name="S4">
+                            <input type="checkbox" value="3" class="S4" name="S4">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="4" id="S4_4" class="S4" name="S4">
+                            <input type="checkbox" value="4" class="S4" name="S4">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox" value="5" id="S4_5" class="S4" name="S4">
+                            <input type="checkbox" value="5" class="S4" name="S4">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox" value="6" id="S4_6" class="S4" name="S4">
+                            <input type="checkbox" value="6" class="S4" name="S4">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade4">0.75</span>%</div></td>
+                <td><span class="umidade">0.75%</span></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba4"><div></div>
                 </label></td>
             </tr>
-            <tr>
+            <tr> 
                 <td class="titulo"><div>Fab 05</div></td>
-                <td><select name="du5" id="duracao5" style="width: 100%; height: 100%; border: none;">
+                <td><select name="du5" id="" style="width: 100%; height: 100%; border: none;">
                     <option value="5">5:00</option>
                     <option value="10">10:00</option>
                     <option value="15">15:00</option>
@@ -549,36 +537,36 @@ table input{
                 <td><div  class="DATA">
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="0" id="S5_0" class="S5" name="S5">
+                            <input type="checkbox" value="0" class="S5" name="S5">
                             <div class="dom">D</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="1" id="S5_1" class="S5" name="S5">
+                            <input type="checkbox" value="1" class="S5" name="S5">
                             <div class="seg">S</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="2" id="S5_2" class="S5" name="S5">
+                            <input type="checkbox" value="2" class="S5" name="S5">
                             <div class="ter">T</div>
                         </label>
                         <label>
-                            <input type="checkbox" value="3" id="S5_3" class="S5" name="S5">
+                            <input type="checkbox" value="3" class="S5" name="S5">
                             <div class="qua">Q</div>
                         </label>
                     </div>
                     <div  class="semana">
                         <label>
-                            <input type="checkbox" value="4" id="S5_4" class="S5" name="S5">
+                            <input type="checkbox" value="4" class="S5" name="S5">
                             <div class="qui">Q</div>
                         </label><label>
-                            <input type="checkbox" value="5" id="S5_5" class="S5" name="S5">
+                            <input type="checkbox" value="5" class="S5" name="S5">
                             <div class="sex">S</div>
                         </label><label>
-                            <input type="checkbox" value="6" id="S5_6" class="S5" name="S5">
+                            <input type="checkbox" value="6" class="S5" name="S5">
                             <div class="sab">S</div>
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade5">0.80</span>%</div></td>
+                <td><span class="umidade">0.80%</span></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba5"><div></div>
                 </label></td>
@@ -600,16 +588,16 @@ table input{
       var nD = new Date();
       var dia = nD.getDate();
       var mes = (nD.getMonth() + 1);
-      var ano = nD.getFullYear();
+      var ano = nD.getFullYear(); 
       var hora = nD.getHours();
       var minuto = nD.getMinutes();
       var semana = nD.getDay();
-     
+      
       if(dia < 10)dia = "0" + dia
       if(mes < 10)mes = "0" + mes
       if(hora < 10)hora = "0" + hora
       if(minuto < 10)minuto = "0" + minuto
-     
+      
       if(semana == 0)StrigSemana = "Domingo"
       else if(semana == 1)StrigSemana = "Segunda"
       else if(semana == 2)StrigSemana = "Terça"
@@ -617,7 +605,7 @@ table input{
       else if(semana == 4)StrigSemana = "Quinta"
       else if(semana == 5)StrigSemana = "Sexta"
       else if(semana == 6)StrigSemana = "Sabado"
-     
+      
       document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
       document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
       document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
@@ -625,7 +613,7 @@ table input{
 
   mostraTime()
   setInterval(mostraTime,10000)
-  
+
   let firtScanf = 0
   InitWebSocket()
   function InitWebSocket(){
@@ -634,115 +622,125 @@ table input{
 
         jsonEsp = JSON.parse(jsonMaster.data);
 
-        document.getElementById('farofa').style.display='none'
+        if(!firtScanf){
+            
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-        if(firtScanf < 10){
-            let veto
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO2
+            document.getElementById('timeSemana1').value = jsonEsp.HORA2
 
-            if(jsonEsp.INDICE == 1){
-                document.getElementById('duracao1').value = jsonEsp.DURACAO1
-                document.getElementById('timeSemana1').value = jsonEsp.HORA1
-                
-                veto = jsonEsp.S1_0
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
 
-                document.getElementById('S1_0').checked = parseInt(veto[0])
-                document.getElementById('S1_1').checked = parseInt(veto[1])
-                document.getElementById('S1_2').checked = parseInt(veto[2])
-                document.getElementById('S1_3').checked = parseInt(veto[3])
-                document.getElementById('S1_4').checked = parseInt(veto[4])
-                document.getElementById('S1_5').checked = parseInt(veto[5])
-                document.getElementById('S1_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
 
-            }
-            else if(jsonEsp.INDICE == 2){
-                document.getElementById('duracao2').value = jsonEsp.DURACAO2
-                document.getElementById('timeSemana2').value = jsonEsp.HORA2
-                
-                veto = jsonEsp.S2_0
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-                document.getElementById('S2_0').checked = parseInt(veto[0])
-                document.getElementById('S2_1').checked = parseInt(veto[1])
-                document.getElementById('S2_2').checked = parseInt(veto[2])
-                document.getElementById('S2_3').checked = parseInt(veto[3])
-                document.getElementById('S2_4').checked = parseInt(veto[4])
-                document.getElementById('S2_5').checked = parseInt(veto[5])
-                document.getElementById('S2_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-            }
-            else if(jsonEsp.INDICE == 3){
-                document.getElementById('duracao3').value = jsonEsp.DURACAO3
-                document.getElementById('timeSemana3').value = jsonEsp.HORA3
-                
-                veto = jsonEsp.S3_0
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-                document.getElementById('S3_0').checked = parseInt(veto[0])
-                document.getElementById('S3_1').checked = parseInt(veto[1])
-                document.getElementById('S3_2').checked = parseInt(veto[2])
-                document.getElementById('S3_3').checked = parseInt(veto[3])
-                document.getElementById('S3_4').checked = parseInt(veto[4])
-                document.getElementById('S3_5').checked = parseInt(veto[5])
-                document.getElementById('S3_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3
-            }
-            else if(jsonEsp.INDICE == 4){
-                document.getElementById('duracao4').value = jsonEsp.DURACAO4
-                document.getElementById('timeSemana4').value = jsonEsp.HORA4
-                
-                veto = jsonEsp.S4_0
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-                document.getElementById('S4_0').checked = parseInt(veto[0])
-                document.getElementById('S4_1').checked = parseInt(veto[1])
-                document.getElementById('S4_2').checked = parseInt(veto[2])
-                document.getElementById('S4_3').checked = parseInt(veto[3])
-                document.getElementById('S4_4').checked = parseInt(veto[4])
-                document.getElementById('S4_5').checked = parseInt(veto[5])
-                document.getElementById('S4_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4
-            }
-            else if(jsonEsp.INDICE == 5){
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+            
+            document.getElementById('duracao1').value = jsonEsp.DURACAO1
+            document.getElementById('timeSemana1').value = jsonEsp.HORA1
 
-                document.getElementById('duracao5').value = jsonEsp.DURACAO5
-                document.getElementById('timeSemana5').value = jsonEsp.HORA5
-                
-                veto = jsonEsp.S5_0
-                
-                document.getElementById('S5_0').checked = parseInt(veto[0])
-                document.getElementById('S5_1').checked = parseInt(veto[1])
-                document.getElementById('S5_2').checked = parseInt(veto[2])
-                document.getElementById('S5_3').checked = parseInt(veto[3])
-                document.getElementById('S5_4').checked = parseInt(veto[4])
-                document.getElementById('S5_5').checked = parseInt(veto[5])
-                document.getElementById('S5_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5
-            }
-            firtScanf++
+            document.getElementById('S1_0').checked = jsonEsp.S1_0 == 'true'? true:false;
+            document.getElementById('S1_1').checked = jsonEsp.S1_1 == 'true'? true:false;
+            document.getElementById('S1_2').checked = jsonEsp.S1_2 == 'true'? true:false;
+            document.getElementById('S1_3').checked = jsonEsp.S1_3 == 'true'? true:false;
+            document.getElementById('S1_4').checked = jsonEsp.S1_4 == 'true'? true:false;
+            document.getElementById('S1_5').checked = jsonEsp.S1_5 == 'true'? true:false;
+            document.getElementById('S1_6').checked = jsonEsp.S1_6 == 'true'? true:false;
+            
+            document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+
+
+
+
+
+            firtScanf=1
         }
- 
+        
+  
     }
   }
 
   //setTimeout(setVariaveisPag,1000)
 
   function fanONOFF(){
-   
-    for(let index = 1; index < 6; index++) {
-        websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value))
-        websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value))
-        let vetor = []
-        for(let ino = 0; ino < 7; ino++){
-            if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1'
-            else vetor +='0'
-        }
-        websock.send('S'+index+'_0='+vetor)
-        
+    
+    websock.send('DURACAO=' + String(document.getElementById('duracao1').value))
+    websock.send('HORA=' + String(document.getElementById('timeSemana1').value))
+
+    for(let i = 0; i < 7; i++){
+        websock.send('S1_'+ i+'='+(document.getElementById('S1_'+ i).checked))
     }
+    
+
+
 
     /*FANbtn = 'LEDonoff=ON';
     if(document.getElementById('FANbtn').innerHTML == 'ON'){
@@ -753,4 +751,4 @@ table input{
 
 </script>
 </html>
-)====="; 
+)=====";
