@@ -1,6 +1,5 @@
-#include <iostream>
-#include <string>
-#include <cmath>
+//////MASTER
+#include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
 #include <WebSocketsServer.h>
@@ -9,12 +8,23 @@
 #include <SPI.h>
 #include "webpage.h"
 
+
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
+
+const int csPin = 18;          // LoRa radio chip select
+const int resetPin = 14;       // LoRa radio reset
+
+String outgoing;              // outgoing message
+
+
 #define LED LED_BUILTIN
 #define SW     23
 
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+byte msgCount = 0;            // count of outgoing messages
+byte localAddress = 0x05;     // address of this device
+byte destination = 0x01;      // destination to send to
 
 int timeZone = -3;
 long lastSendTime = 0;
@@ -33,7 +43,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "2.br.pool.ntp.org",    //URL do servwer NTP
+    "10.2.0.1",    //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -118,8 +128,18 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
 void setup(){
  
   Serial.begin(9600);
+  while (!Serial);
   pinMode(LED, OUTPUT);
   pinMode(A0, INPUT);
+
+  LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
+  
+  if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
+    Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
+    while (true);                       // if failed, do nothing
+  }
+ 
+  Serial.println("LORA INICIADO");
   
   connectWiFi();
   setupNTP();
@@ -145,8 +165,7 @@ void setupNTP(){
     ntpClient.begin(); //Inicializa o client NTP
     
     Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
-    while(!ntpClient.update())
-    {
+    while(!ntpClient.update()){
         Serial.print(".");
         ntpClient.forceUpdate();
         delay(500);
@@ -167,6 +186,7 @@ void wifiConnectionTask(void* param){
 
 void connectWiFi(){
     Serial.println("Conetando");
+    WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
     
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
@@ -183,16 +203,19 @@ void loop() {
   Date date = getDate();
   webSocket.loop(); server.handleClient();
 
-  Serial.printf("%01d\n",date.dayOfWeek);
-  Serial.printf("%02d/%02d\n",date.day, date.month);
-  Serial.printf("%02d:%02d\n",date.hours, date.minutes);
+  Serial.printf("%d\n",date.dayOfWeek);
+  Serial.printf("%d/%d\n",date.day, date.month);
+  Serial.printf("%d:%d\n",date.hours, date.minutes);
  
   static unsigned long l = 0;
   unsigned long t = millis();
 
-  
-    
-    if((s1_0[date.dayOfWeek] == '1')&&(hora1 == String(date.hours) + ":" + String(date.minutes))){
+  String hora = String(date.hours);
+  if(date.hours < 10){
+    hora = "0" + hora;
+  }
+
+    if((s1_0[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + String(date.minutes))){
       bomba1 = "1";
       lastSendTime = millis(); 
     }
@@ -210,8 +233,8 @@ void loop() {
     else{bomba5 = "0";}*/
 
     
-if(bomba1 == "1"){digitalWrite(LED,1);}
-    else{digitalWrite(LED,0);}
+    if(bomba1 == "1"){sendMessage("0RELE0");}
+    else{sendMessage("1RELE1");}
  
   if((t-l) > 1000){
    
@@ -224,10 +247,7 @@ if(bomba1 == "1"){digitalWrite(LED,1);}
     /*if(String(date.dayOfWeek) == s1_0[date.dayOfWeek]){
       printf("brasil");
     }*/
-
-    
-
-    
+   
 
     JSONtxt = "{\"INDICE\":\""+String(indice)+"\",";
     if(indice == 1){
@@ -279,6 +299,8 @@ if(bomba1 == "1"){digitalWrite(LED,1);}
     webSocket.broadcastTXT(JSONtxt);
    
   }
+  
+  onReceive(LoRa.parsePacket());
 }
 
 Date getDate(){
@@ -295,4 +317,58 @@ Date getDate(){
    
     date.dayOfWeek = ntpClient.getDay(); //Dia da semana de 0 a 6, sendo 0 o domingo
     return date;
+}
+
+void sendMessage(String outgoing) {
+  LoRa.beginPacket();                   // start packet
+  LoRa.write(destination);              // add destination address
+  LoRa.write(localAddress);             // add sender address
+  LoRa.write(msgCount);                 // add message ID
+  LoRa.write(outgoing.length());        // add payload length
+  LoRa.print(outgoing);                 // add payload
+  LoRa.endPacket();                     // finish packet and send it
+  msgCount++;                           // increment message ID
+}
+
+void onReceive(int packetSize) {
+  if (packetSize == 0) return;          // if there's no packet, return
+ 
+  // read packet header bytes:
+  int recipient = LoRa.read();          // recipient address
+  byte sender = LoRa.read();            // sender address
+  byte incomingMsgId = LoRa.read();     // incoming msg ID
+  byte incomingLength = LoRa.read();    // incoming msg length
+ 
+  String incoming = "";
+ 
+  while (LoRa.available()) {
+    incoming += (char)LoRa.read();
+  }
+
+  if(String(sender, HEX) == "1"){
+    Serial.println(incoming);
+  }
+
+  
+ 
+  if (incomingLength != incoming.length()) {   // check length for error
+    Serial.println("error: message length does not match length");
+    return;                             // skip rest of function
+  }
+ 
+  // if the recipient isn't this device or broadcast,
+  if (recipient != localAddress && recipient != 0xFF) {
+    Serial.println("This message is not for me.");
+    return;                             // skip rest of function
+  }
+ 
+  // if message is for this device, or broadcast, print details:
+  Serial.println("Received from: 0x" + String(sender, HEX));
+  Serial.println("Sent to: 0x" + String(recipient, HEX));
+  Serial.println("Message ID: " + String(incomingMsgId));
+  Serial.println("Message length: " + String(incomingLength));
+  Serial.println("Message: " + incoming);
+  Serial.println("RSSI: " + String(LoRa.packetRssi()));
+  Serial.println("Snr: " + String(LoRa.packetSnr()));
+  Serial.println();
 }

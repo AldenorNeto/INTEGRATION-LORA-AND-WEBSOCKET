@@ -7,8 +7,8 @@
 #include "webpage.h"
 
 WebServer server(80);
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset

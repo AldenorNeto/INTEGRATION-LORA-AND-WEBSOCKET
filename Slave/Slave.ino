@@ -1,6 +1,8 @@
 //////SLAVE
 #include <SPI.h>              // include libraries
 #include <LoRa.h>
+
+#define RELE1 17
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -9,14 +11,15 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x02;     // address of this device
+byte localAddress = 0x01;     // address of this device
 byte destination = 0x05;      // destination to send to
-long lastSendTime = 0;        // last send time
-int interval = 2000;          // interval between sends
+
  
 void setup() {
   Serial.begin(9600);                   // initialize serial
   while (!Serial);
+
+  pinMode(RELE1, OUTPUT);
  
   // override the default CS, reset, and IRQ pins (optional)
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ pin
@@ -27,6 +30,7 @@ void setup() {
   }
  
   Serial.println("INICIANDO SLAVE LORA");
+  digitalWrite(RELE1,1);
 }
  
 void loop() {
@@ -74,7 +78,8 @@ void onReceive(int packetSize) {
  
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != 0xFF) {
-    Serial.println("MESSAGEM PARA OUTRO SLAVE");
+    Serial.print("MESSAGEM PARA OUTRO SLAVE");
+    Serial.println(localAddress);
     return;                             // skip rest of function
   }
  
@@ -88,5 +93,14 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 
+  if(incoming == "0RELE0"){
+    digitalWrite(RELE1,0);
+    Serial.print("0000000000000000000000000000");
+  }
+  if(incoming == "1RELE1"){
+    digitalWrite(RELE1,1);
+    Serial.print("1111111111111111111111111111");
+  }  
+  
   senderSlave = true;
 }
