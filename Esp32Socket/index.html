@@ -349,11 +349,11 @@ table input{
             <tr>
                 <td class="titulo">Fab 01</td>
                 <td><select name="du1" id="duracao1" style="width: 100%; height: 100%; border: none;">
-                    <option value="5">5:00</option>
-                    <option value="10">10:00</option>
-                    <option value="15">15:00</option>
-                    <option value="20">20:00</option>
-                    <option value="25">25:00</option>
+                    <option value="1">5:00</option>
+                    <option value="2">10:00</option>
+                    <option value="3">15:00</option>
+                    <option value="4">20:00</option>
+                    <option value="5">25:00</option>
                 </select></td>
                 <td><input type="time" name="hora1" id="timeSemana1"></div></td>
                 <td>
@@ -398,11 +398,11 @@ table input{
             <tr>
                 <td class="titulo"><div>Fab 02</div></td>
                 <td><select name="du2" id="duracao2" style="width: 100%; height: 100%; border: none;">
-                    <option value="5">5:00</option>
-                    <option value="10">10:00</option>
-                    <option value="15">15:00</option>
-                    <option value="20">20:00</option>
-                    <option value="25">25:00</option>
+                    <option value="1">5:00</option>
+                    <option value="2">10:00</option>
+                    <option value="3">15:00</option>
+                    <option value="4">20:00</option>
+                    <option value="5">25:00</option>
                 </select></td>
                 <td><input type="time" name="hora2" id="timeSemana2"></td>
                 <td><div  class="DATA">
@@ -445,11 +445,11 @@ table input{
             <tr>
                 <td class="titulo"><div>Fab 03</div></td>
                 <td><select name="du3" id="duracao3" style="width: 100%; height: 100%; border: none;">
-                    <option value="5">5:00</option>
-                    <option value="10">10:00</option>
-                    <option value="15">15:00</option>
-                    <option value="20">20:00</option>
-                    <option value="25">25:00</option>
+                    <option value="1">5:00</option>
+                    <option value="2">10:00</option>
+                    <option value="3">15:00</option>
+                    <option value="4">20:00</option>
+                    <option value="5">25:00</option>
                 </select></td>
                 <td><input type="time" name="hora3" id="timeSemana3"></td>
                 <td><div  class="DATA">
@@ -492,11 +492,11 @@ table input{
             <tr>
                 <td class="titulo"><div>Fab 04</div></td>
                 <td><select name="du4" id="duracao4" style="width: 100%; height: 100%; border: none;">
-                    <option value="5">5:00</option>
-                    <option value="10">10:00</option>
-                    <option value="15">15:00</option>
-                    <option value="20">20:00</option>
-                    <option value="25">25:00</option>
+                    <option value="1">5:00</option>
+                    <option value="2">10:00</option>
+                    <option value="3">15:00</option>
+                    <option value="4">20:00</option>
+                    <option value="5">25:00</option>
                 </select></td>
                 <td><input type="time" name="hora4" id="timeSemana4"></td>
                 <td><div  class="DATA">
@@ -539,11 +539,11 @@ table input{
             <tr>
                 <td class="titulo"><div>Fab 05</div></td>
                 <td><select name="du5" id="duracao5" style="width: 100%; height: 100%; border: none;">
-                    <option value="5">5:00</option>
-                    <option value="10">10:00</option>
-                    <option value="15">15:00</option>
-                    <option value="20">20:00</option>
-                    <option value="25">25:00</option>
+                    <option value="1">5:00</option>
+                    <option value="2">10:00</option>
+                    <option value="3">15:00</option>
+                    <option value="4">20:00</option>
+                    <option value="5">25:00</option>
                 </select></td>
                 <td><input type="time" name="hora5" id="timeSemana5"></td>
                 <td><div  class="DATA">
@@ -596,40 +596,38 @@ table input{
 </body>
 <script>
 
-  const mostraTime = () => {
-      var nD = new Date();
-      var dia = nD.getDate();
-      var mes = (nD.getMonth() + 1);
-      var ano = nD.getFullYear();
-      var hora = nD.getHours();
-      var minuto = nD.getMinutes();
-      var semana = nD.getDay();
-     
-      if(dia < 10)dia = "0" + dia
-      if(mes < 10)mes = "0" + mes
-      if(hora < 10)hora = "0" + hora
-      if(minuto < 10)minuto = "0" + minuto
-     
-      if(semana == 0)StrigSemana = "Domingo"
-      else if(semana == 1)StrigSemana = "Segunda"
-      else if(semana == 2)StrigSemana = "Terça"
-      else if(semana == 3)StrigSemana = "Quarta"
-      else if(semana == 4)StrigSemana = "Quinta"
-      else if(semana == 5)StrigSemana = "Sexta"
-      else if(semana == 6)StrigSemana = "Sabado"
-     
-      document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
-      document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
-      document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
-  }
+    const mostraTime = () => {
+        var nD = new Date();
+        var dia = nD.getDate();
+        var mes = (nD.getMonth() + 1);
+        var ano = nD.getFullYear();
+        var hora = nD.getHours();
+        var minuto = nD.getMinutes();
+        var semana = nD.getDay();
+        
+        if(dia < 10)dia = "0" + dia
+        if(mes < 10)mes = "0" + mes
+        if(hora < 10)hora = "0" + hora
+        if(minuto < 10)minuto = "0" + minuto
+        
+        if(semana == 0)StrigSemana = "Domingo"
+        else if(semana == 1)StrigSemana = "Segunda"
+        else if(semana == 2)StrigSemana = "Terça"
+        else if(semana == 3)StrigSemana = "Quarta"
+        else if(semana == 4)StrigSemana = "Quinta"
+        else if(semana == 5)StrigSemana = "Sexta"
+        else if(semana == 6)StrigSemana = "Sabado"
+        
+        document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
+        document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
+        document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
+    }
 
   mostraTime()
   setInterval(mostraTime,10000)
   
   let firtScanf = 0
-
   InitWebSocket()
-  
   function InitWebSocket(){
     websock = new WebSocket('ws://'+window.location.hostname+':81/');
     websock.onmessage = jsonMaster => {
@@ -713,7 +711,7 @@ table input{
                 document.getElementById('timeSemana5').value = jsonEsp.HORA5
                 
                 veto = jsonEsp.S5_0
-
+                
                 document.getElementById('S5_0').checked = parseInt(veto[0])
                 document.getElementById('S5_1').checked = parseInt(veto[1])
                 document.getElementById('S5_2').checked = parseInt(veto[2])
@@ -726,33 +724,41 @@ table input{
             }
             firtScanf++
         }
-
+ 
     }
   }
 
   //setTimeout(setVariaveisPag,1000)
+  setInterval(() => {
+      
+    if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
+    if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
 
-  function fanONOFF(){
-   
-    for (let index = 1; index < 6; index++) {
-        
+    if(jsonEsp.BOMBA2 == '1')document.getElementById('bomba2').checked = 1;
+    if(jsonEsp.BOMBA2 == '0')document.getElementById('bomba2').checked = 0;
+
+    if(jsonEsp.BOMBA3 == '1')document.getElementById('bomba3').checked = 1;
+    if(jsonEsp.BOMBA3 == '0')document.getElementById('bomba3').checked = 0;
+
+    if(jsonEsp.BOMBA4 == '1')document.getElementById('bomba4').checked = 1;
+    if(jsonEsp.BOMBA4 == '0')document.getElementById('bomba4').checked = 0;
+
+    if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
+    if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
+
+    },1000)
+
+  function fanONOFF(){   
+    for(let index = 1; index < 6; index++) {
         websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value))
         websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value))
         let vetor = []
-        for (let ino = 0; ino < 7; ino++){
+        for(let ino = 0; ino < 7; ino++){
             if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1'
             else vetor +='0'
         }
-
         websock.send('S'+index+'_0='+vetor)
-        
     }
-    
-    /*FANbtn = 'LEDonoff=ON';
-    if(document.getElementById('FANbtn').innerHTML == 'ON'){
-      FANbtn = 'LEDonoff=OFF';
-    }
-    websock.send(FANbtn);*/
   }
 
 </script>
