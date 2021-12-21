@@ -1,4 +1,5 @@
 //////MASTER
+
 #include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
@@ -6,8 +7,11 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <SPI.h>
+#include <Wire.h>  
+#include "SSD1306.h"
 #include "webpage.h"
 
+SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
 const char* ssid     = "Grendene.Coletores";
 const char* password = "ISO8804650216900479";
@@ -134,6 +138,12 @@ void setup(){
 
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
   
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setLogBuffer(5, 30);
+
+  
   if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
     Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
     while (true);                       // if failed, do nothing
@@ -157,8 +167,20 @@ void setup(){
         NULL,                   //prioridade
         NULL,                   //Não precisamos de referência para a tarefa
         0);
+
+  display.println("NovTec"); 
+  display.drawLogBuffer(5, 50);
+  display.display();
+  display.clear();
+  display.println("IRRIGAÇÃO 4.0"); 
+  display.print("Address: "); 
+  display.print(localAddress); 
+  display.drawLogBuffer(0, 0);
+  display.display();
         
 }
+
+
 
 void setupNTP(){
     

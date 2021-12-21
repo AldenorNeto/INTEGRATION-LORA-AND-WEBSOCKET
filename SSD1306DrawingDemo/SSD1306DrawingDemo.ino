@@ -15,7 +15,7 @@
 // This example just provide basic function test;
 // For more informations, please vist www.heltec.cn or mail to support@heltec.cn
 
-#include "Arduino.h"
+
 #include "heltec.h"
 
 
