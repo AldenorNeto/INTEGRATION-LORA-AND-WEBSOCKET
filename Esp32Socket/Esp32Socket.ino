@@ -28,10 +28,17 @@ String outgoing;              // outgoing message
 
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x05;     // address of this device
-byte destination = 0x01;      // destination to send to
+byte destination = 0xe6;      // destination to send to
 
 int timeZone = -3;
+
 long lastSendTime = 0;
+long lastSendTimeBomba1 = 0;
+long lastSendTimeBomba2 = 0;
+long lastSendTimeBomba3 = 0;
+long lastSendTimeBomba4 = 0;
+long lastSendTimeBomba5 = 0;
+
 
 struct Date{
     int dayOfWeek;
@@ -129,68 +136,15 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
 }
 
 
-void setup(){
- 
-  Serial.begin(9600);
-  while (!Serial);
-  pinMode(LED, OUTPUT);
-  pinMode(A0, INPUT);
-
-  LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
-  
-  display.init();
-  display.setFont(ArialMT_Plain_10); //10,16,24
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.setLogBuffer(5, 30);
-
-  
-  if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
-    Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
-    while (true);                       // if failed, do nothing
-  }
- 
-  Serial.println("LORA INICIADO");
-  
-  connectWiFi();
-  setupNTP();
- 
-  server.on("/", handleRoot);
-  server.begin();
-  webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
-
-  xTaskCreatePinnedToCore(
-        wifiConnectionTask,     //Função que será executada
-        "wifiConnectionTask",   //Nome da tarefa
-        10000,                  //Tamanho da memória disponível (em WORDs)
-        NULL,                   //Não vamos passar nenhum parametro
-        NULL,                   //prioridade
-        NULL,                   //Não precisamos de referência para a tarefa
-        0);
-
-  display.println("NovTec"); 
-  display.drawLogBuffer(5, 50);
-  display.display();
-  display.clear();
-  display.println("IRRIGAÇÃO 4.0"); 
-  display.print("Address: "); 
-  display.print(localAddress); 
-  display.drawLogBuffer(0, 0);
-  display.display();
-        
-}
-
-
-
 void setupNTP(){
     
     ntpClient.begin(); //Inicializa o client NTP
     
     Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
+    
     while(!ntpClient.update()){
         Serial.print(".");
-        ntpClient.forceUpdate();
-        delay(500);
+        ntpClient.forceUpdate();delay(500);
     }
 
     Serial.println();
@@ -217,8 +171,53 @@ void connectWiFi(){
 
     Serial.println();
     Serial.print("IP ");
-    Serial.println(WiFi.localIP());
+    Serial.println(WiFi.localIP().toString());
 }
+
+
+void setup(){
+ 
+  Serial.begin(9600);
+  while (!Serial);
+  pinMode(LED, OUTPUT);
+  pinMode(A0, INPUT);
+
+  LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
+  
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.flipScreenVertically(); 
+
+
+  
+  if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
+    Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
+    while (true);                       // if failed, do nothing
+  }
+ 
+  Serial.println("LORA INICIADO");
+  
+  connectWiFi();
+  setupNTP();
+ 
+  server.on("/", handleRoot);
+  server.begin();
+  webSocket.begin();
+  webSocket.onEvent(webSocketEvent);
+
+  xTaskCreatePinnedToCore(
+        wifiConnectionTask,     //Função que será executada
+        "wifiConnectionTask",   //Nome da tarefa
+        10000,                  //Tamanho da memória disponível (em WORDs)
+        NULL,                   //Não vamos passar nenhum parametro
+        NULL,                   //prioridade
+        NULL,                   //Não precisamos de referência para a tarefa
+        0);
+
+lastSendTime = millis();
+
+}
+
 
 void loop() {
 
@@ -237,26 +236,60 @@ void loop() {
     hora = "0" + hora;
   }
 
-    if((s1_0[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + String(date.minutes))){
-      bomba1 = "1";
-      lastSendTime = millis(); 
-    }
-    else if(millis() - lastSendTime > ((duracao1 - '0') * 300000)) {
-        bomba1 = "0";
-    }
-    
-    /*if((s2_0[date.dayOfWeek] == '1')&&(hora2 == String(date.hours) + ":" + String(date.minutes)))bomba2 = "1"; 
-    else{bomba2 = "0";}
-    if((s3_0[date.dayOfWeek] == '1')&&(hora3 == String(date.hours) + ":" + String(date.minutes)))bomba3 = "1"; 
-    else{bomba3 = "0";}
-    if((s4_0[date.dayOfWeek] == '1')&&(hora4 == String(date.hours) + ":" + String(date.minutes)))bomba4 = "1"; 
-    else{bomba4 = "0";}
-    if((s5_0[date.dayOfWeek] == '1')&&(hora5 == String(date.hours) + ":" + String(date.minutes)))bomba5 = "1"; 
-    else{bomba5 = "0";}*/
+  String minuto = String(date.minutes);
+  if(date.minutes < 10){
+    minuto = "0" + minuto;
+  }
 
+    if((s1_0[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + minuto)){
+      bomba1 = "1";
+      sendMessage("1RELE1");
+      lastSendTimeBomba1 = millis(); 
+    }
+    else if(millis() - lastSendTimeBomba1 > ((duracao1 - '0') * 300000)) {
+        bomba1 = "0";
+        sendMessage("1RELE0");
+    }
+
+    if((s2_0[date.dayOfWeek] == '1')&&(hora2 == hora + ":" + minuto)){
+      bomba2 = "1";
+      sendMessage("2RELE1");
+      lastSendTimeBomba2 = millis(); 
+    }
+    else if(millis() - lastSendTimeBomba2 > ((duracao2 - '0') * 300000)) {
+      bomba2 = "0";
+      sendMessage("2RELE0");
+    }
     
-    if(bomba1 == "1"){sendMessage("0RELE0");}
-    else{sendMessage("1RELE1");}
+    if((s3_0[date.dayOfWeek] == '1')&&(hora3 == hora + ":" + minuto)){
+      bomba3 = "1"; 
+      lastSendTimeBomba3 = millis(); 
+    }
+    else if(millis() - lastSendTimeBomba3 > ((duracao3 - '0') * 300000)) {
+      bomba3 = "0";
+    }
+    
+    if((s4_0[date.dayOfWeek] == '1')&&(hora4 == hora + ":" + minuto)){
+      bomba4 = "1"; 
+      lastSendTimeBomba4 = millis(); 
+    }
+    else if(millis() - lastSendTimeBomba4 > ((duracao4 - '0') * 300000)) {
+      bomba4 = "0";
+    }
+    
+    if((s5_0[date.dayOfWeek] == '1')&&(hora5 ==  hora + ":" + minuto)){
+      bomba5 = "1"; 
+      lastSendTimeBomba5 = millis(); 
+    }
+    else if(millis() - lastSendTimeBomba5 > ((duracao5 - '0') * 300000)) {
+      bomba5 = "0";
+    }
+
+
+    if(millis() - lastSendTime > 10000) {
+      sendMessage("HUMIREQ");
+      lastSendTime = millis();
+    }
  
   if((t-l) > 1000){
    
@@ -323,6 +356,15 @@ void loop() {
   }
   
   onReceive(LoRa.parsePacket());
+
+  display.drawString(0, 0, "IRRIGAÇÃO 4.0");
+  display.drawString(0,15, "LoRa OK");
+  display.drawString(100,0, hora + ":" + minuto);
+  display.drawString(60,15, WiFi.localIP().toString());
+  display.display();
+  delay(100);
+  display.clear();
+  delay(100);
 }
 
 Date getDate(){

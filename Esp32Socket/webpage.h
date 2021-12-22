@@ -622,7 +622,7 @@ table input{
         document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
         document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
     }
-
+  console.log(window.location.href.substring(7,window.location.href.substring.length - 2));
   mostraTime()
   setInterval(mostraTime,10000)
   
@@ -730,6 +730,7 @@ table input{
 
   //setTimeout(setVariaveisPag,1000)
   setInterval(() => {
+      
     if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
     if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
 
@@ -744,7 +745,6 @@ table input{
 
     if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
     if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
-
 
     },1000)
 

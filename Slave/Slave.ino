@@ -1,4 +1,6 @@
 //////SLAVE
+#include <Wire.h> 
+#include "SSD1306.h"
 #include <SPI.h>              // include libraries
 #include <LoRa.h>
 
@@ -11,30 +13,45 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x01;     // address of this device
+byte localAddress = 0xe6;     // address of this device
 byte destination = 0x05;      // destination to send to
 
+SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
+
+
+ byte Gsender; 
+ String Gincoming = "";
+ int Grecipient = 0;
  
 void setup() {
+  
   Serial.begin(9600);                   // initialize serial
   while (!Serial);
 
   pinMode(RELE1, OUTPUT);
+  pinMode(A0, INPUT);
  
   // override the default CS, reset, and IRQ pins (optional)
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ pin
  
-  if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
+  if(!LoRa.begin(915E6)){             // initialize ratio at 915 MHz
     Serial.println("INICIALIZAÇÃO LORA DO SLAVE NÃO FOI ESTABELECIDA");
     while (true);                       // if failed, do nothing
   }
  
   Serial.println("INICIANDO SLAVE LORA");
   digitalWrite(RELE1,1);
+
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.flipScreenVertically(); 
+
 }
  
-void loop() {
-  if (senderSlave) {
+void loop(){
+  
+  
+  if(senderSlave){
     String message = String(analogRead(38));   // send a message
     sendMessage(message);
     Serial.println("Enviado: " + message);
@@ -43,6 +60,22 @@ void loop() {
  
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
+
+  display.drawString(0, 0, "IRRIGAÇÃO 4.0");
+  display.drawString(0,15, "ADDR: " + String(localAddress));
+  display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
+  display.drawString(0, 30, "Send " + String(Gsender, HEX) + ":  " + Gincoming);
+  if(Grecipient != localAddress){
+    display.drawString(0, 45, "For " + String(Grecipient));
+  }
+  else{
+    display.drawString(0, 45, "For Me");
+  }
+  
+  display.display();
+  delay(100);
+  display.clear();
+  delay(100);
 }
  
 void sendMessage(String outgoing) {
@@ -56,28 +89,32 @@ void sendMessage(String outgoing) {
   msgCount++;                           // increment message ID
 }
  
-void onReceive(int packetSize) {
-  if (packetSize == 0) return;          // if there's no packet, return
+void onReceive(int packetSize){
+  if(packetSize == 0) return;          // if there's no packet, return
  
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
- 
+
   String incoming = "";
  
-  while (LoRa.available()) {
+  while(LoRa.available()){
     incoming += (char)LoRa.read();
   }
  
-  if (incomingLength != incoming.length()) {   // check length for error
+  if(incomingLength != incoming.length()){   // check length for error
     Serial.println("error: message length does not match length");
     return;                             // skip rest of function
   }
- 
+  
+  Gsender = sender;
+  Gincoming = incoming;
+  Grecipient = recipient;
+  
   // if the recipient isn't this device or broadcast,
-  if (recipient != localAddress && recipient != 0xFF) {
+  if(recipient != localAddress && recipient != 0xFF){
     Serial.print("MESSAGEM PARA OUTRO SLAVE");
     Serial.println(localAddress);
     return;                             // skip rest of function
@@ -93,14 +130,13 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 
+
+  
+
   if(incoming == "0RELE0"){
     digitalWrite(RELE1,0);
-    Serial.print("0000000000000000000000000000");
   }
-  if(incoming == "1RELE1"){
-    digitalWrite(RELE1,1);
-    Serial.print("1111111111111111111111111111");
-  }  
+
   
   senderSlave = true;
 }

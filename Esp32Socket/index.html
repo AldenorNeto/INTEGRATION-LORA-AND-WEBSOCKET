@@ -622,7 +622,7 @@ table input{
         document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
         document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
     }
-
+  console.log(window.location.href.substring(7));
   mostraTime()
   setInterval(mostraTime,10000)
   
