@@ -12,7 +12,6 @@ void setup(){
 
   display.init();
   display.setFont(ArialMT_Plain_10); //10,16,24
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
 
 }
 void loop(){

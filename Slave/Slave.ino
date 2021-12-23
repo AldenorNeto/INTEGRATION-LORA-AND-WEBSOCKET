@@ -51,12 +51,7 @@ void setup() {
 void loop(){
   
   
-  if(senderSlave){
-    String message = String(analogRead(38));   // send a message
-    sendMessage(message);
-    Serial.println("Enviado: " + message);
-    senderSlave = false;
-  }
+
  
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
@@ -70,7 +65,19 @@ void loop(){
   }
   else{
     display.drawString(0, 45, "For Me");
+    if(senderSlave){
+      if(Gincoming == "HQ"){
+        String message = String(analogRead(A0));
+        sendMessage(message);
+        Serial.println("Enviado: " + message);
+        senderSlave = false; 
+      }
+
+    }
+    
   }
+
+  
   
   display.display();
   delay(100);
@@ -131,11 +138,14 @@ void onReceive(int packetSize){
   Serial.println();
 
 
-  
-
+if(recipient == localAddress){
   if(incoming == "0RELE0"){
     digitalWrite(RELE1,0);
   }
+  
+
+}
+  
 
   
   senderSlave = true;

@@ -28,16 +28,19 @@ String outgoing;              // outgoing message
 
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x05;     // address of this device
-byte destination = 0xe6;      // destination to send to
 
 int timeZone = -3;
 
-long lastSendTime = 0;
-long lastSendTimeBomba1 = 0;
-long lastSendTimeBomba2 = 0;
-long lastSendTimeBomba3 = 0;
-long lastSendTimeBomba4 = 0;
-long lastSendTimeBomba5 = 0;
+long lastSendTimeHQ1    = millis();
+long lastSendTimeHQ2    = millis();
+long lastSendTimeHQ3    = millis();
+long lastSendTimeHQ4    = millis();
+long lastSendTimeHQ5    = millis();
+long lastSendTimeBomba1 = millis();
+long lastSendTimeBomba2 = millis();
+long lastSendTimeBomba3 = millis();
+long lastSendTimeBomba4 = millis();
+long lastSendTimeBomba5 = millis();
 
 
 struct Date{
@@ -54,7 +57,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",    //URL do servwer NTP
+    "10.2.0.1",             //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -214,8 +217,6 @@ void setup(){
         NULL,                   //Não precisamos de referência para a tarefa
         0);
 
-lastSendTime = millis();
-
 }
 
 
@@ -243,29 +244,29 @@ void loop() {
 
     if((s1_0[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + minuto)){
       bomba1 = "1";
-      sendMessage("1RELE1");
+      sendMessage("1RELE1",0xe7);
       lastSendTimeBomba1 = millis(); 
     }
-    else if(millis() - lastSendTimeBomba1 > ((duracao1 - '0') * 300000)) {
+    else if((millis()  > ((duracao1 - '0') * 300000) + lastSendTimeBomba1)&&(bomba1 == "1")) {
         bomba1 = "0";
-        sendMessage("1RELE0");
+        sendMessage("1RELE0",0xe7);
     }
 
     if((s2_0[date.dayOfWeek] == '1')&&(hora2 == hora + ":" + minuto)){
       bomba2 = "1";
-      sendMessage("2RELE1");
+      sendMessage("2RELE1",0xe6);
       lastSendTimeBomba2 = millis(); 
     }
-    else if(millis() - lastSendTimeBomba2 > ((duracao2 - '0') * 300000)) {
+    else if((millis() > ((duracao2 - '0') * 300000) + lastSendTimeBomba2)&&(bomba2 == "1")) {
       bomba2 = "0";
-      sendMessage("2RELE0");
+      sendMessage("2RELE0",0xe6);
     }
     
     if((s3_0[date.dayOfWeek] == '1')&&(hora3 == hora + ":" + minuto)){
       bomba3 = "1"; 
       lastSendTimeBomba3 = millis(); 
     }
-    else if(millis() - lastSendTimeBomba3 > ((duracao3 - '0') * 300000)) {
+    else if((millis() > ((duracao3 - '0') * 300000) + lastSendTimeBomba3)&&(bomba3 == "1")){
       bomba3 = "0";
     }
     
@@ -273,7 +274,7 @@ void loop() {
       bomba4 = "1"; 
       lastSendTimeBomba4 = millis(); 
     }
-    else if(millis() - lastSendTimeBomba4 > ((duracao4 - '0') * 300000)) {
+    else if((millis() > ((duracao4 - '0') * 300000) + lastSendTimeBomba4)&&(bomba4 == "1")){
       bomba4 = "0";
     }
     
@@ -281,23 +282,23 @@ void loop() {
       bomba5 = "1"; 
       lastSendTimeBomba5 = millis(); 
     }
-    else if(millis() - lastSendTimeBomba5 > ((duracao5 - '0') * 300000)) {
+    else if((millis() > ((duracao5 - '0') * 300000) + lastSendTimeBomba5)&&(bomba5 == "1")){
       bomba5 = "0";
     }
 
-
-    if(millis() - lastSendTime > 10000) {
-      sendMessage("HUMIREQ");
-      lastSendTime = millis();
+    if(millis() - lastSendTimeHQ1 > 10000) {
+      sendMessage("HQ",0xe7);
+      lastSendTimeHQ1 = millis();
     }
+    
  
   if((t-l) > 1000){
    
-    umidade1 = String(analogRead(A0));
+    /*umidade1 = String(analogRead(A0));
     umidade2 = String(analogRead(A0));
     umidade3 = String(analogRead(A0));
     umidade4 = String(analogRead(A0));
-    umidade5 = String(analogRead(A0));
+    umidade5 = String(analogRead(A0));*/
 
     /*if(String(date.dayOfWeek) == s1_0[date.dayOfWeek]){
       printf("brasil");
@@ -383,7 +384,7 @@ Date getDate(){
     return date;
 }
 
-void sendMessage(String outgoing) {
+void sendMessage(String outgoing,byte destination) {
   LoRa.beginPacket();                   // start packet
   LoRa.write(destination);              // add destination address
   LoRa.write(localAddress);             // add sender address
