@@ -13,7 +13,7 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0xe8;     // address of this device
+byte localAddress = 0xe7;     // address of this device
 byte destination = 0x05;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
@@ -81,6 +81,12 @@ void loop(){
   delay(100);
   display.clear();
   delay(100);
+
+  if(Gincoming == "1RELE1"){
+     digitalWrite(RELE1,0);
+  }else if(Gincoming == "1RELE0"){
+     digitalWrite(RELE1,1);
+  }
 }
  
 void sendMessage(String outgoing) {

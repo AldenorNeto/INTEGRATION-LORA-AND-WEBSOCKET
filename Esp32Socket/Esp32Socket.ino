@@ -13,11 +13,11 @@
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+/*const char* ssid     = "Caetano";
+const char* password = "992920940";*/
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -36,7 +36,8 @@ int timeZone = -3;
 int indexHumidade =  1;
 int lastIndexHumidade =  1;
 
-String Gsender = "00";
+String Gsender   = "00";
+String Gincoming = "00";
 
 long lastSendTimeOLED   = millis();
 long lastSendTimeHQ     = millis();
@@ -67,7 +68,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "2.br.pool.ntp.org",//"10.2.0.1",             //URL do servwer NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/   //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -200,8 +201,6 @@ void setup(){
   display.init();
   display.setFont(ArialMT_Plain_10); //10,16,24
   display.flipScreenVertically(); 
-
-
   
   if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
     Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
@@ -400,6 +399,7 @@ if(lastSendTimeHQ3 + 1000 < millis()){
     }
     
 
+    Serial.println(JSONtxt);
     webSocket.broadcastTXT(JSONtxt);
    
   }
@@ -446,7 +446,7 @@ void sendMessage(String outgoing,byte destination) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   
-  Serial.print("    Enviado " + String(outgoing) + "  para " + String(destination));
+  Serial.println("Enviado " + String(outgoing) + "  para " + String(destination));
 
   stringComunicacao = "Enviado " + String(outgoing);
   stringComunicacao2 = "para o " + String(destination);
@@ -467,8 +467,7 @@ void onReceive(int packetSize) {
   while (LoRa.available()) {
     incoming += (char)LoRa.read();
   }
-  Serial.print("recebendo: ");
-  Serial.println(recipient);
+  
   /*if(String(sender, HEX) == "1"){
     Serial.println(incoming);
   }*/
@@ -492,8 +491,9 @@ void onReceive(int packetSize) {
   Serial.println();
 
   Gsender = String(sender);
+  Gincoming = String(incoming);
   
-  stringComunicacao = String(sender) + ": " + String(incoming);
+  stringComunicacao = Gsender + ": " + Gincoming;
   stringComunicacao2 = "For Me";
     
 }
