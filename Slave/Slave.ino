@@ -1,7 +1,7 @@
 //////SLAVE
 #include <Wire.h> 
 #include "SSD1306.h"
-#include <SPI.h>              // include libraries
+#include <SPI.h>
 #include <LoRa.h>
 
 #define RELE1 17
@@ -13,15 +13,15 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0xe6;     // address of this device
+byte localAddress = 0xe8;     // address of this device
 byte destination = 0x05;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
 
- byte Gsender; 
- String Gincoming = "";
- int Grecipient = 0;
+byte Gsender; 
+String Gincoming = "";
+int Grecipient = 0;
  
 void setup() {
   
@@ -55,7 +55,7 @@ void loop(){
  
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
-
+ 
   display.drawString(0, 0, "IRRIGAÇÃO 4.0");
   display.drawString(0,15, "ADDR: " + String(localAddress));
   display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
@@ -66,19 +66,17 @@ void loop(){
   else{
     display.drawString(0, 45, "For Me");
     if(senderSlave){
+      
       if(Gincoming == "HQ"){
         String message = String(analogRead(A0));
         sendMessage(message);
         Serial.println("Enviado: " + message);
         senderSlave = false; 
       }
-
     }
-    
   }
 
-  
-  
+
   display.display();
   delay(100);
   display.clear();
@@ -97,6 +95,7 @@ void sendMessage(String outgoing) {
 }
  
 void onReceive(int packetSize){
+
   if(packetSize == 0) return;          // if there's no packet, return
  
   // read packet header bytes:
@@ -122,8 +121,8 @@ void onReceive(int packetSize){
   
   // if the recipient isn't this device or broadcast,
   if(recipient != localAddress && recipient != 0xFF){
-    Serial.print("MESSAGEM PARA OUTRO SLAVE");
-    Serial.println(localAddress);
+    Serial.print("MESSAGEM PARA O SLAVE ");
+    Serial.println(recipient);
     return;                             // skip rest of function
   }
  
@@ -138,13 +137,6 @@ void onReceive(int packetSize){
   Serial.println();
 
 
-if(recipient == localAddress){
-  if(incoming == "0RELE0"){
-    digitalWrite(RELE1,0);
-  }
-  
-
-}
   
 
   

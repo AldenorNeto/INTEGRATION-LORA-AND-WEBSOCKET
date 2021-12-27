@@ -13,8 +13,11 @@
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
+
+const char* ssid     = "Caetano";
+const char* password = "992920940";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -22,7 +25,7 @@ const int resetPin = 14;       // LoRa radio reset
 String outgoing;              // outgoing message
 
 
-#define LED LED_BUILTIN
+#define LED    LED_BUILTIN
 #define SW     23
 
 
@@ -30,8 +33,13 @@ byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x05;     // address of this device
 
 int timeZone = -3;
+int indexHumidade =  1;
+int lastIndexHumidade =  1;
 
-long lastSendTimeHQ1    = millis();
+String Gsender = "00";
+
+long lastSendTimeOLED   = millis();
+long lastSendTimeHQ     = millis();
 long lastSendTimeHQ2    = millis();
 long lastSendTimeHQ3    = millis();
 long lastSendTimeHQ4    = millis();
@@ -42,6 +50,8 @@ long lastSendTimeBomba3 = millis();
 long lastSendTimeBomba4 = millis();
 long lastSendTimeBomba5 = millis();
 
+String stringComunicacao = "";
+String stringComunicacao2 = "";
 
 struct Date{
     int dayOfWeek;
@@ -57,7 +67,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",             //URL do servwer NTP
+    "2.br.pool.ntp.org",//"10.2.0.1",             //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -146,7 +156,7 @@ void setupNTP(){
     Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
     
     while(!ntpClient.update()){
-        Serial.print(".");
+        Serial.print(",");
         ntpClient.forceUpdate();delay(500);
     }
 
@@ -169,7 +179,7 @@ void connectWiFi(){
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
     
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
-        Serial.print("."); delay(500);
+        Serial.print("_"); delay(500);
     }
 
     Serial.println();
@@ -224,10 +234,6 @@ void loop() {
 
   Date date = getDate();
   webSocket.loop(); server.handleClient();
-
-  Serial.printf("%d\n",date.dayOfWeek);
-  Serial.printf("%d/%d\n",date.day, date.month);
-  Serial.printf("%d:%d\n",date.hours, date.minutes);
  
   static unsigned long l = 0;
   unsigned long t = millis();
@@ -286,12 +292,54 @@ void loop() {
       bomba5 = "0";
     }
 
-    if(millis() - lastSendTimeHQ1 > 10000) {
-      sendMessage("HQ",0xe7);
-      lastSendTimeHQ1 = millis();
+    if(lastSendTimeHQ + 60000 < millis()){
+      indexHumidade = 1;
+      lastSendTimeHQ = millis();
     }
-    
- 
+
+    if(lastSendTimeHQ2 + 10000 < millis()){
+      if(lastIndexHumidade != indexHumidade){
+        lastIndexHumidade = indexHumidade;
+      }else{
+        indexHumidade++;
+      }
+      lastSendTimeHQ2 = millis();
+    }
+
+if(lastSendTimeHQ3 + 1000 < millis()){
+    if(indexHumidade == 1){
+      sendMessage("HQ",0xe7);
+      if(Gsender == "231"){
+        indexHumidade = 2;
+      }
+    }
+    if(indexHumidade == 2){
+      sendMessage("HQ",0xe8);
+      if(Gsender == "232"){
+        indexHumidade = 3;
+      }
+    }
+    if(indexHumidade == 3) {
+      sendMessage("HQ",0xe9);
+      if(Gsender == "233"){
+        indexHumidade = 4;
+      }
+    }
+    if(indexHumidade == 4){
+      sendMessage("HQ",0xea);
+      if(Gsender == "234"){
+        indexHumidade = 5;
+      }
+    }
+    if(indexHumidade == 5){
+      sendMessage("HQ",0xeb);
+      if(Gsender == "235"){
+        indexHumidade = 6;
+      }
+    }
+    lastSendTimeHQ3 = millis();
+  }
+
   if((t-l) > 1000){
    
     /*umidade1 = String(analogRead(A0));
@@ -351,21 +399,25 @@ void loop() {
       indice = 1;
     }
     
-    Serial.println(JSONtxt);
+
     webSocket.broadcastTXT(JSONtxt);
    
   }
   
   onReceive(LoRa.parsePacket());
 
-  display.drawString(0, 0, "IRRIGAÇÃO 4.0");
-  display.drawString(0,15, "LoRa OK");
-  display.drawString(100,0, hora + ":" + minuto);
-  display.drawString(60,15, WiFi.localIP().toString());
-  display.display();
-  delay(100);
-  display.clear();
-  delay(100);
+  if(lastSendTimeOLED + 500 < millis()){
+    display.drawString(0, 0, "IRRIGAÇÃO 4.0");
+    display.drawString(0,15, "LoRa OK");
+    display.drawString(100,0, hora + ":" + minuto);
+    display.drawString(60,15, WiFi.localIP().toString());
+    display.drawString(0,30, stringComunicacao);
+    display.drawString(0,45, stringComunicacao2);
+    display.display();
+    display.clear();
+    lastSendTimeOLED = millis();
+  }
+
 }
 
 Date getDate(){
@@ -393,9 +445,15 @@ void sendMessage(String outgoing,byte destination) {
   LoRa.print(outgoing);                 // add payload
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
+  
+  Serial.print("    Enviado " + String(outgoing) + "  para " + String(destination));
+
+  stringComunicacao = "Enviado " + String(outgoing);
+  stringComunicacao2 = "para o " + String(destination);
 }
 
 void onReceive(int packetSize) {
+ 
   if (packetSize == 0) return;          // if there's no packet, return
  
   // read packet header bytes:
@@ -405,28 +463,24 @@ void onReceive(int packetSize) {
   byte incomingLength = LoRa.read();    // incoming msg length
  
   String incoming = "";
- 
+  Serial.println("onReceive");
   while (LoRa.available()) {
     incoming += (char)LoRa.read();
   }
-
-  if(String(sender, HEX) == "1"){
+  Serial.print("recebendo: ");
+  Serial.println(recipient);
+  /*if(String(sender, HEX) == "1"){
     Serial.println(incoming);
-  }
+  }*/
 
-  
+   
  
   if (incomingLength != incoming.length()) {   // check length for error
     Serial.println("error: message length does not match length");
     return;                             // skip rest of function
   }
  
-  // if the recipient isn't this device or broadcast,
-  if (recipient != localAddress && recipient != 0xFF) {
-    Serial.println("This message is not for me.");
-    return;                             // skip rest of function
-  }
- 
+
   // if message is for this device, or broadcast, print details:
   Serial.println("Received from: 0x" + String(sender, HEX));
   Serial.println("Sent to: 0x" + String(recipient, HEX));
@@ -436,4 +490,10 @@ void onReceive(int packetSize) {
   Serial.println("RSSI: " + String(LoRa.packetRssi()));
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
+
+  Gsender = String(sender);
+  
+  stringComunicacao = String(sender) + ": " + String(incoming);
+  stringComunicacao2 = "For Me";
+    
 }
