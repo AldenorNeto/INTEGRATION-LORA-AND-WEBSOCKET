@@ -13,14 +13,14 @@
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
 /*const char* ssid     = "Caetano";
 const char* password = "992920940";*/
 
-const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";
+/*const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";*/
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -47,7 +47,7 @@ long lastSendTimeHQ     = millis();
 long lastSendTimeHQ2    = millis();
 long lastSendTimeJson   = millis();
 long lastSendTimeHQ3    = millis();
-long lastSendTimeHQ5    = millis();
+long lastSendTimeBomba  = millis();
 long lastSendTimeBomba1 = millis();
 long lastSendTimeBomba2 = millis();
 long lastSendTimeBomba3 = millis();
@@ -71,7 +71,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do servwer NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -250,24 +250,41 @@ void loop() {
     minuto = "0" + minuto;
   }
 
+  if(lastSendTimeBomba + 1000 < millis()){
+    
+    if(bomba1 == "1"){sendMessage("1RELE1",0xe7);}
+    if(bomba1 == "0"){sendMessage("1RELE0",0xe7);}
+    
+    if(bomba2 == "1"){sendMessage("1RELE1",0xe8);}
+    if(bomba2 == "0"){sendMessage("1RELE0",0xe8);}
+    
+    if(bomba3 == "1"){sendMessage("1RELE1",0xe9);}
+    if(bomba3 == "0"){sendMessage("1RELE0",0xe9);}
+    
+    if(bomba4 == "1"){sendMessage("1RELE1",0xea);}
+    if(bomba4 == "0"){sendMessage("1RELE0",0xea);}
+    
+    if(bomba5 == "1"){sendMessage("1RELE1",0xeb);}
+    if(bomba5 == "0"){sendMessage("1RELE0",0xeb);}
+    
+    lastSendTimeBomba = millis();
+  }
+
     if((s1_0[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + minuto)){
       bomba1 = "1";
-      sendMessage("1RELE1",0xe7);
       lastSendTimeBomba1 = millis(); 
     }
-    else if((millis()  > ((duracao1 - '0') * 300000) + lastSendTimeBomba1)&&(bomba1 == "1")) {
-        bomba1 = "0";
-        sendMessage("1RELE0",0xe7);
+    else if((millis() > ((duracao1 - '0') * 300000) + lastSendTimeBomba1)&&(bomba1 == "1")){
+      bomba1 = "0";
     }
 
     if((s2_0[date.dayOfWeek] == '1')&&(hora2 == hora + ":" + minuto)){
       bomba2 = "1";
-      sendMessage("2RELE1",0xe6);
       lastSendTimeBomba2 = millis(); 
     }
-    else if((millis() > ((duracao2 - '0') * 300000) + lastSendTimeBomba2)&&(bomba2 == "1")) {
+    else if((millis() > ((duracao2 - '0') * 300000) + lastSendTimeBomba2)&&(bomba2 == "1")){
       bomba2 = "0";
-      sendMessage("2RELE0",0xe6);
+      Serial.println(" / / / / / / / ");
     }
     
     if((s3_0[date.dayOfWeek] == '1')&&(hora3 == hora + ":" + minuto)){
@@ -311,33 +328,23 @@ void loop() {
 if(lastSendTimeHQ3 + 1000 < millis()){
     if(indexHumidade == 1){
       sendMessage("HQ",0xe7);
-      if(Gsender == "231"){
-        indexHumidade = 2;
-      }
+
     }
     if(indexHumidade == 2){
       sendMessage("HQ",0xe8);
-      if(Gsender == "232"){
-        indexHumidade = 3;
-      }
+
     }
     if(indexHumidade == 3) {
       sendMessage("HQ",0xe9);
-      if(Gsender == "233"){
-        indexHumidade = 4;
-      }
+
     }
     if(indexHumidade == 4){
       sendMessage("HQ",0xea);
-      if(Gsender == "234"){
-        indexHumidade = 5;
-      }
+
     }
     if(indexHumidade == 5){
       sendMessage("HQ",0xeb);
-      if(Gsender == "235"){
-        indexHumidade = 6;
-      }
+
     }
     lastSendTimeHQ3 = millis();
   }
@@ -356,7 +363,8 @@ if(lastSendTimeHQ3 + 1000 < millis()){
       printf("brasil");
     }*/
    
-
+  if(lastSendTimeJson + 500 < millis()){
+    
     JSONtxt = "{\"INDICE\":\""+String(indice)+"\",";
     if(indice == 1){
       JSONtxt += "\"DURACAO1\":\""+String(duracao1)+"\",";
@@ -403,7 +411,7 @@ if(lastSendTimeHQ3 + 1000 < millis()){
       indice = 1;
     }
     
-    if(lastSendTimeJson + 500 < millis()){
+    
       Serial.println(JSONtxt);
       webSocket.broadcastTXT(JSONtxt);
       lastSendTimeJson = millis();
@@ -459,9 +467,9 @@ void sendMessage(String outgoing,byte destination) {
 }
 
 void onReceive(int packetSize) {
- 
+
   if (packetSize == 0) return;          // if there's no packet, return
- 
+ Serial.println("ATE AQUI OK");
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
@@ -496,24 +504,38 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 
-   if(String(sender, HEX) == "e7"){
+   if((String(sender, HEX) == "e7") && (String(incoming[0]) == "H")){
     umidade1 = incoming;
-    Serial.println(incoming + "\n\n\n\n\n");
+    Serial.println(String(incoming[0]) + " -- -- -- -- -- -- -- ");
    }
-   if(String(sender, HEX) == "e8"){
+   if((String(sender, HEX) == "e8") && (String(incoming[0]) == "H")){
     umidade2 = incoming;
    }
-   if(String(sender, HEX) == "e9"){
+   if((String(sender, HEX) == "e9") && (String(incoming[0]) == "H")){
     umidade3 = incoming;
    }
-   if(String(sender, HEX) == "ea"){
+   if((String(sender, HEX) == "ea") && (String(incoming[0]) == "H")){
     umidade4 = incoming;
    }
-   if(String(sender, HEX) == "eb"){
+   if((String(sender, HEX) == "eb") && (String(incoming[0]) == "H")){
     umidade5 = incoming;
    }
 
-
+   if((String(sender) == "231") && (String(incoming[1]) == "R")){
+     indexHumidade = 2;
+   }
+   if((String(sender) == "232") && (String(incoming[1]) == "R")){
+     indexHumidade = 3;
+   }
+   if((String(sender) == "233") && (String(incoming[1]) == "R")){
+     indexHumidade = 4;
+   }
+   if((String(sender) == "234") && (String(incoming[1]) == "R")){
+     indexHumidade = 5;
+   }
+   if((String(sender) == "235") && (String(incoming[1]) == "R")){
+     indexHumidade = 6;
+   }
    
   Gsender = String(sender);
   Gincoming = String(incoming);

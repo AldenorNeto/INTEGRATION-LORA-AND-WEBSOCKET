@@ -8,12 +8,14 @@
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
+
+long lastSendTimeOLED   = millis();
  
 String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0xe7;     // address of this device
+byte localAddress = 0xe8;     // address of this device
 byte destination = 0x05;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
@@ -55,38 +57,35 @@ void loop(){
  
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
- 
-  display.drawString(0, 0, "IRRIGAÇÃO 4.0");
-  display.drawString(0,15, "ADDR: " + String(localAddress));
-  display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
-  display.drawString(0, 30, "Send " + String(Gsender, HEX) + ":  " + Gincoming);
-  if(Grecipient != localAddress){
-    display.drawString(0, 45, "For " + String(Grecipient));
-  }
-  else{
-    display.drawString(0, 45, "For Me");
-    if(senderSlave){
-      
-      if(Gincoming == "HQ"){
-        String message = String((analogRead(A0) * 100)/4095);
-        sendMessage(message);
-        Serial.println("Enviado: " + message);
-        senderSlave = false; 
+  
+  if(lastSendTimeOLED + 500 < millis()){
+    display.drawString(0, 0, "IRRIGAÇÃO 4.0");
+    display.drawString(0,15, "ADDR: " + String(localAddress));
+    display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
+    display.drawString(0, 30, "Send " + String(Gsender, HEX) + ":  " + Gincoming);
+    if(Grecipient != localAddress){
+      display.drawString(0, 45, "For " + String(Grecipient));
+    }
+    else{
+      display.drawString(0, 45, "For Me");
+      if(senderSlave){
+        if(Gincoming == "HQ"){
+          String message = "H" + String((analogRead(A0) * 100)/4095);
+          sendMessage(message);
+          Serial.println("Enviado: " + message);
+          
+          senderSlave = false; 
+        }
       }
     }
-  }
 
 
-  display.display();
-  delay(100);
-  display.clear();
-  delay(100);
+    display.display();
+    display.clear();
+    lastSendTimeOLED = millis();
+ }
 
-  if(Gincoming == "1RELE1"){
-     digitalWrite(RELE1,0);
-  }else if(Gincoming == "1RELE0"){
-     digitalWrite(RELE1,1);
-  }
+
 }
  
 void sendMessage(String outgoing) {
@@ -103,7 +102,7 @@ void sendMessage(String outgoing) {
 void onReceive(int packetSize){
 
   if(packetSize == 0) return;          // if there's no packet, return
- 
+
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
@@ -120,10 +119,28 @@ void onReceive(int packetSize){
     Serial.println("error: message length does not match length");
     return;                             // skip rest of function
   }
-  
+
+  if(recipient == localAddress){
+
+    if(incoming == "1RELE1"){
+      digitalWrite(RELE1,0);
+      sendMessage("1RELE1");
+    }else if(incoming == "1RELE0"){
+      digitalWrite(RELE1,1);
+      sendMessage("1RELE0");
+    }
+
+    if(incoming == "HQ"){
+      sendMessage("H" + String((analogRead(A0) * 100)/4095));
+      Serial.println("H -+-+--> " + String((analogRead(A0) * 100)/4095));
+    }
+
+  }
+
   Gsender = sender;
   Gincoming = incoming;
   Grecipient = recipient;
+ 
   
   // if the recipient isn't this device or broadcast,
   if(recipient != localAddress && recipient != 0xFF){
@@ -143,7 +160,7 @@ void onReceive(int packetSize){
   Serial.println();
 
 
-  
+
 
   
   senderSlave = true;

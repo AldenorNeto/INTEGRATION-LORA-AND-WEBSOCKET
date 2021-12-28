@@ -390,7 +390,7 @@ table input{
                         </div>
                     </div></div>
                 </td>
-                <td><div class="umidade"><span id="umidade1">0.69</span>%</div></td>
+                <td><div class="umidade"><span id="umidade1">0</span>%</div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba1"><div></div>
                 </label></td>
@@ -437,7 +437,7 @@ table input{
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade2">0.75</span>%</div></td>
+                <td><div class="umidade"><span id="umidade2">0</span>%</div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba2"><div></div>
                 </label></td>
@@ -484,7 +484,7 @@ table input{
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade3">0.73</span>%</div></td>
+                <td><div class="umidade"><span id="umidade3">0</span>%</div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba3"><div></div>
                 </label></td>
@@ -531,7 +531,7 @@ table input{
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade4">0.75</span>%</div></td>
+                <td><div class="umidade"><span id="umidade4">0</span>%</div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba4"><div></div>
                 </label></td>
@@ -578,7 +578,7 @@ table input{
                         </label>
                     </div>
                 </div></td>
-                <td><div class="umidade"><span id="umidade5">0.80</span>%</div></td>
+                <td><div class="umidade"><span id="umidade5">0</span>%</div></td>
                 <td><label class="estadoBomba">
                     <input type="checkbox" id="bomba5"><div></div>
                 </label></td>
@@ -605,28 +605,28 @@ table input{
         var minuto = nD.getMinutes();
         var semana = nD.getDay();
         
-        if(dia < 10)dia = "0" + dia
-        if(mes < 10)mes = "0" + mes
-        if(hora < 10)hora = "0" + hora
-        if(minuto < 10)minuto = "0" + minuto
+        if(dia < 10)dia = "0" + dia;
+        if(mes < 10)mes = "0" + mes;
+        if(hora < 10)hora = "0" + hora;
+        if(minuto < 10)minuto = "0" + minuto;
         
-        if(semana == 0)StrigSemana = "Domingo"
-        else if(semana == 1)StrigSemana = "Segunda"
-        else if(semana == 2)StrigSemana = "Terça"
-        else if(semana == 3)StrigSemana = "Quarta"
-        else if(semana == 4)StrigSemana = "Quinta"
-        else if(semana == 5)StrigSemana = "Sexta"
-        else if(semana == 6)StrigSemana = "Sabado"
+        if(semana == 0)StrigSemana = "Domingo";
+        else if(semana == 1)StrigSemana = "Segunda";
+        else if(semana == 2)StrigSemana = "Terça";
+        else if(semana == 3)StrigSemana = "Quarta";
+        else if(semana == 4)StrigSemana = "Quinta";
+        else if(semana == 5)StrigSemana = "Sexta";
+        else if(semana == 6)StrigSemana = "Sabado";
         
-        document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>")
-        document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>")
-        document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>")    
+        document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>");
+        document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>");
+        document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>");
     }
   console.log(window.location.href.substring(7));
-  mostraTime()
-  setInterval(mostraTime,10000)
+  mostraTime();
+  setInterval(mostraTime,10000);
   
-  let firtScanf = 0
+  let firtScanf = 0;
   InitWebSocket()
   function InitWebSocket(){
     websock = new WebSocket('ws://'+window.location.hostname+':81/');
@@ -654,7 +654,6 @@ table input{
                 document.getElementById('S1_6').checked = parseInt(veto[6])
                 
                 //document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
-
             }
             else if(jsonEsp.INDICE == 2){
                 document.getElementById('duracao2').value = jsonEsp.DURACAO2
@@ -671,7 +670,6 @@ table input{
                 document.getElementById('S2_6').checked = parseInt(veto[6])
                 
                 //document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2
-
             }
             else if(jsonEsp.INDICE == 3){
                 document.getElementById('duracao3').value = jsonEsp.DURACAO3
@@ -707,22 +705,22 @@ table input{
             }
             else if(jsonEsp.INDICE == 5){
 
-                document.getElementById('duracao5').value = jsonEsp.DURACAO5
-                document.getElementById('timeSemana5').value = jsonEsp.HORA5
+                document.getElementById('duracao5').value = jsonEsp.DURACAO5;
+                document.getElementById('timeSemana5').value = jsonEsp.HORA5;
                 
-                veto = jsonEsp.S5_0
+                veto = jsonEsp.S5_0;
                 
-                document.getElementById('S5_0').checked = parseInt(veto[0])
-                document.getElementById('S5_1').checked = parseInt(veto[1])
-                document.getElementById('S5_2').checked = parseInt(veto[2])
-                document.getElementById('S5_3').checked = parseInt(veto[3])
-                document.getElementById('S5_4').checked = parseInt(veto[4])
-                document.getElementById('S5_5').checked = parseInt(veto[5])
-                document.getElementById('S5_6').checked = parseInt(veto[6])
+                document.getElementById('S5_0').checked = parseInt(veto[0]);
+                document.getElementById('S5_1').checked = parseInt(veto[1]);
+                document.getElementById('S5_2').checked = parseInt(veto[2]);
+                document.getElementById('S5_3').checked = parseInt(veto[3]);
+                document.getElementById('S5_4').checked = parseInt(veto[4]);
+                document.getElementById('S5_5').checked = parseInt(veto[5]);
+                document.getElementById('S5_6').checked = parseInt(veto[6]);
                 
                 //document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5
             }
-            firtScanf++
+            firtScanf++;
         }
  
     }
@@ -752,20 +750,20 @@ table input{
     if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
     if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
 
-    },1)
+    },100);
 
 
 
   function fanONOFF(){   
     for(let index = 1; index < 6; index++) {
-        websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value))
-        websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value))
+        websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value));
+        websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value));
         let vetor = []
         for(let ino = 0; ino < 7; ino++){
-            if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1'
-            else vetor +='0'
+            if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1';
+            else vetor +='0';
         }
-        websock.send('S'+index+'_0='+vetor)
+        websock.send('S'+index+'_0='+vetor);
     }
   }
 
