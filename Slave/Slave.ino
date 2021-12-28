@@ -68,7 +68,7 @@ void loop(){
     if(senderSlave){
       
       if(Gincoming == "HQ"){
-        String message = String(analogRead(A0));
+        String message = String((analogRead(A0) * 100)/4095);
         sendMessage(message);
         Serial.println("Enviado: " + message);
         senderSlave = false; 

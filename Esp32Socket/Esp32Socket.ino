@@ -13,11 +13,14 @@
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
 /*const char* ssid     = "Caetano";
 const char* password = "992920940";*/
+
+const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -42,8 +45,8 @@ String Gincoming = "00";
 long lastSendTimeOLED   = millis();
 long lastSendTimeHQ     = millis();
 long lastSendTimeHQ2    = millis();
+long lastSendTimeJson   = millis();
 long lastSendTimeHQ3    = millis();
-long lastSendTimeHQ4    = millis();
 long lastSendTimeHQ5    = millis();
 long lastSendTimeBomba1 = millis();
 long lastSendTimeBomba2 = millis();
@@ -68,7 +71,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/   //URL do servwer NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -81,31 +84,31 @@ int indice = 1;
 char duracao1 = '1';
 String hora1 = "00:00";
 String s1_0 = "0000000";
-String umidade1;
-String bomba1 = "0";
+String umidade1 = "0";
+String bomba1 = "0"; 
 
 char duracao2 = '1';
 String hora2 = "00:00";
 String s2_0 = "0000000";
-String umidade2;
+String umidade2 = "0";
 String bomba2 = "0";
 
 char duracao3 = '1';
 String hora3 = "00:00";
 String s3_0 = "0000000";
-String umidade3;
+String umidade3 = "0";
 String bomba3 = "0";
 
 char duracao4 = '1';
 String hora4 = "00:00";
 String s4_0 = "0000000";
-String umidade4;
+String umidade4 = "0";
 String bomba4 = "0";
 
 char duracao5 = '1';
 String hora5 = "00:00";
 String s5_0 = "0000000";
-String umidade5;
+String umidade5 = "0";
 String bomba5 = "0";
 
 String JSONtxt;
@@ -339,6 +342,8 @@ if(lastSendTimeHQ3 + 1000 < millis()){
     lastSendTimeHQ3 = millis();
   }
 
+  
+
   if((t-l) > 1000){
    
     /*umidade1 = String(analogRead(A0));
@@ -398,10 +403,11 @@ if(lastSendTimeHQ3 + 1000 < millis()){
       indice = 1;
     }
     
-
-    Serial.println(JSONtxt);
-    webSocket.broadcastTXT(JSONtxt);
-   
+    if(lastSendTimeJson + 500 < millis()){
+      Serial.println(JSONtxt);
+      webSocket.broadcastTXT(JSONtxt);
+      lastSendTimeJson = millis();
+    }
   }
   
   onReceive(LoRa.parsePacket());
@@ -490,6 +496,25 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
 
+   if(String(sender, HEX) == "e7"){
+    umidade1 = incoming;
+    Serial.println(incoming + "\n\n\n\n\n");
+   }
+   if(String(sender, HEX) == "e8"){
+    umidade2 = incoming;
+   }
+   if(String(sender, HEX) == "e9"){
+    umidade3 = incoming;
+   }
+   if(String(sender, HEX) == "ea"){
+    umidade4 = incoming;
+   }
+   if(String(sender, HEX) == "eb"){
+    umidade5 = incoming;
+   }
+
+
+   
   Gsender = String(sender);
   Gincoming = String(incoming);
   
