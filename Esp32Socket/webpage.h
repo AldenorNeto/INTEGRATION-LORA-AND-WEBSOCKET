@@ -625,6 +625,8 @@ table input{
   console.log(window.location.href.substring(7));
   mostraTime();
   setInterval(mostraTime,10000);
+
+  var json = 0
   
   let firtScanf = 0;
   InitWebSocket()
@@ -636,7 +638,7 @@ table input{
 
         document.getElementById('farofa').style.display='none'
 
-        
+        json = 0
 
         if(firtScanf < 10){
             let veto
@@ -731,12 +733,13 @@ table input{
 
   //setTimeout(setVariaveisPag,1000)
   setInterval(() => {
-
+    json++
+    console.log(json);
     if(isOpen(websock)) socketOk = true 
 
     if(socketOk){
 
-        if(!isOpen(websock))location.reload();
+        if(!isOpen(websock)|| (json > 50 && json < 55 ))location.reload();
 
         if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1.substring(1);
         if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2.substring(1);
