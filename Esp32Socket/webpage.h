@@ -48,7 +48,7 @@ button{
 
 
 #envioForm{
-    background-image: linear-gradient(to bottom right, #00ff00 50%, #00db00 50%);
+    background-image: linear-gradient(to bottom right, #00ff00 50%, #00c900 50%);
     font-weight: bold;
 }
 
@@ -636,6 +636,8 @@ table input{
 
         document.getElementById('farofa').style.display='none'
 
+        
+
         if(firtScanf < 10){
             let veto
 
@@ -725,37 +727,49 @@ table input{
  
     }
   }
+  var socketOk = false
 
   //setTimeout(setVariaveisPag,1000)
   setInterval(() => {
 
-    if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1;
-    if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2;
-    if(jsonEsp.UMIDADE3)document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3;
-    if(jsonEsp.UMIDADE4)document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4;
-    if(jsonEsp.UMIDADE5)document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5;
-      
-    if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
-    if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
+    if(isOpen(websock)) socketOk = true 
 
-    if(jsonEsp.BOMBA2 == '1')document.getElementById('bomba2').checked = 1;
-    if(jsonEsp.BOMBA2 == '0')document.getElementById('bomba2').checked = 0;
+    if(socketOk){
 
-    if(jsonEsp.BOMBA3 == '1')document.getElementById('bomba3').checked = 1;
-    if(jsonEsp.BOMBA3 == '0')document.getElementById('bomba3').checked = 0;
+        if(!isOpen(websock))location.reload();
 
-    if(jsonEsp.BOMBA4 == '1')document.getElementById('bomba4').checked = 1;
-    if(jsonEsp.BOMBA4 == '0')document.getElementById('bomba4').checked = 0;
+        if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1.substring(1);
+        if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2.substring(1);
+        if(jsonEsp.UMIDADE3)document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3.substring(1);
+        if(jsonEsp.UMIDADE4)document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4.substring(1);
+        if(jsonEsp.UMIDADE5)document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5.substring(1);
+        
+        if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
+        if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
 
-    if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
-    if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
+        if(jsonEsp.BOMBA2 == '1')document.getElementById('bomba2').checked = 1;
+        if(jsonEsp.BOMBA2 == '0')document.getElementById('bomba2').checked = 0;
 
-    },100);
+        if(jsonEsp.BOMBA3 == '1')document.getElementById('bomba3').checked = 1;
+        if(jsonEsp.BOMBA3 == '0')document.getElementById('bomba3').checked = 0;
 
+        if(jsonEsp.BOMBA4 == '1')document.getElementById('bomba4').checked = 1;
+        if(jsonEsp.BOMBA4 == '0')document.getElementById('bomba4').checked = 0;
 
+        if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
+        if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
+
+    }
+
+  },100);
+
+    var isOpen = ws => ws.readyState === ws.OPEN 
 
   function fanONOFF(){   
     for(let index = 1; index < 6; index++) {
+
+
+        
         websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value));
         websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value));
         let vetor = []

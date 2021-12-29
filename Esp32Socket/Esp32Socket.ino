@@ -13,14 +13,14 @@
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
 /*const char* ssid     = "Caetano";
 const char* password = "992920940";*/
 
-/*const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";*/
+const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -71,7 +71,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do servwer NTP
+   /* "10.2.0.1",*/"2.br.pool.ntp.org",  //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
