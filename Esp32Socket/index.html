@@ -643,70 +643,20 @@ table input{
         if(firtScanf < 10){
             let veto
 
-            if(jsonEsp.INDICE == 1){
-                document.getElementById('duracao1').value = jsonEsp.DURACAO1
-                document.getElementById('timeSemana1').value = jsonEsp.HORA1
+            var setupTabela = (INDICE,DURACAO,HORA,SEMANA) => {
+                document.getElementById('duracao'+INDICE).value = DURACAO
+                document.getElementById('timeSemana'+INDICE).value = HORA
                 
-                veto = jsonEsp.S1_0
-
-                document.getElementById('S1_0').checked = parseInt(veto[0])
-                document.getElementById('S1_1').checked = parseInt(veto[1])
-                document.getElementById('S1_2').checked = parseInt(veto[2])
-                document.getElementById('S1_3').checked = parseInt(veto[3])
-                document.getElementById('S1_4').checked = parseInt(veto[4])
-                document.getElementById('S1_5').checked = parseInt(veto[5])
-                document.getElementById('S1_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
+                for(let ino = 0; ino < 7; ino++){
+                    document.getElementById('S1_'+ino).checked = parseInt(SEMANA[ino])
+                }
             }
-            else if(jsonEsp.INDICE == 2){
-                document.getElementById('duracao2').value = jsonEsp.DURACAO2
-                document.getElementById('timeSemana2').value = jsonEsp.HORA2
-                
-                veto = jsonEsp.S2_0
 
-                document.getElementById('S2_0').checked = parseInt(veto[0])
-                document.getElementById('S2_1').checked = parseInt(veto[1])
-                document.getElementById('S2_2').checked = parseInt(veto[2])
-                document.getElementById('S2_3').checked = parseInt(veto[3])
-                document.getElementById('S2_4').checked = parseInt(veto[4])
-                document.getElementById('S2_5').checked = parseInt(veto[5])
-                document.getElementById('S2_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2
-            }
-            else if(jsonEsp.INDICE == 3){
-                document.getElementById('duracao3').value = jsonEsp.DURACAO3
-                document.getElementById('timeSemana3').value = jsonEsp.HORA3
-                
-                veto = jsonEsp.S3_0
+            if(jsonEsp.INDICE == 1)setupTabela(jsonEsp.INDICE,jsonEsp.DURACAO1,jsonEsp.HORA1,jsonEsp.S1_0)
+            if(jsonEsp.INDICE == 2)setupTabela(jsonEsp.INDICE,jsonEsp.DURACAO2,jsonEsp.HORA2,jsonEsp.S2_0)
+            if(jsonEsp.INDICE == 3)setupTabela(jsonEsp.INDICE,jsonEsp.DURACAO3,jsonEsp.HORA3,jsonEsp.S3_0)
+            if(jsonEsp.INDICE == 3)setupTabela(jsonEsp.INDICE,jsonEsp.DURACAO3,jsonEsp.HORA3,jsonEsp.S3_0)
 
-                document.getElementById('S3_0').checked = parseInt(veto[0])
-                document.getElementById('S3_1').checked = parseInt(veto[1])
-                document.getElementById('S3_2').checked = parseInt(veto[2])
-                document.getElementById('S3_3').checked = parseInt(veto[3])
-                document.getElementById('S3_4').checked = parseInt(veto[4])
-                document.getElementById('S3_5').checked = parseInt(veto[5])
-                document.getElementById('S3_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3
-            }
-            else if(jsonEsp.INDICE == 4){
-                document.getElementById('duracao4').value = jsonEsp.DURACAO4
-                document.getElementById('timeSemana4').value = jsonEsp.HORA4
-                
-                veto = jsonEsp.S4_0
-
-                document.getElementById('S4_0').checked = parseInt(veto[0])
-                document.getElementById('S4_1').checked = parseInt(veto[1])
-                document.getElementById('S4_2').checked = parseInt(veto[2])
-                document.getElementById('S4_3').checked = parseInt(veto[3])
-                document.getElementById('S4_4').checked = parseInt(veto[4])
-                document.getElementById('S4_5').checked = parseInt(veto[5])
-                document.getElementById('S4_6').checked = parseInt(veto[6])
-                
-                //document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4
-            }
             else if(jsonEsp.INDICE == 5){
 
                 document.getElementById('duracao5').value = jsonEsp.DURACAO5;
@@ -714,13 +664,9 @@ table input{
                 
                 veto = jsonEsp.S5_0;
                 
-                document.getElementById('S5_0').checked = parseInt(veto[0]);
-                document.getElementById('S5_1').checked = parseInt(veto[1]);
-                document.getElementById('S5_2').checked = parseInt(veto[2]);
-                document.getElementById('S5_3').checked = parseInt(veto[3]);
-                document.getElementById('S5_4').checked = parseInt(veto[4]);
-                document.getElementById('S5_5').checked = parseInt(veto[5]);
-                document.getElementById('S5_6').checked = parseInt(veto[6]);
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S5_'+ino).checked = parseInt(veto[ino])
+                }
                 
                 //document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5
             }
@@ -737,9 +683,12 @@ table input{
     console.log(json);
     if(isOpen(websock)) socketOk = true 
 
-    if(socketOk){
+    if(socketOk && firtScanf){
 
-        if(!isOpen(websock)|| (json > 50 && json < 55 ))location.reload();
+        if(!isOpen(websock)|| json > 50){
+            location.reload();
+            json = 0;
+        };
 
         if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1.substring(1);
         if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2.substring(1);
@@ -747,20 +696,11 @@ table input{
         if(jsonEsp.UMIDADE4)document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4.substring(1);
         if(jsonEsp.UMIDADE5)document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5.substring(1);
         
-        if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
-        if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
-
-        if(jsonEsp.BOMBA2 == '1')document.getElementById('bomba2').checked = 1;
-        if(jsonEsp.BOMBA2 == '0')document.getElementById('bomba2').checked = 0;
-
-        if(jsonEsp.BOMBA3 == '1')document.getElementById('bomba3').checked = 1;
-        if(jsonEsp.BOMBA3 == '0')document.getElementById('bomba3').checked = 0;
-
-        if(jsonEsp.BOMBA4 == '1')document.getElementById('bomba4').checked = 1;
-        if(jsonEsp.BOMBA4 == '0')document.getElementById('bomba4').checked = 0;
-
-        if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
-        if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
+        if(jsonEsp.BOMBA1)document.getElementById('bomba1').checked = parseInt(jsonEsp.BOMBA1);
+        if(jsonEsp.BOMBA2)document.getElementById('bomba2').checked = parseInt(jsonEsp.BOMBA2);
+        if(jsonEsp.BOMBA3)document.getElementById('bomba3').checked = parseInt(jsonEsp.BOMBA3);
+        if(jsonEsp.BOMBA4)document.getElementById('bomba4').checked = parseInt(jsonEsp.BOMBA4);
+        if(jsonEsp.BOMBA5)document.getElementById('bomba5').checked = parseInt(jsonEsp.BOMBA5);
 
     }
 

@@ -1,4 +1,5 @@
 //////MASTER
+
 #include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
@@ -64,14 +65,13 @@ struct Date{
     int hours;
     int minutes;
 };
-
 //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 WiFiUDP udp;
 
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do servwer NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -161,8 +161,6 @@ void setupNTP(){
     
     while(!ntpClient.update()){
         Serial.print(",");
-        display.drawString(100,0, "NTP");
-        display.display();
         ntpClient.forceUpdate();delay(500);
     }
 
@@ -180,16 +178,12 @@ void wifiConnectionTask(void* param){
 }
 
 void connectWiFi(){
-  
     Serial.println("Conetando");
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
     
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
-        Serial.print(".");
-        display.drawString(60,15, "Wifi");
-        display.display();
-        delay(500);
+        Serial.print("_"); delay(500);
     }
 
     Serial.println();
@@ -197,15 +191,8 @@ void connectWiFi(){
     Serial.println(WiFi.localIP().toString());
 }
 
+
 void setup(){
-
-  display.init();
-  display.setFont(ArialMT_Plain_10); //10,16,24
-  display.flipScreenVertically();
-
-  display.drawString(0, 0, "IRRIGAÇÃO 4.0");
-  display.display();
-  delay(10);
  
   Serial.begin(9600);
   while (!Serial);
@@ -214,7 +201,9 @@ void setup(){
 
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
   
-
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.flipScreenVertically(); 
   
   if (!LoRa.begin(915E6)) {             // initialize ratio at 915 MHz
     Serial.println("INICIALIZAÇÃO LORA NÃO FOI ESTABELECIDA");
@@ -295,6 +284,7 @@ void loop() {
     }
     else if((millis() > ((duracao2 - '0') * 300000) + lastSendTimeBomba2)&&(bomba2 == "1")){
       bomba2 = "0";
+      Serial.println(" / / / / / / / ");
     }
     
     if((s3_0[date.dayOfWeek] == '1')&&(hora3 == hora + ":" + minuto)){
@@ -470,10 +460,10 @@ void sendMessage(String outgoing,byte destination) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   
-  Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
+  Serial.println("Enviado " + String(outgoing) + "  para " + String(destination));
 
-  stringComunicacao = "ENVIADO " + String(outgoing);
-  stringComunicacao2 = "PARA " + String(destination);
+  stringComunicacao = "Enviado " + String(outgoing);
+  stringComunicacao2 = "para o " + String(destination);
 }
 
 void onReceive(int packetSize) {
@@ -550,7 +540,7 @@ void onReceive(int packetSize) {
   Gsender = String(sender);
   Gincoming = String(incoming);
   
-  stringComunicacao = "SLAVE " +Gsender + ": " + Gincoming;
-  stringComunicacao2 = "RESPONDEU";
+  stringComunicacao = Gsender + ": " + Gincoming;
+  stringComunicacao2 = "For Me";
     
 }

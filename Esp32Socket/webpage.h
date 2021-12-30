@@ -648,15 +648,9 @@ table input{
                 document.getElementById('timeSemana1').value = jsonEsp.HORA1
                 
                 veto = jsonEsp.S1_0
-
-                document.getElementById('S1_0').checked = parseInt(veto[0])
-                document.getElementById('S1_1').checked = parseInt(veto[1])
-                document.getElementById('S1_2').checked = parseInt(veto[2])
-                document.getElementById('S1_3').checked = parseInt(veto[3])
-                document.getElementById('S1_4').checked = parseInt(veto[4])
-                document.getElementById('S1_5').checked = parseInt(veto[5])
-                document.getElementById('S1_6').checked = parseInt(veto[6])
-                
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S1_'+ino).checked = parseInt(veto[ino])
+                }
                 //document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
             }
             else if(jsonEsp.INDICE == 2){
@@ -665,13 +659,9 @@ table input{
                 
                 veto = jsonEsp.S2_0
 
-                document.getElementById('S2_0').checked = parseInt(veto[0])
-                document.getElementById('S2_1').checked = parseInt(veto[1])
-                document.getElementById('S2_2').checked = parseInt(veto[2])
-                document.getElementById('S2_3').checked = parseInt(veto[3])
-                document.getElementById('S2_4').checked = parseInt(veto[4])
-                document.getElementById('S2_5').checked = parseInt(veto[5])
-                document.getElementById('S2_6').checked = parseInt(veto[6])
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S2_'+ino).checked = parseInt(veto[ino])
+                }
                 
                 //document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2
             }
@@ -681,13 +671,9 @@ table input{
                 
                 veto = jsonEsp.S3_0
 
-                document.getElementById('S3_0').checked = parseInt(veto[0])
-                document.getElementById('S3_1').checked = parseInt(veto[1])
-                document.getElementById('S3_2').checked = parseInt(veto[2])
-                document.getElementById('S3_3').checked = parseInt(veto[3])
-                document.getElementById('S3_4').checked = parseInt(veto[4])
-                document.getElementById('S3_5').checked = parseInt(veto[5])
-                document.getElementById('S3_6').checked = parseInt(veto[6])
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S3_'+ino).checked = parseInt(veto[ino])
+                }
                 
                 //document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3
             }
@@ -697,13 +683,9 @@ table input{
                 
                 veto = jsonEsp.S4_0
 
-                document.getElementById('S4_0').checked = parseInt(veto[0])
-                document.getElementById('S4_1').checked = parseInt(veto[1])
-                document.getElementById('S4_2').checked = parseInt(veto[2])
-                document.getElementById('S4_3').checked = parseInt(veto[3])
-                document.getElementById('S4_4').checked = parseInt(veto[4])
-                document.getElementById('S4_5').checked = parseInt(veto[5])
-                document.getElementById('S4_6').checked = parseInt(veto[6])
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S4_'+ino).checked = parseInt(veto[ino])
+                }
                 
                 //document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4
             }
@@ -714,13 +696,9 @@ table input{
                 
                 veto = jsonEsp.S5_0;
                 
-                document.getElementById('S5_0').checked = parseInt(veto[0]);
-                document.getElementById('S5_1').checked = parseInt(veto[1]);
-                document.getElementById('S5_2').checked = parseInt(veto[2]);
-                document.getElementById('S5_3').checked = parseInt(veto[3]);
-                document.getElementById('S5_4').checked = parseInt(veto[4]);
-                document.getElementById('S5_5').checked = parseInt(veto[5]);
-                document.getElementById('S5_6').checked = parseInt(veto[6]);
+                for(let ino = 0; ino < 7; ino++){
+                document.getElementById('S5_'+ino).checked = parseInt(veto[ino])
+                }
                 
                 //document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5
             }
@@ -737,9 +715,12 @@ table input{
     console.log(json);
     if(isOpen(websock)) socketOk = true 
 
-    if(socketOk){
+    if(socketOk && firtScanf){
 
-        if(!isOpen(websock)|| (json > 50 && json < 55 ))location.reload();
+        if(!isOpen(websock)|| json > 50){
+            location.reload();
+            json = 0;
+        };
 
         if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1.substring(1);
         if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2.substring(1);
@@ -747,20 +728,11 @@ table input{
         if(jsonEsp.UMIDADE4)document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4.substring(1);
         if(jsonEsp.UMIDADE5)document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5.substring(1);
         
-        if(jsonEsp.BOMBA1 == '1')document.getElementById('bomba1').checked = 1;
-        if(jsonEsp.BOMBA1 == '0')document.getElementById('bomba1').checked = 0;
-
-        if(jsonEsp.BOMBA2 == '1')document.getElementById('bomba2').checked = 1;
-        if(jsonEsp.BOMBA2 == '0')document.getElementById('bomba2').checked = 0;
-
-        if(jsonEsp.BOMBA3 == '1')document.getElementById('bomba3').checked = 1;
-        if(jsonEsp.BOMBA3 == '0')document.getElementById('bomba3').checked = 0;
-
-        if(jsonEsp.BOMBA4 == '1')document.getElementById('bomba4').checked = 1;
-        if(jsonEsp.BOMBA4 == '0')document.getElementById('bomba4').checked = 0;
-
-        if(jsonEsp.BOMBA5 == '1')document.getElementById('bomba5').checked = 1;
-        if(jsonEsp.BOMBA5 == '0')document.getElementById('bomba5').checked = 0;
+        if(jsonEsp.BOMBA1)document.getElementById('bomba1').checked = parseInt(jsonEsp.BOMBA1);
+        if(jsonEsp.BOMBA2)document.getElementById('bomba2').checked = parseInt(jsonEsp.BOMBA2);
+        if(jsonEsp.BOMBA3)document.getElementById('bomba3').checked = parseInt(jsonEsp.BOMBA3);
+        if(jsonEsp.BOMBA4)document.getElementById('bomba4').checked = parseInt(jsonEsp.BOMBA4);
+        if(jsonEsp.BOMBA5)document.getElementById('bomba5').checked = parseInt(jsonEsp.BOMBA5);
 
     }
 

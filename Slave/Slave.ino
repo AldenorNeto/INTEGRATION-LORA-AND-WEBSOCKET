@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <LoRa.h>
 
-#define RELE1 17
+#define RELE1 0
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -15,8 +15,8 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0xe8;     // address of this device
-byte destination = 0x05;      // destination to send to
+byte localAddress = 0xe7;     // address of this device
+byte Master = 0x05;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -52,45 +52,43 @@ void setup() {
  
 void loop(){
   
-  
-
- 
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
   
   if(lastSendTimeOLED + 500 < millis()){
-    display.drawString(0, 0, "IRRIGAÇÃO 4.0");
+    display.drawString(0, 0, "IRRIGAÇÃO 4.0      SLAVE");
     display.drawString(0,15, "ADDR: " + String(localAddress));
     display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
-    display.drawString(0, 30, "Send " + String(Gsender, HEX) + ":  " + Gincoming);
+    if(String(Gsender, HEX) == "5"){
+      display.drawString(0, 30, "MASTER:  " + Gincoming);
+    }else{
+      display.drawString(0, 30, "SLAVE " + String(Gsender, HEX) + ":  " + Gincoming);
+    }
+    //Serial.println(Grecipient + "    " + localAddress);
     if(Grecipient != localAddress){
-      display.drawString(0, 45, "For " + String(Grecipient));
+      display.drawString(0, 45, "PARA O SLAVE " + String(Grecipient, DEC));
     }
     else{
-      display.drawString(0, 45, "For Me");
+      display.drawString(0, 45, "PARA MIM");
       if(senderSlave){
         if(Gincoming == "HQ"){
           String message = "H" + String((analogRead(A0) * 100)/4095);
           sendMessage(message);
           Serial.println("Enviado: " + message);
-          
           senderSlave = false; 
         }
       }
     }
 
-
     display.display();
     display.clear();
     lastSendTimeOLED = millis();
  }
-
-
 }
  
 void sendMessage(String outgoing) {
   LoRa.beginPacket();                   // start packet
-  LoRa.write(destination);              // add destination address
+  LoRa.write(Master);              // add destination address
   LoRa.write(localAddress);             // add sender address
   LoRa.write(msgCount);                 // add message ID
   LoRa.write(outgoing.length());        // add payload length
@@ -132,7 +130,6 @@ void onReceive(int packetSize){
 
     if(incoming == "HQ"){
       sendMessage("H" + String((analogRead(A0) * 100)/4095));
-      Serial.println("H -+-+--> " + String((analogRead(A0) * 100)/4095));
     }
 
   }
@@ -141,7 +138,6 @@ void onReceive(int packetSize){
   Gincoming = incoming;
   Grecipient = recipient;
  
-  
   // if the recipient isn't this device or broadcast,
   if(recipient != localAddress && recipient != 0xFF){
     Serial.print("MESSAGEM PARA O SLAVE ");
@@ -158,9 +154,6 @@ void onReceive(int packetSize){
   Serial.println("RSSI: " + String(LoRa.packetRssi()));
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
-
-
-
 
   
   senderSlave = true;
