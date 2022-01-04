@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <LoRa.h>
 
-#define RELE1 0
+#define RELE1 LED_BUILTIN
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset

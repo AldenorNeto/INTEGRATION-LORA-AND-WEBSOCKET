@@ -633,75 +633,12 @@ table input{
   function InitWebSocket(){
     websock = new WebSocket('ws://'+window.location.hostname+':81/');
     websock.onmessage = jsonMaster => {
-
         jsonEsp = JSON.parse(jsonMaster.data);
-
         document.getElementById('farofa').style.display='none'
-
         json = 0
-
         if(firtScanf < 10){
             let veto
-
-            if(jsonEsp.INDICE == 1){
-                document.getElementById('duracao1').value = jsonEsp.DURACAO1
-                document.getElementById('timeSemana1').value = jsonEsp.HORA1
-                
-                veto = jsonEsp.S1_0
-                for(let ino = 0; ino < 7; ino++){
-                document.getElementById('S1_'+ino).checked = parseInt(veto[ino])
-                }
-                //document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1
-            }
-            else if(jsonEsp.INDICE == 2){
-                document.getElementById('duracao2').value = jsonEsp.DURACAO2
-                document.getElementById('timeSemana2').value = jsonEsp.HORA2
-                
-                veto = jsonEsp.S2_0
-
-                for(let ino = 0; ino < 7; ino++){
-                document.getElementById('S2_'+ino).checked = parseInt(veto[ino])
-                }
-                
-                //document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2
-            }
-            else if(jsonEsp.INDICE == 3){
-                document.getElementById('duracao3').value = jsonEsp.DURACAO3
-                document.getElementById('timeSemana3').value = jsonEsp.HORA3
-                
-                veto = jsonEsp.S3_0
-
-                for(let ino = 0; ino < 7; ino++){
-                document.getElementById('S3_'+ino).checked = parseInt(veto[ino])
-                }
-                
-                //document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3
-            }
-            else if(jsonEsp.INDICE == 4){
-                document.getElementById('duracao4').value = jsonEsp.DURACAO4
-                document.getElementById('timeSemana4').value = jsonEsp.HORA4
-                
-                veto = jsonEsp.S4_0
-
-                for(let ino = 0; ino < 7; ino++){
-                document.getElementById('S4_'+ino).checked = parseInt(veto[ino])
-                }
-                
-                //document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4
-            }
-            else if(jsonEsp.INDICE == 5){
-
-                document.getElementById('duracao5').value = jsonEsp.DURACAO5;
-                document.getElementById('timeSemana5').value = jsonEsp.HORA5;
-                
-                veto = jsonEsp.S5_0;
-                
-                for(let ino = 0; ino < 7; ino++){
-                document.getElementById('S5_'+ino).checked = parseInt(veto[ino])
-                }
-                
-                //document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5
-            }
+            setupTabela(jsonEsp.I)
             firtScanf++;
         }
  
@@ -709,50 +646,51 @@ table input{
   }
   var socketOk = false
 
+  var setupTabela = INDICE => {
+    console.log(INDICE);
+    document.getElementById('duracao'+INDICE).value = jsonEsp.D
+    document.getElementById('timeSemana'+INDICE).value = jsonEsp.H
+                
+    for(let ind in jsonEsp.S){
+        document.getElementById('S'+INDICE+'_'+ind).checked = parseInt(jsonEsp.S[ind])
+    }
+ }
+
   //setTimeout(setVariaveisPag,1000)
   setInterval(() => {
     json++
-    console.log(json);
     if(isOpen(websock)) socketOk = true 
 
     if(socketOk && firtScanf){
 
-        if(!isOpen(websock)|| json > 50){
+        if(!isOpen(websock) || json > 50){
             location.reload();
             json = 0;
         };
-
-        if(jsonEsp.UMIDADE1)document.getElementById('umidade1').innerHTML = jsonEsp.UMIDADE1.substring(1);
-        if(jsonEsp.UMIDADE2)document.getElementById('umidade2').innerHTML = jsonEsp.UMIDADE2.substring(1);
-        if(jsonEsp.UMIDADE3)document.getElementById('umidade3').innerHTML = jsonEsp.UMIDADE3.substring(1);
-        if(jsonEsp.UMIDADE4)document.getElementById('umidade4').innerHTML = jsonEsp.UMIDADE4.substring(1);
-        if(jsonEsp.UMIDADE5)document.getElementById('umidade5').innerHTML = jsonEsp.UMIDADE5.substring(1);
-        
-        if(jsonEsp.BOMBA1)document.getElementById('bomba1').checked = parseInt(jsonEsp.BOMBA1);
-        if(jsonEsp.BOMBA2)document.getElementById('bomba2').checked = parseInt(jsonEsp.BOMBA2);
-        if(jsonEsp.BOMBA3)document.getElementById('bomba3').checked = parseInt(jsonEsp.BOMBA3);
-        if(jsonEsp.BOMBA4)document.getElementById('bomba4').checked = parseInt(jsonEsp.BOMBA4);
-        if(jsonEsp.BOMBA5)document.getElementById('bomba5').checked = parseInt(jsonEsp.BOMBA5);
+        for(let ino = 0; ino < 7; ino++){
+            if(jsonEsp.I == ino){
+                document.getElementById('umidade'+ino).innerHTML = jsonEsp.U.substring(1);
+                document.getElementById('bomba'+ino).checked = parseInt(jsonEsp.B);
+            }
+        }
 
     }
 
-  },100);
+  },500);
 
-    var isOpen = ws => ws.readyState === ws.OPEN 
+  var isOpen = ws => ws.readyState === ws.OPEN 
 
   function fanONOFF(){   
     for(let index = 1; index < 6; index++) {
-
-
-        
         websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value));
         websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value));
         let vetor = []
-        for(let ino = 0; ino < 7; ino++){
+        for(let ino in jsonEsp.S){
             if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1';
             else vetor +='0';
         }
         websock.send('S'+index+'_0='+vetor);
+
     }
   }
 
