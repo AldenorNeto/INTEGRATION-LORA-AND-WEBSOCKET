@@ -5,11 +5,11 @@
 *********************************************************/
 
 // Bibliotecas ------------------------------------------
-#include <SPIFFS.h>
+//#include <SPIFFS.h>
 
 // Setup ------------------------------------------------
 void setup(){
-  Serial.begin(115200);
+  /*Serial.begin(115200);
 
   // --- Inicializando SPIFSS ---
   Serial.println("\nInicializando SPIFSS ---------------------");

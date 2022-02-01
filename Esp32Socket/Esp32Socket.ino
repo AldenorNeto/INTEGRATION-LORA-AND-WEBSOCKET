@@ -2,13 +2,16 @@
 #include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
-#include <WebSocketsServer.h>
 #include <NTPClient.h>
-#include <WiFiUdp.h>
 #include <SPI.h>
 #include <Wire.h>  
 #include "SSD1306.h"
 #include "webpage.h"
+#include <WebSocketsServer.h>
+#include <WiFiUdp.h>
+#include <FS.h>
+#include <SPIFFS.h> 
+
 
 SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
@@ -25,7 +28,6 @@ const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
 
 String outgoing;              // outgoing message
-
 
 #define LED    LED_BUILTIN
 #define SW     23
@@ -117,14 +119,33 @@ void handleRoot(){
   server.send(200,"text/html", webpageCont);
 }
 
+String readFile(String pathFile) {
+  Serial.println("- Reading file: " + pathFile);
+  SPIFFS.begin(true);
+  File rFile = SPIFFS.open(pathFile, "r");
+  String values;
+  if (!rFile) {
+    Serial.println("- Failed to open file.");
+  } else {
+    while (rFile.available()) {
+      values += rFile.readString();
+    }
+    Serial.println("- File values: " + values);
+  }
+  rFile.close();
+  return values;
+}
+
 //evento de processo de função: novos dados recebidos do cliente
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){
   String payloadString = (const char *)payload;
- 
+
+  readFile("/addr.json");
+  
   if(type == WStype_TEXT){
     
-    byte separator=payloadString.indexOf('=');
+    byte separator = payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
 
@@ -238,18 +259,18 @@ void setup(){
 
 void escreveEJsonPUT(){
   JSONtxt = "{\"I\":\""+String(indice)+"\",";
-  if(indice == 1)montaUmJsonIndex(duracao1, hora1, s1, umidade1, bomba1);
+       if(indice == 1)montaUmJsonIndex(duracao1, hora1, s1, umidade1, bomba1);
   else if(indice == 2)montaUmJsonIndex(duracao2, hora2, s2, umidade2, bomba2);
   else if(indice == 3)montaUmJsonIndex(duracao3, hora3, s3, umidade3, bomba3);
   else if(indice == 4)montaUmJsonIndex(duracao4, hora4, s4, umidade4, bomba4);
   else if(indice == 5)montaUmJsonIndex(duracao5, hora5, s5, umidade5, bomba5);
   else indice = 1;
     
-  Serial.println(JSONtxt);
+  ///--Serial.println(JSONtxt);
   webSocket.broadcastTXT(JSONtxt);
 }
 
-void estadoBomba(Date date){
+void estadoBomba(Date date, String hora, String minuto){
   
     if((s1[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + minuto)){
       bomba1 = '1';
@@ -322,7 +343,8 @@ void loop() {
     String minuto = String(date.minutes);
     if(date.hours < 10)hora = "0" + hora;
     if(date.minutes < 10)minuto = "0" + minuto;
-    estadoBomba(date);
+    
+    estadoBomba(date,hora,minuto);
 
     if(lastSendTimeHQ + 60000 < millis()){
       indexHumidade = 1;
@@ -395,7 +417,7 @@ void sendMessage(String outgoing,byte destination) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   
-  Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
+  ///--Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
 
   stringComunicacao = "ENVIADO " + String(outgoing);
   stringComunicacao2 = "PARA " + String(destination);
