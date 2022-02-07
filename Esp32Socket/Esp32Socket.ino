@@ -2,25 +2,23 @@
 #include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
+#include <WebSocketsServer.h>
 #include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <SPI.h>
 #include <Wire.h>  
-#include "SSD1306.h"
-#include "webpage.h"
-#include <WebSocketsServer.h>
-#include <WiFiUdp.h>
 #include <FS.h>
 #include <SPIFFS.h> 
-
+#include "SSD1306.h"
+#include "webpage.h"
 
 SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
-
+/*const char* ssid     = "Caetano";
+const char* password = "992920940";*/
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
@@ -28,6 +26,7 @@ const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
 
 String outgoing;              // outgoing message
+
 
 #define LED    LED_BUILTIN
 #define SW     23
@@ -73,7 +72,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -84,7 +83,7 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 int indice = 1;
 
 char duracao1 = '1';
-String hora1 = "00:00";
+String hora1 = "23:23";
 String s1 = "0000000";
 String umidade1 = "0";
 char bomba1 = '0'; 
@@ -114,38 +113,20 @@ String umidade5 = "0";
 char bomba5 = '0';
 
 String JSONtxt;
+String jsonAddrArmaz;
 
 void handleRoot(){
   server.send(200,"text/html", webpageCont);
-}
-
-String readFile(String pathFile) {
-  Serial.println("- Reading file: " + pathFile);
-  SPIFFS.begin(true);
-  File rFile = SPIFFS.open(pathFile, "r");
-  String values;
-  if (!rFile) {
-    Serial.println("- Failed to open file.");
-  } else {
-    while (rFile.available()) {
-      values += rFile.readString();
-    }
-    Serial.println("- File values: " + values);
-  }
-  rFile.close();
-  return values;
 }
 
 //evento de processo de função: novos dados recebidos do cliente
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){
   String payloadString = (const char *)payload;
-
-  readFile("/addr.json");
-  
+ 
   if(type == WStype_TEXT){
     
-    byte separator = payloadString.indexOf('=');
+    byte separator=payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
 
@@ -217,7 +198,27 @@ void connectWiFi(){
     Serial.println(WiFi.localIP().toString());
 }
 
+String readFile(String pathFile) {
+  Serial.println("- Reading file: " + pathFile);
+  SPIFFS.begin(true);
+  File rFile = SPIFFS.open(pathFile, "r");
+  String values;
+  if (!rFile) {
+    Serial.println("- Failed to open file.");
+  } else {
+    while (rFile.available()) {
+      values += rFile.readString();
+    }
+    Serial.println("- File values: " + values);
+  }
+  rFile.close();
+  jsonAddrArmaz = values;
+  return values;
+}
+
+
 void setup(){
+  
 
   display.init();
   display.setFont(ArialMT_Plain_10); //10,16,24
@@ -255,23 +256,103 @@ void setup(){
         NULL,                   //Não precisamos de referência para a tarefa
         0);
 
+  
+  readFile("/addr.json");
+  
+  /*int i = 0;
+  while(i < 2500){
+    Serial.print(i);
+    Serial.print(" - ");
+    Serial.println(jsonAddrArmaz[i]);
+    Serial.println("*********");
+    i++;
+  }*/
+
+  
+  duracao1 = jsonAddrArmaz[26];
+  hora1 = jsonAddrArmaz.substring(71,75);
+  s1 = "0111100";
+  umidade1 = "0";
+  bomba1 = '0'; 
+  
+  duracao2 = '1';
+  hora2 = "23:23";
+  s2 = "0000000";
+  umidade2 = "0";
+  bomba2 = '0';
+  
+  duracao3 = '1';
+  hora3 = "00:00";
+  s3 = "0000000";
+  umidade3 = "0";
+  bomba3 = '0';
+  
+  duracao4 = '1';
+  hora4 = "00:00";
+  s4 = "0000000";
+  umidade4 = "0";
+  bomba4 = '0';
+  
+  duracao5 = '1';
+  hora5 = "00:00";
+  s5 = "0000000";
+  umidade5 = "0";
+  bomba5 = '0';
+
 }
 
 void escreveEJsonPUT(){
   JSONtxt = "{\"I\":\""+String(indice)+"\",";
-       if(indice == 1)montaUmJsonIndex(duracao1, hora1, s1, umidade1, bomba1);
+  if(indice == 1)montaUmJsonIndex(duracao1, hora1, s1, umidade1, bomba1);
   else if(indice == 2)montaUmJsonIndex(duracao2, hora2, s2, umidade2, bomba2);
   else if(indice == 3)montaUmJsonIndex(duracao3, hora3, s3, umidade3, bomba3);
   else if(indice == 4)montaUmJsonIndex(duracao4, hora4, s4, umidade4, bomba4);
   else if(indice == 5)montaUmJsonIndex(duracao5, hora5, s5, umidade5, bomba5);
   else indice = 1;
     
-  ///--Serial.println(JSONtxt);
+  Serial.println(JSONtxt);
   webSocket.broadcastTXT(JSONtxt);
 }
 
-void estadoBomba(Date date, String hora, String minuto){
+void estadoBomba(Date date){
   
+  
+
+}   
+
+
+void montaUmJsonIndex (char duracao, String hora, String s, String umidade, char bomba){
+    JSONtxt += "\"D\":\""+String(duracao)+"\",";
+    JSONtxt += "\"H\":\""+hora+"\",";
+    JSONtxt += "\"S\":\""+s+"\",";
+    JSONtxt += "\"U\":\""+umidade+"\",";
+    JSONtxt += "\"B\":\""+String(bomba)+"\"}";
+    indice++;
+}
+
+
+void loop() {
+
+  Date date = getDate();
+  webSocket.loop(); server.handleClient();
+
+  if(lastSendTimeBomba + 1000 < millis()){
+    sendMessage("1RELE" + String(bomba1),0xe7);
+    sendMessage("1RELE" + String(bomba2),0xe8);
+    sendMessage("1RELE" + String(bomba3),0xe9);
+    sendMessage("1RELE" + String(bomba4),0xea);
+    sendMessage("1RELE" + String(bomba5),0xeb);
+    lastSendTimeBomba = millis();
+  }
+
+    String hora = String(date.hours);
+    String minuto = String(date.minutes);
+    if(date.hours < 10)hora = "0" + hora;
+    if(date.minutes < 10)minuto = "0" + minuto;
+    estadoBomba(date);
+
+
+
     if((s1[date.dayOfWeek] == '1')&&(hora1 == hora + ":" + minuto)){
       bomba1 = '1';
       lastSendTimeBomba1 = millis(); 
@@ -312,39 +393,7 @@ void estadoBomba(Date date, String hora, String minuto){
       bomba5 = '0';
     }
 
-}   
-
-
-void montaUmJsonIndex (char duracao, String hora, String s, String umidade, char bomba){
-    JSONtxt += "\"D\":\""+String(duracao)+"\",";
-    JSONtxt += "\"H\":\""+hora+"\",";
-    JSONtxt += "\"S\":\""+s+"\",";
-    JSONtxt += "\"U\":\""+umidade+"\",";
-    JSONtxt += "\"B\":\""+String(bomba)+"\"}";
-    indice++;
-}
-
-
-void loop() {
-
-  Date date = getDate();
-  webSocket.loop(); server.handleClient();
-
-  if(lastSendTimeBomba + 1000 < millis()){
-    sendMessage("1RELE" + String(bomba1),0xe7);
-    sendMessage("1RELE" + String(bomba2),0xe8);
-    sendMessage("1RELE" + String(bomba3),0xe9);
-    sendMessage("1RELE" + String(bomba4),0xea);
-    sendMessage("1RELE" + String(bomba5),0xeb);
-    lastSendTimeBomba = millis();
-  }
-
-    String hora = String(date.hours);
-    String minuto = String(date.minutes);
-    if(date.hours < 10)hora = "0" + hora;
-    if(date.minutes < 10)minuto = "0" + minuto;
     
-    estadoBomba(date,hora,minuto);
 
     if(lastSendTimeHQ + 60000 < millis()){
       indexHumidade = 1;
@@ -417,7 +466,7 @@ void sendMessage(String outgoing,byte destination) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   
-  ///--Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
+  Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
 
   stringComunicacao = "ENVIADO " + String(outgoing);
   stringComunicacao2 = "PARA " + String(destination);

@@ -1,19 +1,3 @@
-/*
- * HelTec Automation(TM) ESP32 Series Dev boards OLED Drawing Function test code
- *
- * - Some OLED Drawing Function function test;
- *
- * by lxyzn from HelTec AutoMation, ChengDu, China
- * 成都惠利特自动化科技有限公司
- * https://heltec.org
- *
- * this project also realess in GitHub:
- * https://github.com/HelTecAutomation/Heltec_ESP32
-*/
-
-
-// This example just provide basic function test;
-// For more informations, please vist www.heltec.cn or mail to support@heltec.cn
 
 
 #include "heltec.h"
