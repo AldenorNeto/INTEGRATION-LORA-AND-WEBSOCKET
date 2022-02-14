@@ -596,6 +596,8 @@ table input{
 </body>
 <script>
 
+
+
     const mostraTime = () => {
         var nD = new Date();
         var dia = nD.getDate();
@@ -618,29 +620,30 @@ table input{
         else if(semana == 5)StrigSemana = "Sexta";
         else if(semana == 6)StrigSemana = "Sabado";
         
-        document.querySelector("#relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>");
-        document.querySelector("#relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>");
-        document.querySelector("#relogioS").innerHTML = ("<span> "+StrigSemana+" </span>");
+        document.getElementById("relogioD").innerHTML = ("<span> "+dia+"/"+mes+"/"+ano+" </span>");
+        document.getElementById("relogioH").innerHTML = ("<span> "+hora+":"+minuto+" </span>");
+        document.getElementById("relogioS").innerHTML = ("<span> "+StrigSemana+" </span>");
     }
-  console.log(window.location.href.substring(7));
+  //console.log(window.location.hostname);
   mostraTime();
   setInterval(mostraTime,10000);
 
   var json = 0
-  
   let firtScanf = 0;
   InitWebSocket()
   function InitWebSocket(){
     websock = new WebSocket('ws://'+window.location.hostname+':81/');
     websock.onmessage = jsonMaster => {
         jsonEsp = JSON.parse(jsonMaster.data);
+        var Sockt = 0;
         document.getElementById('farofa').style.display='none'
         json = 0
         if(firtScanf < 10){
-            let veto
+            Sockt = 1;
             setupTabela(jsonEsp.I)
             firtScanf++;
         }
+        websock.send('Sockt=' + Sockt);
  
     }
   }
@@ -658,6 +661,7 @@ table input{
 
   //setTimeout(setVariaveisPag,1000)
   setInterval(() => {
+    
     json++
     if(isOpen(websock)) socketOk = true 
 

@@ -14,11 +14,12 @@
 
 SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
-/*const char* ssid     = "Caetano";
-const char* password = "992920940";*/
+const char* ssid     = "Caetano";
+const char* password = "992920940";
+
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
@@ -33,7 +34,7 @@ String outgoing;              // outgoing message
 
 
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x05;     // address of this device
+byte localAddress = 0x00;     // address of this device
 
 int timeZone = -3;
 int indexHumidade =  1;
@@ -72,7 +73,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -115,6 +116,8 @@ char bomba5 = '0';
 String JSONtxt;
 String jsonAddrArmaz;
 
+char socketAberto = '0';
+
 void handleRoot(){
   server.send(200,"text/html", webpageCont);
 }
@@ -149,6 +152,13 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     if(var == "DURACAO5")duracao5 = val[0];
     if(var == "HORA5")hora5 = val;
     if(var == "S5_0")s5 = val;
+
+
+    if(var == "Sockt")socketAberto = val[0];
+    
+    Serial.print(var);
+    Serial.print(" ---> ");
+    Serial.println(val);
     
   }
 }
@@ -269,8 +279,8 @@ void setup(){
   }*/
 
   
-  duracao1 = jsonAddrArmaz[26];
-  hora1 = jsonAddrArmaz.substring(71,75);
+  duracao1 = jsonAddrArmaz[50];
+  hora1 = jsonAddrArmaz.substring(71,76);
   s1 = "0111100";
   umidade1 = "0";
   bomba1 = '0'; 
@@ -308,7 +318,7 @@ void escreveEJsonPUT(){
   else if(indice == 3)montaUmJsonIndex(duracao3, hora3, s3, umidade3, bomba3);
   else if(indice == 4)montaUmJsonIndex(duracao4, hora4, s4, umidade4, bomba4);
   else if(indice == 5)montaUmJsonIndex(duracao5, hora5, s5, umidade5, bomba5);
-  else indice = 1;
+  if(indice > 5)indice = 1;
     
   Serial.println(JSONtxt);
   webSocket.broadcastTXT(JSONtxt);
@@ -322,11 +332,7 @@ void estadoBomba(Date date){
 
 
 void montaUmJsonIndex (char duracao, String hora, String s, String umidade, char bomba){
-    JSONtxt += "\"D\":\""+String(duracao)+"\",";
-    JSONtxt += "\"H\":\""+hora+"\",";
-    JSONtxt += "\"S\":\""+s+"\",";
-    JSONtxt += "\"U\":\""+umidade+"\",";
-    JSONtxt += "\"B\":\""+String(bomba)+"\"}";
+    JSONtxt += "\"D\":\""+String(duracao)+"\",\"H\":\""+hora+"\",\"S\":\""+s+"\",\"U\":\""+umidade+"\",\"B\":\""+String(bomba)+"\"}";
     indice++;
 }
 
@@ -336,14 +342,12 @@ void loop() {
   Date date = getDate();
   webSocket.loop(); server.handleClient();
 
-  if(lastSendTimeBomba + 1000 < millis()){
-    sendMessage("1RELE" + String(bomba1),0xe7);
-    sendMessage("1RELE" + String(bomba2),0xe8);
-    sendMessage("1RELE" + String(bomba3),0xe9);
-    sendMessage("1RELE" + String(bomba4),0xea);
-    sendMessage("1RELE" + String(bomba5),0xeb);
+  if(lastSendTimeBomba + 3000 < millis()){
+    sendMessage("1RELE" + String(bomba1), indice);
     lastSendTimeBomba = millis();
   }
+
+  
 
     String hora = String(date.hours);
     String minuto = String(date.minutes);
@@ -410,12 +414,8 @@ void loop() {
     }
 
 if(lastSendTimeHQ3 + 5000 < millis()){
-    if(indexHumidade == 1)sendMessage("HQ",0xe7);
-    else if(indexHumidade == 2)sendMessage("HQ",0xe8);
-    else if(indexHumidade == 3)sendMessage("HQ",0xe9);
-    else if(indexHumidade == 4)sendMessage("HQ",0xea);
-    else if(indexHumidade == 5)sendMessage("HQ",0xeb);
-    
+    sendMessage("HQ",indexHumidade);
+ 
     lastSendTimeHQ3 = millis();
 }
   
@@ -503,16 +503,16 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));*/
   Serial.println();
 
-   if((String(sender, HEX) == "e7") && (String(incoming[0]) == "H")){
+   if((sender == 1) && (String(incoming[0]) == "H")){
     umidade1 = incoming;
    }
-   if((String(sender, HEX) == "e8") && (String(incoming[0]) == "H")){
+   if((sender == 2) && (String(incoming[0]) == "H")){
     umidade2 = incoming;
    }
-   if((String(sender, HEX) == "e9") && (String(incoming[0]) == "H")){
+   if((sender == 3) && (String(incoming[0]) == "H")){
     umidade3 = incoming;
    }
-   if((String(sender, HEX) == "ea") && (String(incoming[0]) == "H")){
+   if((sender == 4) && (String(incoming[0]) == "H")){
     umidade4 = incoming;
    }
    if((String(sender, HEX) == "eb") && (String(incoming[0]) == "H")){
