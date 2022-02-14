@@ -43,11 +43,11 @@ int lastIndexHumidade =  1;
 String Gsender   = "00";
 String Gincoming = "00";
 
-long lastSendTimeOLED   = millis();
+long millisAtualizacaoDisplay = millis();
 long lastSendTimeHQ     = millis();
 long lastSendTimeHQ2    = millis();
-long lastSendTimeJson   = millis();
 long lastSendTimeHQ3    = millis();
+long tempoDeReenvioJson = millis();
 long lastSendTimeBomba  = millis();
 long lastSendTimeBomba1 = millis();
 long lastSendTimeBomba2 = millis();
@@ -239,7 +239,7 @@ void setup(){
   delay(10);
  
   Serial.begin(9600);
-  while (!Serial);
+
   pinMode(LED, OUTPUT);
   pinMode(A0, INPUT);
 
@@ -415,19 +415,26 @@ void loop() {
 
 if(lastSendTimeHQ3 + 5000 < millis()){
     sendMessage("HQ",indexHumidade);
- 
     lastSendTimeHQ3 = millis();
 }
   
-if(lastSendTimeJson + 500 < millis()){
+if(tempoDeReenvioJson + 500 < millis()){
     escreveEJsonPUT();
-    lastSendTimeJson = millis();
+    tempoDeReenvioJson = millis();
 }
  
   
   onReceive(LoRa.parsePacket());
 
-  if(lastSendTimeOLED + 500 < millis()){
+  
+  if(millisAtualizacaoDisplay + 500 < millis()){
+    escreveDisplay();
+    millisAtualizacaoDisplay = millis();
+  }
+
+}
+
+void escreveDisplay(){
     display.drawString(0, 0, "IRRIGAÇÃO 4.0");
     display.drawString(0,15, "LoRa OK");
     display.drawString(100,0, hora + ":" + minuto);
@@ -436,9 +443,6 @@ if(lastSendTimeJson + 500 < millis()){
     display.drawString(0,45, stringComunicacao2);
     display.display();
     display.clear();
-    lastSendTimeOLED = millis();
-  }
-
 }
 
 Date getDate(){
