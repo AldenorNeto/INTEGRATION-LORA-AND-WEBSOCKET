@@ -14,11 +14,12 @@
 
 SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
-/*const char* ssid     = "Caetano";
-const char* password = "992920940";*/
+const char* ssid     = "Caetano";
+const char* password = "992920940";
+
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
@@ -31,7 +32,7 @@ String outgoing;              // outgoing message
 #define SW     23
 
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x05;     // address of this device
+byte localAddress = 0x00;     // address of this device
 
 int timeZone = -3;
 int indexHumidade =  1;
@@ -40,12 +41,22 @@ int lastIndexHumidade =  1;
 String Gsender   = "00";
 String Gincoming = "00";
 
-long lastSendTimeOLED   = millis();
+long millisAtualizacaoDisplay = millis();
 long lastSendTimeHQ     = millis();
 long lastSendTimeHQ2    = millis();
 long lastSendTimeHQ3    = millis();
+<<<<<<< HEAD
 long lastSendTimeJson   = millis();
 long lastSendTimeBomba[6] = {millis(),millis(),millis(),millis(),millis(),millis()};
+=======
+long tempoDeReenvioJson = millis();
+long lastSendTimeBomba  = millis();
+long lastSendTimeBomba1 = millis();
+long lastSendTimeBomba2 = millis();
+long lastSendTimeBomba3 = millis();
+long lastSendTimeBomba4 = millis();
+long lastSendTimeBomba5 = millis();
+>>>>>>> 64241ca1fe95ebd1233fdc0550530e0f0f13d04c
 
 String stringComunicacao = "";
 String stringComunicacao2 = "";
@@ -65,7 +76,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -82,6 +93,8 @@ String bomba = "m00000";
 
 String JSONtxt;
 String jsonAddrArmaz;
+
+char socketAberto = '0';
 
 void handleRoot(){
   server.send(200,"text/html", webpageCont);
@@ -183,8 +196,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
       }
     }
 
+    if(var == "Sockt")socketAberto = val[0];
+
     Serial.print(var);
-    Serial.print(" --> ");
+    Serial.print(" ---> ");
     Serial.println(val);
     writeFile(jsonAddrArmaz,"/addr.json",false);
     
@@ -286,7 +301,7 @@ void setup(){
   delay(10);
  
   Serial.begin(9600);
-  while (!Serial);
+
   pinMode(LED, OUTPUT);
   pinMode(A0, INPUT);
 
@@ -339,9 +354,9 @@ void setup(){
 
 void escreveEJsonPUT(){
   JSONtxt = "{\"I\":\""+String(indice)+"\",";
-  for (int ind = 1; ind <= 5; ind++){
-    if(indice == ind)montaUmJsonIndex(duracao[ind], hora[ind], s[ind], umidade[ind], bomba[ind]);
-  }
+
+  montaUmJsonIndex(duracao[indice], hora[indice], s[indice], umidade[indice], bomba[indice]);
+  
   if(indice > 5) indice = 1;
     
   Serial.println(JSONtxt);
@@ -349,12 +364,11 @@ void escreveEJsonPUT(){
 }
 
 
-void montaUmJsonIndex (char duracao, String horas, String s, String umidade, char bomba){
-    JSONtxt += "\"D\":\""+String(duracao)+"\",";
-    JSONtxt += "\"H\":\""+horas+"\",";
-    JSONtxt += "\"S\":\""+s+"\",";
-    JSONtxt += "\"U\":\""+umidade+"\",";
-    JSONtxt += "\"B\":\""+String(bomba)+"\"}";
+}   
+
+
+void montaUmJsonIndex (char duracao, String hora, String s, String umidade, char bomba){
+    JSONtxt += "\"D\":\""+String(duracao)+"\",\"H\":\""+hora+"\",\"S\":\""+s+"\",\"U\":\""+umidade+"\",\"B\":\""+String(bomba)+"\"}";
     indice++;
 }
 
@@ -364,12 +378,8 @@ void loop() {
   Date date = getDate();
   webSocket.loop(); server.handleClient();
 
-  if(lastSendTimeBomba[0] + 1000 < millis()){
-    sendMessage("1RELE" + String(bomba[1]),0xe7);
-    sendMessage("1RELE" + String(bomba[2]),0xe8);
-    sendMessage("1RELE" + String(bomba[3]),0xe9);
-    sendMessage("1RELE" + String(bomba[4]),0xea);
-    sendMessage("1RELE" + String(bomba[5]),0xeb);
+  if(lastSendTimeBomba[0] + 3000 < millis()){
+    sendMessage("1RELE" + String(bomba[indice]),indice);
     lastSendTimeBomba[0] = millis();
   }
 
@@ -404,23 +414,26 @@ void loop() {
     }
 
 if(lastSendTimeHQ3 + 5000 < millis()){
-    if(indexHumidade == 1)sendMessage("HQ",0xe7);
-    else if(indexHumidade == 2)sendMessage("HQ",0xe8);
-    else if(indexHumidade == 3)sendMessage("HQ",0xe9);
-    else if(indexHumidade == 4)sendMessage("HQ",0xea);
-    else if(indexHumidade == 5)sendMessage("HQ",0xeb);
-    
+    sendMessage("HQ",indexHumidade);
     lastSendTimeHQ3 = millis();
 }
   
-if(lastSendTimeJson + 500 < millis()){
+if(tempoDeReenvioJson + 500 < millis()){
     escreveEJsonPUT();
-    lastSendTimeJson = millis();
+    tempoDeReenvioJson = millis();
 }
   
   onReceive(LoRa.parsePacket());
 
-  if(lastSendTimeOLED + 500 < millis()){
+  
+  if(millisAtualizacaoDisplay + 500 < millis()){
+    escreveDisplay();
+    millisAtualizacaoDisplay = millis();
+  }
+
+}
+
+void escreveDisplay(){
     display.drawString(0, 0, "IRRIGAÇÃO 4.0");
     display.drawString(0,15, "LoRa OK");
     display.drawString(100,0, horas + ":" + minuto);
@@ -429,9 +442,6 @@ if(lastSendTimeJson + 500 < millis()){
     display.drawString(0,45, stringComunicacao2);
     display.display();
     display.clear();
-    lastSendTimeOLED = millis();
-  }
-
 }
 
 
@@ -498,26 +508,26 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));*/
   Serial.println();
 
-   if((String(sender, HEX) == "e7") && (String(incoming[0]) == "H")){
+   if((sender == 1) && (String(incoming[0]) == "H")){
     umidade[1] = incoming;
    }
-   if((String(sender, HEX) == "e8") && (String(incoming[0]) == "H")){
+   if((sender == 2) && (String(incoming[0]) == "H")){
     umidade[2] = incoming;
    }
-   if((String(sender, HEX) == "e9") && (String(incoming[0]) == "H")){
+   if((sender == 3) && (String(incoming[0]) == "H")){
     umidade[3] = incoming;
    }
-   if((String(sender, HEX) == "ea") && (String(incoming[0]) == "H")){
+   if((sender == 4) && (String(incoming[0]) == "H")){
     umidade[4] = incoming;
    }
-   if((String(sender, HEX) == "eb") && (String(incoming[0]) == "H")){
+   if((sender == 5) && (String(incoming[0]) == "H")){
     umidade[5] = incoming;
    }
 
   Gsender = String(sender);
   Gincoming = String(incoming);
   
-  stringComunicacao = "SLAVE " +Gsender + ": " + Gincoming;
+  stringComunicacao = "SLAVE " + Gsender + ": " + Gincoming;
   stringComunicacao2 = "RESPONDEU";
     
 }

@@ -15,8 +15,8 @@ String outgoing;              // outgoing message
 bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0xe7;     // address of this device
-byte Master = 0x05;      // destination to send to
+byte localAddress = 1;     // address of this device
+byte Master = 0x00;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
