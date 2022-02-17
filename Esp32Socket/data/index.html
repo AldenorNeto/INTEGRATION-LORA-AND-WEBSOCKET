@@ -43,6 +43,11 @@ button{
     margin: 5px;
 }
 
+.duracao{
+    width: 100%;
+    height: 100%;
+    border: none;
+}
 
 #envioForm{
     background-image: linear-gradient(to bottom right, #00ff00 50%, #00c900 50%);
@@ -343,243 +348,50 @@ table input{
                 <td>UMIDADE</td>
                 <td>IRRIGAR</td>
             </tr>
-            <tr>
+
+        <tr>
                 <td class="titulo">Fab 01</td>
-                <td><select name="du1" id="duracao1" style="width: 100%; height: 100%; border: none;">
+                <td><select class="duracao">
                     <option value="1">5:00</option>
                     <option value="2">10:00</option>
                     <option value="3">15:00</option>
                     <option value="4">20:00</option>
                     <option value="5">25:00</option>
                 </select></td>
-                <td><input type="time" name="hora1" id="timeSemana1"></div></td>
-                <td>
-                    <div  class="DATA">
-                        <div  class="semana">
-                            <label>
-                                <input type="checkbox"  id="S1_0" class="S1" name="S1">
-                                <div class="dom">D</div>
-                            </label>
-                            <label>
-                                <input type="checkbox"  id="S1_1" class="S1" name="S1">
-                                <div class="seg">S</div>
-                            </label>
-                            <label>
-                                <input type="checkbox"  id="S1_2" class="S1" name="S1">
-                                <div class="ter">T</div>
-                            </label>
-                            <label>
-                                <input type="checkbox"  id="S1_3" class="S1" name="S1">
-                                <div class="qua">Q</div>
-                            </label>
-                        </div>
-                        <div  class="semana">
-                            <label>
-                                <input type="checkbox"  id="S1_4" class="S1" name="S1">
-                                <div class="qui">Q</div>
-                            </label><label>
-                                <input type="checkbox"  id="S1_5" class="S1" name="S1">
-                                <div class="sex">S</div>
-                            </label><label>
-                                <input type="checkbox"  id="S1_6" class="S1" name="S1">
-                                <div class="sab">S</div>
-                            </label>
-                        </div>
-                    </div></div>
+                <td><input type="time" class="timeSemana"></div></td>
+                <td><div class="DATA">
+                    <div class="semana">
+                        <label>
+                            <input type="checkbox" class="S0"><div class="dom">D</div>
+                        </label>
+                        <label>
+                            <input type="checkbox" class="S1"><div class="seg">S</div>
+                        </label>
+                        <label>
+                            <input type="checkbox" class="S2"><div class="ter">T</div>
+                        </label>
+                        <label>
+                            <input type="checkbox" class="S3"><div class="qua">Q</div>
+                        </label>
+                    </div>
+                    <div  class="semana">
+                        <label>
+                            <input type="checkbox" class="S4"><div class="qui">Q</div>
+                        </label><label>
+                            <input type="checkbox" class="S5"><div class="sex">S</div>
+                        </label><label>
+                            <input type="checkbox" class="S6"><div class="sab">S</div>
+                        </label>
+                    </div>
+                </div></div>
                 </td>
-                <td><div class="umidade"><span id="umidade1">0</span>%</div></td>
+                <td><div class="umidade"><span class="umidad">0</span>%</div></td>
                 <td><label class="estadoBomba">
-                    <input type="checkbox" id="bomba1"><div></div>
+                    <input type="checkbox" class="bomba"><div></div>
                 </label></td>
-            </tr>
-            <tr>
-                <td class="titulo"><div>Fab 02</div></td>
-                <td><select name="du2" id="duracao2" style="width: 100%; height: 100%; border: none;">
-                    <option value="1">5:00</option>
-                    <option value="2">10:00</option>
-                    <option value="3">15:00</option>
-                    <option value="4">20:00</option>
-                    <option value="5">25:00</option>
-                </select></td>
-                <td><input type="time" name="hora2" id="timeSemana2"></td>
-                <td><div  class="DATA">
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="0" id="S2_0" class="S2" name="S2">
-                            <div class="dom">D</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="1" id="S2_1" class="S2" name="S2">
-                            <div class="seg">S</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="2" id="S2_2" class="S2" name="S2">
-                            <div class="ter">T</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="3" id="S2_3" class="S2" name="S2">
-                            <div class="qua">Q</div>
-                        </label>
-                    </div>
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="4" id="S2_4" class="S2" name="S2">
-                            <div class="qui">Q</div>
-                        </label><label>
-                            <input type="checkbox" value="5" id="S2_5" class="S2" name="S2">
-                            <div class="sex">S</div>
-                        </label><label>
-                            <input type="checkbox" value="6" id="S2_6" class="S2" name="S2">
-                            <div class="sab">S</div>
-                        </label>
-                    </div>
-                </div></td>
-                <td><div class="umidade"><span id="umidade2">0</span>%</div></td>
-                <td><label class="estadoBomba">
-                    <input type="checkbox" id="bomba2"><div></div>
-                </label></td>
-            </tr>
-            <tr>
-                <td class="titulo"><div>Fab 03</div></td>
-                <td><select name="du3" id="duracao3" style="width: 100%; height: 100%; border: none;">
-                    <option value="1">5:00</option>
-                    <option value="2">10:00</option>
-                    <option value="3">15:00</option>
-                    <option value="4">20:00</option>
-                    <option value="5">25:00</option>
-                </select></td>
-                <td><input type="time" name="hora3" id="timeSemana3"></td>
-                <td><div  class="DATA">
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="0" id="S3_0" class="S3" name="S3">
-                            <div class="dom">D</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="1" id="S3_1" class="S3" name="S3">
-                            <div class="seg">S</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="2" id="S3_2" class="S3" name="S3">
-                            <div class="ter">T</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="3" id="S3_3" class="S3" name="S3">
-                            <div class="qua">Q</div>
-                        </label>
-                    </div>
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="4" id="S3_4" class="S3" name="S3">
-                            <div class="qui">Q</div>
-                        </label><label>
-                            <input type="checkbox" value="5" id="S3_5" class="S3" name="S3">
-                            <div class="sex">S</div>
-                        </label><label>
-                            <input type="checkbox" value="6" id="S3_6" class="S3" name="S3">
-                            <div class="sab">S</div>
-                        </label>
-                    </div>
-                </div></td>
-                <td><div class="umidade"><span id="umidade3">0</span>%</div></td>
-                <td><label class="estadoBomba">
-                    <input type="checkbox" id="bomba3"><div></div>
-                </label></td>
-            </tr>
-            <tr>
-                <td class="titulo"><div>Fab 04</div></td>
-                <td><select name="du4" id="duracao4" style="width: 100%; height: 100%; border: none;">
-                    <option value="1">5:00</option>
-                    <option value="2">10:00</option>
-                    <option value="3">15:00</option>
-                    <option value="4">20:00</option>
-                    <option value="5">25:00</option>
-                </select></td>
-                <td><input type="time" name="hora4" id="timeSemana4"></td>
-                <td><div  class="DATA">
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="0" id="S4_0" class="S4" name="S4">
-                            <div class="dom">D</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="1" id="S4_1" class="S4" name="S4">
-                            <div class="seg">S</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="2" id="S4_2" class="S4" name="S4">
-                            <div class="ter">T</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="3" id="S4_3" class="S4" name="S4">
-                            <div class="qua">Q</div>
-                        </label>
-                    </div>
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="4" id="S4_4" class="S4" name="S4">
-                            <div class="qui">Q</div>
-                        </label><label>
-                            <input type="checkbox" value="5" id="S4_5" class="S4" name="S4">
-                            <div class="sex">S</div>
-                        </label><label>
-                            <input type="checkbox" value="6" id="S4_6" class="S4" name="S4">
-                            <div class="sab">S</div>
-                        </label>
-                    </div>
-                </div></td>
-                <td><div class="umidade"><span id="umidade4">0</span>%</div></td>
-                <td><label class="estadoBomba">
-                    <input type="checkbox" id="bomba4"><div></div>
-                </label></td>
-            </tr>
-            <tr>
-                <td class="titulo"><div>Fab 05</div></td>
-                <td><select name="du5" id="duracao5" style="width: 100%; height: 100%; border: none;">
-                    <option value="1">5:00</option>
-                    <option value="2">10:00</option>
-                    <option value="3">15:00</option>
-                    <option value="4">20:00</option>
-                    <option value="5">25:00</option>
-                </select></td>
-                <td><input type="time" name="hora5" id="timeSemana5"></td>
-                <td><div  class="DATA">
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="0" id="S5_0" class="S5" name="S5">
-                            <div class="dom">D</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="1" id="S5_1" class="S5" name="S5">
-                            <div class="seg">S</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="2" id="S5_2" class="S5" name="S5">
-                            <div class="ter">T</div>
-                        </label>
-                        <label>
-                            <input type="checkbox" value="3" id="S5_3" class="S5" name="S5">
-                            <div class="qua">Q</div>
-                        </label>
-                    </div>
-                    <div  class="semana">
-                        <label>
-                            <input type="checkbox" value="4" id="S5_4" class="S5" name="S5">
-                            <div class="qui">Q</div>
-                        </label><label>
-                            <input type="checkbox" value="5" id="S5_5" class="S5" name="S5">
-                            <div class="sex">S</div>
-                        </label><label>
-                            <input type="checkbox" value="6" id="S5_6" class="S5" name="S5">
-                            <div class="sab">S</div>
-                        </label>
-                    </div>
-                </div></td>
-                <td><div class="umidade"><span id="umidade5">0</span>%</div></td>
-                <td><label class="estadoBomba">
-                    <input type="checkbox" id="bomba5"><div></div>
-                </label></td>
-            </tr>
+        </tr>
+
+
         </TABLE>
         <div id="conteiner_relogio">
             <div><div class="relogio">
@@ -640,14 +452,18 @@ table input{
     }
   }
   
-  var setupTabela = INDICE => {
-    document.getElementById('duracao'+INDICE).value = jsonEsp.D
-    document.getElementById('timeSemana'+INDICE).value = jsonEsp.H
-                
-    for(let ind in jsonEsp.S){
-        document.getElementById('S'+INDICE+'_'+ind).checked = parseInt(jsonEsp.S[ind])
+    /*document.querySelectorAll('.duracao')[0].value = "3"//--jsonEsp.D
+    document.querySelectorAll('.timeSemana')[0].value = "04:00"//--jsonEsp.H
+    document.querySelectorAll('.S0')[0].checked = 1//--parseInt(jsonEsp.S[ind])
+    document.getElementById('farofa').style.display='none'//--*/
+    
+    var setupTabela = INDICE => {
+        document.querySelectorAll('.duracao')[INDICE-1].value = jsonEsp.D
+        document.querySelectorAll('.timeSemana')[INDICE-1].value = jsonEsp.H
+        for(let ind in jsonEsp.S){
+            document.querySelectorAll('.S'+ind)[INDICE-1].checked = parseInt(jsonEsp.S[ind])
+        }
     }
-  }
 
   //setTimeout(setVariaveisPag,1000)
   var socketOk = false
@@ -663,8 +479,8 @@ table input{
     if(socketOk && firtScanf){
         for(let ino = 0; ino < 7; ino++){
             if(jsonEsp.I == ino){
-                document.getElementById('umidade'+ino).innerHTML = jsonEsp.U.substring(1);
-                document.getElementById('bomba'+ino).checked = parseInt(jsonEsp.B);
+                document.querySelectorAll('.umidad')[ino-1].innerHTML = jsonEsp.U.substring(1);
+                document.querySelectorAll('.bomba')[ino-1].checked = parseInt(jsonEsp.B);
             }
         }
     }
@@ -675,11 +491,11 @@ table input{
 
   function fanONOFF(){   
     for(let index = 1; index < 6; index++) {
-        websock.send('DURACAO'+index+'=' + String(document.getElementById('duracao'+index).value));
-        websock.send('HORA'+index+'=' + String(document.getElementById('timeSemana'+index).value));
+        websock.send('DURACAO'+index+'=' + String(document.querySelectorAll('.duracao')[index-1].value));
+        websock.send('HORA'+index+'=' + String(document.querySelectorAll('.timeSemana')[index-1].value));
         let vetor = []
         for(let ino in jsonEsp.S){
-            if(document.getElementById('S'+index+'_'+ino).checked)vetor +='1';
+            if(document.querySelectorAll('.S'+ino)[index-1].checked)vetor +='1';
             else vetor +='0';
         }
         websock.send('S'+index+'='+vetor);

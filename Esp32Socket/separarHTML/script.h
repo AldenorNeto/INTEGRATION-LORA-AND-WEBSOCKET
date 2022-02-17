@@ -1,5 +1,16 @@
-const char webpageCont2[] PROGMEM =
+const char script[] PROGMEM =
 R"=====(
+          </TABLE>
+        <div id="conteiner_relogio">
+            <div><div class="relogio">
+                <div id="relogioD">Carregando...</div>
+                <div id="relogioH"></div>
+                <div id="relogioS"></div>
+            </div></div>
+        </div>
+    </div>
+
+</body>
 <script>
 
   const mostraTime = () => {
