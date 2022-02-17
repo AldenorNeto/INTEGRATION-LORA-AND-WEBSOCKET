@@ -7,7 +7,6 @@ const char* password = "bolsonaro";
 char jsonOutput[128];
   
 void setup() {
-  
   Serial.begin(115200);
   delay(4000);   //Delay needed before calling the WiFi.begin
   
@@ -17,17 +16,16 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
-  Serial.print("\nConnected to the WiFi network ");
-  Serial.println(ssid);
+  Serial.println("Connected to the WiFi network");
 }
-  
+
 void loop() {
   
  if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
   
    HTTPClient http;   
   
-   http.begin("http://ptsv2.com/t/90ul9-1645026328");  //Specify destination for HTTP request
+   http.begin("http://jsonplaceholder.typicode.com/posts");  //Specify destination for HTTP request
    http.addHeader("Content-Type", "text/plain");             //Specify content-type header
 
 
@@ -35,23 +33,24 @@ void loop() {
    StaticJsonDocument<CAPACITY> doc;
 
    JsonObject object = doc.to<JsonObject>();
-   object["json"] = "{\"device\":\"esp32-CC50E39613DC\",\"estado\":\"acionado\"}";
+   object["title"] = "Brasileiro";
+
    serializeJson(doc,jsonOutput);
    
    Serial.println(String(jsonOutput));
-  
-   int httpResponseCode = http.POST(String(jsonOutput));   //Send the actual POST request
-  
-  if(httpResponseCode>0){
-  
-    String response = http.getString();                       //Get the response to the request
-    Serial.println(httpResponseCode);   //Print return code
-    Serial.println(response); 
+   
+   int httpCode = http.POST(String(jsonOutput));
 
+  if(httpCode>0){
+    
+    String response = http.getString(); 
+    
+    Serial.println(httpCode);   //Print return code
+    Serial.println(response);
     http.end(); 
    }else{
     Serial.print("Error on sending POST: ");
-    Serial.println(httpResponseCode);
+ 
    }
    
  }else{
