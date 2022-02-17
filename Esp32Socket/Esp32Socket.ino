@@ -11,17 +11,18 @@
 #include <SPIFFS.h> 
 #include "SSD1306.h"
 #include "webpage.h"
+#include "webpage2.h"
 
 SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
 /*const char* ssid     = "Caetano";
 const char* password = "992920940";*/
 
-/*const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";*/
+const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -42,9 +43,8 @@ String Gsender   = "00";
 String Gincoming = "00";
 
 long millisAtualizacaoDisplay = millis();
-long lastSendTimeHQ           = millis();
-long lastSendTimeHQ2          = millis();
-long lastSendTimeHQ3          = millis();
+long tempoEmCadaSlave         = millis();
+long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
 
@@ -66,7 +66,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -87,7 +87,7 @@ String jsonAddrArmaz;
 char socketAberto = '0';
 
 void handleRoot(){
-  server.send(200,"text/html", webpageCont);
+  server.send(200,"text/html", String(webpageCont)+String(webpageCont2));
 }
 
 //evento de processo de função: novos dados recebidos do cliente
@@ -99,27 +99,25 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     byte separator=payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
-
-  for(byte endrc = 0; endrc <= 5; endrc++){
+    
+  for(byte endrc = 1; endrc <= 5; endrc++){
     if(var == "DURACAO" + String(endrc)){
       duracao[endrc] = val[0];
-      jsonAddrArmaz[50] = duracao[endrc];
+      jsonAddrArmaz[50+((endrc - 1)*108)] = duracao[endrc];
     }
     if(var == "HORA" + String(endrc)){
       hora[endrc] = val;
       for (int i=0; i < hora[endrc].length(); i++){
-        jsonAddrArmaz[71+i] = hora[endrc][i];
+        jsonAddrArmaz[71+i+((endrc - 1)*108)] = hora[endrc][i];
       }
     }
     if(var == "S" + String(endrc)){
       s[endrc] = val;
       for (int i=0; i < s[endrc].length(); i++){
-        jsonAddrArmaz[93+i] = s[endrc][i];
+        jsonAddrArmaz[93+i+((endrc - 1)*108)] = s[endrc][i];
       }
     }
   }
-
-    if(var == "Sockt")socketAberto = val[0];
 
     Serial.print(var);
     Serial.print(" ---> ");
@@ -183,7 +181,7 @@ bool writeFile(String values, String pathFile, bool appending) {
     return false;
   } else {
     wFile.println(values);
-    Serial.println(values);
+    //Serial.println(values);
     Serial.println("- Gravado!");
   }
   wFile.close();
@@ -279,24 +277,13 @@ void escreveEJsonPUT(){
   webSocket.broadcastTXT(JSONtxt);
 } 
 
-void montaUmJsonIndex (char duracao, String hora, String s, String umidade, char bomba){
+void montaUmJsonIndex(char duracao, String hora, String s, String umidade, char bomba){
     JSONtxt += "\"D\":\""+String(duracao)+"\",\"H\":\""+hora+"\",\"S\":\""+s+"\",\"U\":\""+umidade+"\",\"B\":\""+String(bomba)+"\"}";
     indice++;
 }
 
-
-void loop() {
-
-  
-  webSocket.loop(); server.handleClient();
-
-
-
-
-
-  if(lastSendTimeBomba[0] + 3000 < millis()){
-
-        Date date = getDate();
+void acionamentoBomba(){
+    Date date = getDate();
     String horas = String(date.hours);
     String minuto = String(date.minutes);
     if(date.hours < 10)horas = "0" + horas;
@@ -313,41 +300,40 @@ void loop() {
     }
     
     sendMessage("1RELE" + String(bomba[indice]),indice);
-    lastSendTimeBomba[0] = millis();
-  }
+}
 
 
-    
-    if(lastSendTimeHQ + 60000 < millis()){
-      indexHumidade = 1;
-      lastSendTimeHQ = millis();
-    }
+void loop() {
 
-    if(lastSendTimeHQ2 + 10000 < millis()){
-      if(lastIndexHumidade != indexHumidade){
-        lastIndexHumidade = indexHumidade;
-      }else{
-        indexHumidade++;
-      }
-      lastSendTimeHQ2 = millis();
-    }
+  webSocket.loop(); server.handleClient();
 
-  if(lastSendTimeHQ3 + 5000 < millis()){
-    sendMessage("HQ",indexHumidade);
-    lastSendTimeHQ3 = millis();
-  }
-  
   if(tempoDeReenvioJson + 500 < millis()){
     escreveEJsonPUT();
     tempoDeReenvioJson = millis();
   }
-  
-  onReceive(LoRa.parsePacket());
-  
+
   if(millisAtualizacaoDisplay + 500 < millis()){
     escreveDisplay();/*horas, minuto*/
     millisAtualizacaoDisplay = millis();
   }
+  
+  if(lastSendTimeBomba[0] + 3000 < millis()){
+    acionamentoBomba();
+    lastSendTimeBomba[0] = millis();
+  }
+
+  if(tempoEmCadaSlave + 10000 < millis()){
+    indexHumidade++;
+    if(indexHumidade>5)indexHumidade = 1;
+    tempoEmCadaSlave = millis();
+  }
+
+  if(intervaloEntreMensagens + 5000 < millis()){
+    sendMessage("HQ",indexHumidade);
+    intervaloEntreMensagens = millis();
+  }
+  
+  onReceive(LoRa.parsePacket());
 }
 
 void escreveDisplay(){/*String horas, String minuto*/
