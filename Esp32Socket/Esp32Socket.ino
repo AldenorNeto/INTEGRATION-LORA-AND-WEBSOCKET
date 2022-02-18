@@ -20,14 +20,14 @@ SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 const char* user     = "ar9185";
 const char* password = "Medalha654";*/
 
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+/*const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";*/
 
 /*const char* ssid     = "Caetano";
 const char* password = "992920940";*/
 
-/*const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";*/
+const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";
 
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -40,9 +40,8 @@ String outgoing;              // outgoing message
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x00;     // address of this device
 
-int timeZone = -3;
-int indexHumidade =  1;
-int lastIndexHumidade =  1;
+byte timeZone = -3;
+byte indexHumidade =  1;
 
 String Gsender   = "00";
 String Gincoming = "00";
@@ -71,7 +70,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -309,37 +308,36 @@ void acionamentoBomba(){
 
 
 void loop() {
-
+  void (*_escreveEJsonPUT)()=&escreveEJsonPUT, (*_escreveDisplay)()=&escreveDisplay, (*_acionamentoBomba)()=&acionamentoBomba, (*_WaitDogSlave)()=&WaitDogSlave;    //, (*_sendMessage)("HQ",indexHumidade)=&sendMessage; //
+  
   webSocket.loop(); server.handleClient();
 
-  if(tempoDeReenvioJson + 500 < millis()){
-    escreveEJsonPUT();
-    tempoDeReenvioJson = millis();
-  }
-
-  if(millisAtualizacaoDisplay + 500 < millis()){
-    escreveDisplay();/*horas, minuto*/
-    millisAtualizacaoDisplay = millis();
-  }
+  tempoDeReenvioJson = callBack(*_escreveEJsonPUT,tempoDeReenvioJson,512);
+  millisAtualizacaoDisplay = callBack(*_escreveDisplay,millisAtualizacaoDisplay,755);///*horas, minuto*/
+  lastSendTimeBomba[0] = callBack(*_acionamentoBomba,lastSendTimeBomba[0],3070);
+  tempoEmCadaSlave = callBack(*_WaitDogSlave,tempoEmCadaSlave,10000);
+  //intervaloEntreMensagens = callBack(*_sendMessage,intervaloEntreMensagens,5000);
   
-  if(lastSendTimeBomba[0] + 3000 < millis()){
-    acionamentoBomba();
-    lastSendTimeBomba[0] = millis();
-  }
-
-  if(tempoEmCadaSlave + 10000 < millis()){
-    indexHumidade++;
-    if(indexHumidade>5)indexHumidade = 1;
-    tempoEmCadaSlave = millis();
-  }
-
   if(intervaloEntreMensagens + 5000 < millis()){
     sendMessage("HQ",indexHumidade);
     intervaloEntreMensagens = millis();
   }
-  
   onReceive(LoRa.parsePacket());
 }
+
+long callBack(void (*func)(), long variavel, int tempo){ 
+  if(variavel + tempo < millis()){
+    (*func)();
+    variavel = millis();
+  }
+  return variavel;
+} 
+
+void WaitDogSlave(){
+  indexHumidade++;
+  if(indexHumidade>5)indexHumidade=1;
+}
+
 
 void escreveDisplay(){/*String horas, String minuto*/
     display.drawString(0, 0, "IRRIGAÇÃO 4.0");
@@ -418,11 +416,8 @@ void onReceive(int packetSize) {
      umidade[ind] = incoming;
    }
   }
-
-  Gsender = String(sender);
-  Gincoming = String(incoming);
   
-  stringComunicacao = "SLAVE " + Gsender + ": " + Gincoming;
+  stringComunicacao = "SLAVE " + String(sender) + ": " + String(incoming);
   stringComunicacao2 = "RESPONDEU";
     
 }
