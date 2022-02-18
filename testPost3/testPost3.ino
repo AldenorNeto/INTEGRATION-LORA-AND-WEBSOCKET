@@ -8,8 +8,8 @@
 //#include <ESP8266WiFiMulti.h>
 //#include <ESP8266HTTPClient.h>
 
-const char* ssid     = "Redmi 10";
-const char* password = "bolsonaro";
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
 String user = "ioticos";
 String pass = "12345";
