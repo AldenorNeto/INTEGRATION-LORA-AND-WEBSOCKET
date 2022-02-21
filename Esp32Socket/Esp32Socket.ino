@@ -12,10 +12,6 @@
 #include "SSD1306.h"
 #include "webpage.h"
 
-
-SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
-
-
 /*const char* ssid     = "Grendene.Usuarios";
 const char* user     = "ar9185";
 const char* password = "Medalha654";*/
@@ -23,28 +19,21 @@ const char* password = "Medalha654";*/
 /*const char* ssid     = "Grendene.Coletores";
 const char* password = "ISO8804650216900479";*/
 
-/*const char* ssid     = "Caetano";
-const char* password = "992920940";*/
+const char* ssid     = "Caetano";
+const char* password = "992920940";
 
-const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";
+/*const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";*/
 
-const int csPin = 18;          // LoRa radio chip select
-const int resetPin = 14;       // LoRa radio reset
+const byte csPin = 18;          // LoRa radio chip select
+const byte resetPin = 14;       // LoRa radio reset
 
 String outgoing;              // outgoing message
-
-#define LED    LED_BUILTIN
-#define SW     23
-
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x00;     // address of this device
 
 byte timeZone = -3;
 byte indexHumidade =  1;
-
-String Gsender   = "00";
-String Gincoming = "00";
 
 long millisAtualizacaoDisplay = millis();
 long tempoEmCadaSlave         = millis();
@@ -52,17 +41,12 @@ long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
 
+SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
+
 String stringComunicacao = "";
 String stringComunicacao2 = "";
 
-struct Date{
-    int dayOfWeek;
-    int day;
-    int month;
-    int year;
-    int hours;
-    int minutes;
-};
+struct Date{int dayOfWeek;int day;int month;int year;int hours;int minutes;};
 
 //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 WiFiUDP udp;
@@ -77,13 +61,9 @@ NTPClient ntpClient(
 WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-int indice = 1;
+byte indice = 1;
 
-String duracao = "m11111";
-String hora[10] = {"maste","00:00","00:00","00:00","00:00","00:00"};
-String s[10] = {"masterm","0000000","0000000","0000000","0000000","0000000"};
-String umidade[10] = {"m","0","0","0","0","0"};
-String bomba = "m00000";
+String duracao = "m11111",hora[10],s[10],umidade[10],bomba = "m00000";
 
 String JSONtxt;
 String jsonAddrArmaz;
@@ -99,43 +79,48 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
   String payloadString = (const char *)payload;
  
   if(type == WStype_TEXT){
-    
-    byte separator=payloadString.indexOf('=');
+    byte separator = payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
     
   for(byte endrc = 1; endrc <= 5; endrc++){
     if(var == "DURACAO" + String(endrc)){
       duracao[endrc] = val[0];
-      jsonAddrArmaz[50+((endrc - 1)*108)] = duracao[endrc];
+      jsonAddrArmaz[50+((endrc-1)*108)]=duracao[endrc];
     }
     if(var == "HORA" + String(endrc)){
       hora[endrc] = val;
       for (int i=0; i < hora[endrc].length(); i++){
-        jsonAddrArmaz[71+i+((endrc - 1)*108)] = hora[endrc][i];
+        jsonAddrArmaz[71+i+((endrc-1)*108)]=hora[endrc][i];
       }
     }
     if(var == "S" + String(endrc)){
       s[endrc] = val;
       for (int i=0; i < s[endrc].length(); i++){
-        jsonAddrArmaz[93+i+((endrc - 1)*108)] = s[endrc][i];
+        jsonAddrArmaz[93+i+((endrc-1)*108)]=s[endrc][i];
       }
     }
   }
-
-    Serial.print(var);
-    Serial.print(" ---> ");
-    Serial.println(val);
-    
-    writeFile(jsonAddrArmaz,"/addr.json",false);
+  writeFile(jsonAddrArmaz,"/addr.json",false);
   }
 }
 
+void lerJsonIrrigacao(){
+  int dur = 50, hor = 71, sem = 93;
+  for (int indice = 1; indice <= 5; indice++){
+    duracao[indice] = jsonAddrArmaz[dur];
+    hora[indice] = jsonAddrArmaz.substring(hor,hor+5);
+    s[indice] = jsonAddrArmaz.substring(sem,sem+7);
+    dur += 108;
+    hor += 108;
+    sem += 108;
+  }
+}
 
 void setupNTP(){
     
     ntpClient.begin(); //Inicializa o client NTP
-    Serial.println("FAZENDO UPDATE DO HORAsRIO"); //Espera pelo primeiro update online
+    Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
     
     while(!ntpClient.update()){
         Serial.print(",");
@@ -158,7 +143,6 @@ void wifiConnectionTask(void* param){
 }
 
 void connectWiFi(){
-  
     Serial.println("Conetando");
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
@@ -169,8 +153,7 @@ void connectWiFi(){
         display.display();
         delay(500);
     }
-
-    Serial.println();
+    
     Serial.print("IP ");
     Serial.println(WiFi.localIP().toString());
 }
@@ -193,7 +176,7 @@ bool writeFile(String values, String pathFile, bool appending) {
 }
 
 
-String readFile(String pathFile) {
+String readFile(String pathFile){
   Serial.println("- Lendo: " + pathFile);
   SPIFFS.begin(true);
   File rFile = SPIFFS.open(pathFile, "r");
@@ -204,73 +187,33 @@ String readFile(String pathFile) {
     while (rFile.available()) {
       values += rFile.readString();
     }
-    //Serial.println("- File values: " + values);
   }
   rFile.close();
   jsonAddrArmaz = values;
   return values;
 }
 
-
-void setup(){
+void displayInit(){
   delay(10);
   display.init();
   display.setFont(ArialMT_Plain_10); //10,16,24
   display.flipScreenVertically();
-
   display.drawString(0, 0, "IRRIGAÇÃO 4.0");
   display.display();
-  delay(100);
- 
-  Serial.begin(9600);
+}
 
-  pinMode(LED, OUTPUT);
-  pinMode(A0, INPUT);
-
+void LoraBegin(){
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ 
-  
   if(!LoRa.begin(915E6))while(true);
- 
   Serial.println("LORA INICIADO");
-  
-  connectWiFi();
-  setupNTP();
- 
+}
+
+void webSocketInit(){
   server.on("/", handleRoot);
   server.begin();
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
-
-  xTaskCreatePinnedToCore(
-        wifiConnectionTask,     //Função que será executada
-        "wifiConnectionTask",   //Nome da tarefa
-        10000,                  //Tamanho da memória disponível (em WORDs)
-        NULL,                   //Não vamos passar nenhum parametro
-        NULL,                   //prioridade
-        NULL,                   //Não precisamos de referência para a tarefa
-        0);
-
-  readFile("/addr.json");
-  
-  /*int i = 0;
-  while(i < 2500){
-    Serial.print(i);
-    Serial.print(" - ");
-    Serial.println(jsonAddrArmaz[i]);
-    Serial.println("*********");
-    i++;
-  }*/
-
-  int dur = 50, hor = 71, sem = 93;
-  for (int indice = 1; indice <= 5; indice++){
-    duracao[indice] = jsonAddrArmaz[dur];
-    hora[indice] = jsonAddrArmaz.substring(hor,hor+5);
-    s[indice] = jsonAddrArmaz.substring(sem,sem+7);
-    dur += 108;
-    hor += 108;
-    sem += 108;
-  }
-
+  xTaskCreatePinnedToCore(wifiConnectionTask,"wifiConnectionTask",10000, NULL,NULL,NULL,0);
 }
 
 void escreveEJsonPUT(){
@@ -302,27 +245,7 @@ void acionamentoBomba(){
         bomba[in] = '0';
       }
     }
-    
     sendMessage("1RELE" + String(bomba[indice]),indice);
-}
-
-
-void loop() {
-  void (*_escreveEJsonPUT)()=&escreveEJsonPUT, (*_escreveDisplay)()=&escreveDisplay, (*_acionamentoBomba)()=&acionamentoBomba, (*_WaitDogSlave)()=&WaitDogSlave;    //, (*_sendMessage)("HQ",indexHumidade)=&sendMessage; //
-  
-  webSocket.loop(); server.handleClient();
-
-  tempoDeReenvioJson = callBack(*_escreveEJsonPUT,tempoDeReenvioJson,512);
-  millisAtualizacaoDisplay = callBack(*_escreveDisplay,millisAtualizacaoDisplay,755);///*horas, minuto*/
-  lastSendTimeBomba[0] = callBack(*_acionamentoBomba,lastSendTimeBomba[0],3070);
-  tempoEmCadaSlave = callBack(*_WaitDogSlave,tempoEmCadaSlave,10000);
-  //intervaloEntreMensagens = callBack(*_sendMessage,intervaloEntreMensagens,5000);
-  
-  if(intervaloEntreMensagens + 5000 < millis()){
-    sendMessage("HQ",indexHumidade);
-    intervaloEntreMensagens = millis();
-  }
-  onReceive(LoRa.parsePacket());
 }
 
 long callBack(void (*func)(), long variavel, int tempo){ 
@@ -338,7 +261,6 @@ void WaitDogSlave(){
   if(indexHumidade>5)indexHumidade=1;
 }
 
-
 void escreveDisplay(){/*String horas, String minuto*/
     display.drawString(0, 0, "IRRIGAÇÃO 4.0");
     display.drawString(0,15, "LoRa OK");
@@ -353,13 +275,7 @@ void escreveDisplay(){/*String horas, String minuto*/
 Date getDate(){
     char* strDate = (char*)ntpClient.getFormattedDate().c_str(); //Recupera os dados de data e horário usando o client NTP
     Date date; //Passa os dados da string para a struct
-    sscanf(strDate, "%d-%d-%dT%d:%d", 
-                    &date.year, 
-                    &date.month, 
-                    &date.day, 
-                    &date.hours, 
-                    &date.minutes);
-   
+    sscanf(strDate,"%d-%d-%dT%d:%d",&date.year,&date.month,&date.day,&date.hours,&date.minutes);
     date.dayOfWeek = ntpClient.getDay(); //Dia da semana de 0 a 6, sendo 0 o domingo
     return date;
 }
@@ -384,7 +300,6 @@ void onReceive(int packetSize) {
 
   if (packetSize == 0) return;          // if there's no packet, return
 
-  // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
@@ -398,10 +313,9 @@ void onReceive(int packetSize) {
  
   if (incomingLength != incoming.length()) {   // check length for error
     Serial.println("Tamanho de mensagem não correspondente");
-    return;                             // skip rest of function
+    return;                    
   }
 
-  // if message is for this device, or broadcast, print details:
   Serial.println("Recebido de: " + String(sender, HEX));
   Serial.println("Enviado para: " + String(recipient, HEX));
   /*Serial.println("Message ID: " + String(incomingMsgId));
@@ -420,4 +334,35 @@ void onReceive(int packetSize) {
   stringComunicacao = "SLAVE " + String(sender) + ": " + String(incoming);
   stringComunicacao2 = "RESPONDEU";
     
+}
+
+void setup(){
+  Serial.begin(9600);
+  
+  displayInit();
+  LoraBegin();
+  connectWiFi();
+  setupNTP();
+  webSocketInit();
+
+  readFile("/addr.json");
+  lerJsonIrrigacao();
+}
+
+void loop() {
+  void (*_escreveEJsonPUT)()=&escreveEJsonPUT, (*_escreveDisplay)()=&escreveDisplay, (*_acionamentoBomba)()=&acionamentoBomba, (*_WaitDogSlave)()=&WaitDogSlave;    //, (*_sendMessage)("HQ",indexHumidade)=&sendMessage; //
+  
+  webSocket.loop(); server.handleClient();
+
+  tempoDeReenvioJson = callBack(*_escreveEJsonPUT,tempoDeReenvioJson,512);
+  millisAtualizacaoDisplay = callBack(*_escreveDisplay,millisAtualizacaoDisplay,755);///*horas, minuto*/
+  lastSendTimeBomba[0] = callBack(*_acionamentoBomba,lastSendTimeBomba[0],3070);
+  tempoEmCadaSlave = callBack(*_WaitDogSlave,tempoEmCadaSlave,10000);
+  //intervaloEntreMensagens = callBack(*_sendMessage,intervaloEntreMensagens,5000);
+  
+  if(intervaloEntreMensagens + 5000 < millis()){
+    sendMessage("HQ",indexHumidade);
+    intervaloEntreMensagens = millis();
+  }
+  onReceive(LoRa.parsePacket());
 }
