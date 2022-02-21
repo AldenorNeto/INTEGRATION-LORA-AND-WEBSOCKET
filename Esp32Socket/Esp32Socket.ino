@@ -2,6 +2,7 @@
 #include <LoRa.h>
 #include <WiFi.h>
 #include <WebServer.h>
+#include <HTTPClient.h>
 #include <WebSocketsServer.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
@@ -12,15 +13,11 @@
 #include "SSD1306.h"
 #include "webpage.h"
 
-/*const char* ssid     = "Grendene.Usuarios";
-const char* user     = "ar9185";
-const char* password = "Medalha654";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
-
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+/*const char* ssid     = "Caetano";
+const char* password = "992920940";*/
 
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
@@ -28,7 +25,6 @@ const char* password = "34sup2bc9";*/
 const byte csPin = 18;          // LoRa radio chip select
 const byte resetPin = 14;       // LoRa radio reset
 
-String outgoing;              // outgoing message
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x00;     // address of this device
 
@@ -46,7 +42,7 @@ SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 String stringComunicacao = "";
 String stringComunicacao2 = "";
 
-struct Date{int dayOfWeek;int day;int month;int year;int hours;int minutes;};
+struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;};
 
 //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 WiFiUDP udp;
@@ -54,7 +50,7 @@ WiFiUDP udp;
 //Objeto responsável por recuperar dados sobre horário
 NTPClient ntpClient(
     udp,                    //socket udp
-    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -297,7 +293,6 @@ void sendMessage(String outgoing,byte destination){
 }
 
 void onReceive(int packetSize) {
-
   if (packetSize == 0) return;          // if there's no packet, return
 
   int recipient = LoRa.read();          // recipient address
@@ -333,7 +328,6 @@ void onReceive(int packetSize) {
   
   stringComunicacao = "SLAVE " + String(sender) + ": " + String(incoming);
   stringComunicacao2 = "RESPONDEU";
-    
 }
 
 void setup(){

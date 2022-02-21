@@ -2,8 +2,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
   
-const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";
+const char* ssid     = "Redmi 10";
+const char* password = "bolsonaro";
   
 void setup() {
   
@@ -26,9 +26,9 @@ void loop() {
   
     HTTPClient http;
   
-    http.begin("https://10.2.4.229:7443/process-engine/public/rt/p_SAVE_CSV?device=esp32-CC50E39613DC&estado=acionado"); //Specify the URL
+    http.begin("https://na1.ai.dm-us.informaticacloud.com/active-bpel/public/rt/gKlSdumC0iIjZgAY6sxzAX/p_CALL_SAVE_JSON"); //Specify the URL
     http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
-    int httpCode = http.GET();                                        //Make the request
+    int httpCode = http.POST();                                        //Make the request
   
     if (httpCode > 0) { //Check for the returning code
   
