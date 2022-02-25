@@ -1,4 +1,4 @@
-#include <ArduinoJson.h>
+//#include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h> 
 
@@ -23,14 +23,14 @@ String readFile(String pathFile){
 void setup() {
   Serial.begin(9600);
   
-  StaticJsonDocument<256> doc;
-  doc = readFile("/addr.json");
+  //StaticJsonDocument<256> doc;
+  readFile("/backup.txt");
 
   
   //deserializeJson(doc, input);
   //Serial.println(doc);
 
-  const char* sensor = doc[3]["hora"];
+  /*const char* sensor = doc[3]["hora"];
   long time = doc["time"];
   float lat = doc["data"][0];
   float lon = doc["data"][1];
@@ -38,7 +38,7 @@ void setup() {
   Serial.println(sensor);
   Serial.println("-***-*-*--*-*-*-**-**-*-*-*-*-----***");
   Serial.println(lat,3);
-  Serial.println(lon,2);
+  Serial.println(lon,2);*/
 }
 
 void loop() {

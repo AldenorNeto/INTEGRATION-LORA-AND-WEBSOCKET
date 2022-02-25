@@ -10,15 +10,16 @@ void setup() {
   Serial.begin(9600);
   delay(t);
 
-  readFile("/addr.json");
-  delay(t);
+
+  readFile("/bac.txt");
+  /*delay(t);
   Serial.println(json);
   for (int i=0; i < semana.length(); i++){
     json[93+i] = semana[i];
   }
   Serial.println("...................................................");
   Serial.println(json);
-  writeFile(json,"/addr.json", false );
+  writeFile(json,"/addr.json", false );*/
   
 }
 

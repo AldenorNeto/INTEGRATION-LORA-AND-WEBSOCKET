@@ -4,6 +4,7 @@
 #include <WebServer.h>
 #include <HTTPClient.h>
 #include <WebSocketsServer.h>
+#include <ArduinoJson.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <SPI.h>
@@ -58,6 +59,7 @@ WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 byte indice = 1;
+byte indexFirstScanf = 0
 
 String duracao = "m11111",hora[10],s[10],umidade[10],bomba = "m00000";
 
@@ -68,7 +70,7 @@ char socketAberto = '0';
 
 void handleRoot(){
   server.send(200,"text/html",webpageCont);/*+String(webpageCont2)*/
-  Serial.println("###############################################");
+  indexFirstScanf = 1;
 }
 
 //evento de processo de função: novos dados recebidos do cliente
@@ -82,22 +84,17 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     
   for(byte endrc = 1; endrc <= 5; endrc++){
     if(var == "DURACAO" + String(endrc)){
-      duracao[endrc] = val[0];
-      jsonAddrArmaz[50+((endrc-1)*108)]=duracao[endrc];
+      jsonDoc[indice]["duracao"] = val;
     }
     if(var == "HORA" + String(endrc)){
-      hora[endrc] = val;
-      for (int i=0; i < hora[endrc].length(); i++){
-        jsonAddrArmaz[71+i+((endrc-1)*108)]=hora[endrc][i];
-      }
+      jsonDoc[indice]["hora"] = val;
     }
     if(var == "S" + String(endrc)){
-      s[endrc] = val;
-      for (int i=0; i < s[endrc].length(); i++){
-        jsonAddrArmaz[93+i+((endrc-1)*108)]=s[endrc][i];
-      }
+      jsonDoc[indice]["s"] = val;
     }
   }
+  //String GravaJson = "";
+  //deserealization();
   writeFile(jsonAddrArmaz,"/addr.json",false);
   }
 }
@@ -215,13 +212,13 @@ void webSocketInit(){
 
 void escreveEJsonPUT(){
   JSONtxt = "{\"I\":\""+String(indice)+"\",";
-  montaUmJsonIndex(duracao[indice], hora[indice], s[indice], umidade[indice], bomba[indice]);
+  montaUmJsonIndex(jsonDoc[indice]["duracao"], jsonDoc[indice]["hora"], jsonDoc[indice]["s"], umidade[indice], bomba[indice]);
   if(indice > 5) indice = 1;
   Serial.println(JSONtxt);
   webSocket.broadcastTXT(JSONtxt);
 } 
 
-void montaUmJsonIndex(char duracao, String hora, String s, String umidade, char bomba){
+void montaUmJsonIndex(int duracao, String hora, String s, String umidade, char bomba){
     JSONtxt += "\"D\":\""+String(duracao)+"\",\"H\":\""+hora+"\",\"S\":\""+s+"\",\"U\":\""+umidade+"\",\"B\":\""+String(bomba)+"\"}";
     indice++;
 }
@@ -234,11 +231,11 @@ void acionamentoBomba(){
     if(date.minutes < 10)minuto = "0" + minuto;
     
     for (int in = 1; in <= 5; in++){
-      if((s[in][date.dayOfWeek] == '1')&&(hora[in] == horas + ":" + minuto)){
+      if((sonDoc[in]["s"][date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
         bomba[in] = '1';
         lastSendTimeBomba[indice] = millis(); 
       }
-      else if((millis() > ((duracao[in] - '0') * 300000) + lastSendTimeBomba[indice])&&(bomba[in] == '1')){
+      else if((millis() > (jsonDoc[in]["duracao"]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in] == '1')){
         bomba[in] = '0';
       }
     }
