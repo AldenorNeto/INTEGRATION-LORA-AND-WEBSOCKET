@@ -29,7 +29,7 @@ const byte resetPin = 14;       // LoRa radio reset
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x00;     // address of this device
 
-byte timeZone = -3;
+int timeZone = -3;
 byte indexHumidade =  1;
 
 long millisAtualizacaoDisplay = millis();
@@ -42,6 +42,8 @@ SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
 
 String stringComunicacao = "";
 String stringComunicacao2 = "";
+
+StaticJsonDocument<2560> jsonDoc;
 
 struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;};
 
@@ -59,9 +61,9 @@ WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 byte indice = 1;
-byte indexFirstScanf = 0
 
-String duracao = "m11111",hora[10],s[10],umidade[10],bomba = "m00000";
+String hora[10],s[10],umidade[10],bomba = "m00000";
+int duracao[10];
 
 String JSONtxt;
 String jsonAddrArmaz;
@@ -70,7 +72,7 @@ char socketAberto = '0';
 
 void handleRoot(){
   server.send(200,"text/html",webpageCont);/*+String(webpageCont2)*/
-  indexFirstScanf = 1;
+  Serial.println(""###############################################");
 }
 
 //evento de processo de função: novos dados recebidos do cliente
@@ -84,30 +86,24 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     
   for(byte endrc = 1; endrc <= 5; endrc++){
     if(var == "DURACAO" + String(endrc)){
-      jsonDoc[indice]["duracao"] = val;
+      jsonDoc[endrc]["duracao"] = val;
     }
     if(var == "HORA" + String(endrc)){
-      jsonDoc[indice]["hora"] = val;
+      jsonDoc[endrc]["hora"] = val;
     }
     if(var == "S" + String(endrc)){
-      jsonDoc[indice]["s"] = val;
+      jsonDoc[endrc]["s"] = val;
     }
   }
-  //String GravaJson = "";
-  //deserealization();
-  writeFile(jsonAddrArmaz,"/addr.json",false);
+  //String gravaJson = "";
+  //(gravaJson, jsonDoc);
+  //writeFile(gravaJson,"/addr.json",false);
   }
 }
 
 void lerJsonIrrigacao(){
-  int dur = 50, hor = 71, sem = 93;
   for (int indice = 1; indice <= 5; indice++){
-    duracao[indice] = jsonAddrArmaz[dur];
-    hora[indice] = jsonAddrArmaz.substring(hor,hor+5);
-    s[indice] = jsonAddrArmaz.substring(sem,sem+7);
-    dur += 108;
-    hor += 108;
-    sem += 108;
+    duracao[indice] = jsonDoc[indice]["duracao"];
   }
 }
 
@@ -231,11 +227,12 @@ void acionamentoBomba(){
     if(date.minutes < 10)minuto = "0" + minuto;
     
     for (int in = 1; in <= 5; in++){
-      if((sonDoc[in]["s"][date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
+      duracao[in] = jsonDoc[in]["duracao"];
+      if((jsonDoc[in]["s"][date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
         bomba[in] = '1';
         lastSendTimeBomba[indice] = millis(); 
       }
-      else if((millis() > (jsonDoc[in]["duracao"]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in] == '1')){
+      else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in] == '1')){
         bomba[in] = '0';
       }
     }
@@ -337,7 +334,8 @@ void setup(){
   setupNTP();
   webSocketInit();
 
-  readFile("/addr.json");
+  String input = readFile("/addr.json");
+  deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
 }
 
