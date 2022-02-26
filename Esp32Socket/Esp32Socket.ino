@@ -17,11 +17,11 @@
 /*const char* ssid     = "Grendene.Coletores";
 const char* password = "ISO8804650216900479";*/
 
-/*const char* ssid     = "Caetano";
-const char* password = "992920940";*/
+const char* ssid     = "Caetano";
+const char* password = "992920940";
 
-const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";
+/*const char* ssid     = "Elisabeth_NossaNet";
+const char* password = "34sup2bc9";*/
 
 const byte csPin = 18;          // LoRa radio chip select
 const byte resetPin = 14;       // LoRa radio reset
@@ -72,7 +72,7 @@ char socketAberto = '0';
 
 void handleRoot(){
   server.send(200,"text/html",webpageCont);/*+String(webpageCont2)*/
-  Serial.println(""###############################################");
+  Serial.println("###############################################");
 }
 
 //evento de processo de função: novos dados recebidos do cliente
@@ -95,9 +95,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
       jsonDoc[endrc]["s"] = val;
     }
   }
-  //String gravaJson = "";
-  //(gravaJson, jsonDoc);
-  //writeFile(gravaJson,"/addr.json",false);
+  String gravaJson = "";
+  serializeJson(jsonDoc,gravaJson);
+  writeFile(gravaJson,"/addr.json",false);
   }
 }
 
@@ -179,7 +179,7 @@ String readFile(String pathFile){
     }
   }
   rFile.close();
-  jsonAddrArmaz = values;
+  Serial.println(values);
   return values;
 }
 
