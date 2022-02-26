@@ -1,5 +1,5 @@
-const char webpageCont[] PROGMEM =
-R"=====(
+String webpageCont PROGMEM (){
+return R"=====(
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -176,4 +176,4 @@ R"=====(
 
 </script>
 </html>
-)====="; 
+)====="; }

@@ -12,7 +12,7 @@
 #include <FS.h>
 #include <SPIFFS.h> 
 #include "SSD1306.h"
-#include "webpage.h"
+#include "corpo.h"
 
 /*const char* ssid     = "Grendene.Coletores";
 const char* password = "ISO8804650216900479";*/
@@ -71,7 +71,8 @@ String jsonAddrArmaz;
 char socketAberto = '0';
 
 void handleRoot(){
-  server.send(200,"text/html",webpageCont);/*+String(webpageCont2)*/
+  String webpageCont1 = corpo(jsonDoc[0]["duracao"],jsonDoc[0]["hora"],jsonDoc[0]["s"]);
+  server.send(200,"text/html",webpageCont1);/*+String(webpageCont2)*/
   Serial.println("###############################################");
 }
 
@@ -85,15 +86,9 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     String val = payloadString.substring(separator+1);
     
   for(byte endrc = 1; endrc <= 5; endrc++){
-    if(var == "DURACAO" + String(endrc)){
-      jsonDoc[endrc]["duracao"] = val;
-    }
-    if(var == "HORA" + String(endrc)){
-      jsonDoc[endrc]["hora"] = val;
-    }
-    if(var == "S" + String(endrc)){
-      jsonDoc[endrc]["s"] = val;
-    }
+    if(var == "DURACAO" + String(endrc))jsonDoc[endrc]["duracao"] = val;
+    if(var == "HORA" + String(endrc))jsonDoc[endrc]["hora"] = val;
+    if(var == "S" + String(endrc))jsonDoc[endrc]["s"] = val;
   }
   String gravaJson = "";
   serializeJson(jsonDoc,gravaJson);
@@ -332,11 +327,12 @@ void setup(){
   LoraBegin();
   connectWiFi();
   setupNTP();
-  webSocketInit();
+  
 
   String input = readFile("/addr.json");
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
+  webSocketInit();
 }
 
 void loop() {
