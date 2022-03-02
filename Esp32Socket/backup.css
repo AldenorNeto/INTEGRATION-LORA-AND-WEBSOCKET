@@ -259,7 +259,6 @@ input[type="time"]:hover{background-color: #bfbfbf50}
 }
 
 .DATA{
-
     display: flex;
     height: 80%; /*78px;*/
     width: 100%;
@@ -323,4 +322,3 @@ table input{
     width: 100%;
     height: 100%;
 }
-    

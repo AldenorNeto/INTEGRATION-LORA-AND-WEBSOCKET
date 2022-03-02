@@ -1,7 +1,7 @@
-String corpo PROGMEM (int duracao, String hora, String s){
+String corpo PROGMEM (String appending, String txt, int duracao, String hora, String s, int indexClass){
 String r;
-r = R"=====(
-<tr><td class="titulo">Fab 01</td>
+r = String(R"=====(
+<tr><td class='titulo'><input type='text' value=' )=====")+ txt +String(R"=====('></td>
 <td><select class="duracao">
     <option value="1">5:00</option>
     <option value="2">10:00</option>
@@ -23,23 +23,17 @@ r = R"=====(
 <td><div class="umidade"><span class="umidad">0</span>%</div></td>
 <td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
 
-
-
 <script>
-    console.log("brasil log 1");
-    document.querySelector('.duracao').value = ")=====";
+    document.querySelectorAll('.duracao')[)=====")+ String(indexClass) +String(R"=====(].value = )=====");
 r += String(duracao);
-
-r += R"=====("
-    document.querySelector('.hora').value = ")=====";
+r += String(R"=====(
+    document.querySelectorAll('.hora')[)=====")+ String(indexClass) +String(R"=====(].value = ")=====");
 r += hora;
-
-r += R"=====("
+r += String(R"=====("
     for(let ind=0; ind < 7; ind++){
-        document.querySelector('.S'+ind).checked = parseInt(')=====";
+        document.querySelectorAll('.S'+ind)[)=====")+ String(indexClass) +String(R"=====(].checked = parseInt(')=====");
 r += s;
-
 r += R"=====('[ind])}</script>)====="; 
 
-return r;
+return appending + r;
 }

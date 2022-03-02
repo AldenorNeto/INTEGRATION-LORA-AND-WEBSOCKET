@@ -12,6 +12,7 @@
 #include <FS.h>
 #include <SPIFFS.h> 
 #include "SSD1306.h"
+#include "webpage.h"
 #include "corpo.h"
 
 /*const char* ssid     = "Grendene.Coletores";
@@ -28,6 +29,7 @@ const byte resetPin = 14;       // LoRa radio reset
 
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 0x00;     // address of this device
+
 
 int timeZone = -3;
 byte indexHumidade =  1;
@@ -62,8 +64,10 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
 byte indice = 1;
 
-String hora[10],s[10],umidade[10],bomba = "m00000";
-int duracao[10];
+byte qantSlaves = 4;
+bool bomba[30];
+String hora[30],s[30],umidade[30];
+int duracao[30];
 
 String JSONtxt;
 String jsonAddrArmaz;
@@ -71,9 +75,13 @@ String jsonAddrArmaz;
 char socketAberto = '0';
 
 void handleRoot(){
-  String webpageCont1 = corpo(jsonDoc[0]["duracao"],jsonDoc[0]["hora"],jsonDoc[0]["s"]);
-  server.send(200,"text/html",webpageCont1);/*+String(webpageCont2)*/
-  Serial.println("###############################################");
+  String pagHTMLconcat = "";
+  for(byte slave = 0; slave < qantSlaves; slave++){
+    pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);
+  }
+  pagHTMLconcat = webpageCont(pagHTMLconcat);
+  server.send(200,"text/html",pagHTMLconcat);
+  Serial.println("#############################");
 }
 
 //evento de processo de função: novos dados recebidos do cliente
@@ -84,26 +92,28 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     byte separator = payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
     String val = payloadString.substring(separator+1);
-    
-  for(byte endrc = 1; endrc <= 5; endrc++){
+    byte endrc = String(payloadString[separator-1]).toInt();
+
+    if(var == "TITULO" + String(endrc))jsonDoc[endrc]["txt"] = val;
     if(var == "DURACAO" + String(endrc))jsonDoc[endrc]["duracao"] = val;
     if(var == "HORA" + String(endrc))jsonDoc[endrc]["hora"] = val;
     if(var == "S" + String(endrc))jsonDoc[endrc]["s"] = val;
-  }
-  String gravaJson = "";
-  serializeJson(jsonDoc,gravaJson);
-  writeFile(gravaJson,"/addr.json",false);
+
+    if(qantSlaves-1 == endrc){
+      String gravaJson = "";
+      serializeJson(jsonDoc,gravaJson);
+      writeFile(gravaJson,"/addr.json",false);
+    }
   }
 }
 
 void lerJsonIrrigacao(){
-  for (int indice = 1; indice <= 5; indice++){
+  for (int indice = 0; indice < qantSlaves; indice++){
     duracao[indice] = jsonDoc[indice]["duracao"];
   }
 }
 
 void setupNTP(){
-    
     ntpClient.begin(); //Inicializa o client NTP
     Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
     
@@ -113,16 +123,13 @@ void setupNTP(){
         display.display();
         ntpClient.forceUpdate();delay(500);
     }
-
     Serial.println();
     Serial.println("PRIMEIRO UPDATE DO HORAsRIO REALIZADO");
 }
 
 void wifiConnectionTask(void* param){
     while(true){
-        if(WiFi.status() != WL_CONNECTED){
-            connectWiFi();
-        }
+        if(WiFi.status() != WL_CONNECTED)connectWiFi();
         vTaskDelay(100);
     }
 }
@@ -153,7 +160,6 @@ bool writeFile(String values, String pathFile, bool appending) {
     return false;
   } else {
     wFile.println(values);
-    //Serial.println(values);
     Serial.println("- Gravado!");
   }
   wFile.close();
@@ -202,33 +208,36 @@ void webSocketInit(){
 }
 
 void escreveEJsonPUT(){
-  JSONtxt = "{\"I\":\""+String(indice)+"\",";
-  montaUmJsonIndex(jsonDoc[indice]["duracao"], jsonDoc[indice]["hora"], jsonDoc[indice]["s"], umidade[indice], bomba[indice]);
-  if(indice > 5) indice = 1;
+  JSONtxt = "{\"I\":"+String(indice)+",";
+  montaUmJsonIndex(umidade[indice], bomba[indice]);
+  if(indice > qantSlaves) indice = 0;
   Serial.println(JSONtxt);
   webSocket.broadcastTXT(JSONtxt);
 } 
 
-void montaUmJsonIndex(int duracao, String hora, String s, String umidade, char bomba){
-    JSONtxt += "\"D\":\""+String(duracao)+"\",\"H\":\""+hora+"\",\"S\":\""+s+"\",\"U\":\""+umidade+"\",\"B\":\""+String(bomba)+"\"}";
+void montaUmJsonIndex(String umidade, bool bomba){
+    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
     indice++;
 }
 
 void acionamentoBomba(){
     Date date = getDate();
+    
     String horas = String(date.hours);
     String minuto = String(date.minutes);
     if(date.hours < 10)horas = "0" + horas;
     if(date.minutes < 10)minuto = "0" + minuto;
     
-    for (int in = 1; in <= 5; in++){
+    for (int in = 0; in < qantSlaves; in++){
+      //Serial.println(jsonDoc[in]["s"].toString()[date.dayOfWeek]);
+      String ss = jsonDoc[in]["s"];
       duracao[in] = jsonDoc[in]["duracao"];
-      if((jsonDoc[in]["s"][date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
-        bomba[in] = '1';
+      if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
+        bomba[in] = 1;
         lastSendTimeBomba[indice] = millis(); 
       }
-      else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in] == '1')){
-        bomba[in] = '0';
+      else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){
+        bomba[in] = 0;
       }
     }
     sendMessage("1RELE" + String(bomba[indice]),indice);
@@ -310,7 +319,7 @@ void onReceive(int packetSize) {
   Serial.println("Snr: " + String(LoRa.packetSnr()));*/
   Serial.println();
   
-  for (int ind = 1; ind <= 5; ind++){
+  for (int ind = 0; ind < qantSlaves; ind++){
    if((sender == ind) && (String(incoming[0]) == "H")){
      umidade[ind] = incoming;
    }
