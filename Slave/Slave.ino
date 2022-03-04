@@ -16,7 +16,7 @@ bool senderSlave = false;
  
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 1;     // address of this device
-byte Master = 0x00;      // destination to send to
+byte Master = 250;      // destination to send to
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -55,35 +55,7 @@ void loop(){
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
   
-  if(lastSendTimeOLED + 500 < millis()){
-    display.drawString(0, 0, "IRRIGAÇÃO 4.0      SLAVE");
-    display.drawString(0,15, "ADDR: " + String(localAddress));
-    display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
-    if(String(Gsender, HEX) == "5"){
-      display.drawString(0, 30, "MASTER:  " + Gincoming);
-    }else{
-      display.drawString(0, 30, "SLAVE " + String(Gsender, HEX) + ":  " + Gincoming);
-    }
-    //Serial.println(Grecipient + "    " + localAddress);
-    if(Grecipient != localAddress){
-      display.drawString(0, 45, "PARA O SLAVE " + String(Grecipient, DEC));
-    }
-    else{
-      display.drawString(0, 45, "PARA MIM");
-      if(senderSlave){
-        if(Gincoming == "HQ"){
-          String message = "H" + String((analogRead(A0) * 100)/4095);
-          sendMessage(message);
-          Serial.println("Enviado: " + message);
-          senderSlave = false; 
-        }
-      }
-    }
 
-    display.display();
-    display.clear();
-    lastSendTimeOLED = millis();
- }
 }
  
 void sendMessage(String outgoing) {
@@ -118,6 +90,8 @@ void onReceive(int packetSize){
     return;                             // skip rest of function
   }
 
+  displayelogica(sender,recipient,incoming);
+    
   if(recipient == localAddress){
 
     if(incoming == "1RELE1"){
@@ -127,16 +101,10 @@ void onReceive(int packetSize){
       digitalWrite(RELE1,1);
       sendMessage("1RELE0");
     }
-
-    if(incoming == "HQ"){
-      sendMessage("H" + String((analogRead(A0) * 100)/4095));
-    }
-
+    if(incoming == "HQ")sendMessage("H" + String((analogRead(A0) * 100)/4095));
   }
 
-  Gsender = sender;
-  Gincoming = incoming;
-  Grecipient = recipient;
+
  
   // if the recipient isn't this device or broadcast,
   if(recipient != localAddress && recipient != 0xFF){
@@ -146,15 +114,49 @@ void onReceive(int packetSize){
   }
  
   // if message is for this device, or broadcast, print details:
-  Serial.println("Received from: 0x" + String(sender, HEX));
-  Serial.println("Sent to: 0x" + String(recipient, HEX));
+  Serial.println("Received from: " + sender);
+  Serial.println("Sent to: " + recipient);
   Serial.println("Message ID: " + String(incomingMsgId));
   Serial.println("Message length: " + String(incomingLength));
   Serial.println("Message: " + incoming);
   Serial.println("RSSI: " + String(LoRa.packetRssi()));
   Serial.println("Snr: " + String(LoRa.packetSnr()));
   Serial.println();
-
   
   senderSlave = true;
+}
+
+
+
+void displayelogica(byte sender, int recipient, String incoming){
+
+  if(lastSendTimeOLED + 500 < millis()){
+    display.drawString(0, 0, "IRRIGAÇÃO 4.0      SLAVE");
+    display.drawString(0,15, "ADDR: " + String(localAddress));
+    display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
+    if(sender == 5){
+      display.drawString(0, 30, "MASTER:  " + incoming);
+    }else{
+      display.drawString(0, 30, "SLAVE " + String(sender) + ": " + incoming);
+    }
+
+    if(recipient != localAddress){
+      display.drawString(0, 45, "PARA O SLAVE " + recipient);
+    }
+    else{
+      display.drawString(0, 45, "PARA MIM");
+      if(senderSlave){
+        if(incoming == "HQ"){
+          String message = "H" + String((analogRead(A0) * 100)/4095);
+          sendMessage(message);
+          Serial.println("Enviado: " + message);
+          //senderSlave = false; 
+        }
+      }
+    }
+    display.display();
+    display.clear();
+    lastSendTimeOLED = millis();
+ }
+
 }
