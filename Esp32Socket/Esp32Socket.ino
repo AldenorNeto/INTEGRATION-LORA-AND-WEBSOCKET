@@ -28,14 +28,17 @@ const byte csPin = 18;        // LoRa radio chip select
 const byte resetPin = 14;     // LoRa radio reset
 
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 250;      // address of this device
+byte localAddress = 250;     // address of this device
+
+>>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
 
 int timeZone = -3;
 
-long millisAtualizacaoDisplay = millis();
+long millisAtualizaDisplay    = millis();
 long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
+long millisVerificaBomba      = millis();
 long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
@@ -91,10 +94,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     if(var == "HORA" + String(endrc))jsonDoc[endrc]["hora"] = val;
     if(var == "S" + String(endrc))jsonDoc[endrc]["s"] = val;
 
-    if(qantSlaves-1 == endrc){
+    if(var == "S" + String(qantSlaves-1)){
       String gravaJson = "";
       serializeJson(jsonDoc,gravaJson);
       writeFile(gravaJson,"/addr.json",false);
+      acionamentoBomba();
     }
   }
 }
@@ -202,7 +206,17 @@ void escreveEJsonPUT(){
   indice++;
   if(indice >= qantSlaves) indice = 0;
 } 
+/*
+<<<<<<< HEAD
+=======
+void montaUmJsonIndex(String umidade, bool bomba){
+    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
+    indice++;
+}
+*/
 
+
+>>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
 void acionamentoBomba(){
     Date date = getDate();
     
@@ -215,8 +229,14 @@ void acionamentoBomba(){
       //Serial.println(jsonDoc[in]["s"].toString()[date.dayOfWeek]);
       String ss = jsonDoc[in]["s"];
       duracao[in] = jsonDoc[in]["duracao"];
+      
       if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas+":"+minuto)){
-        bomba[in] = 1;
+        if(bomba[in] == 0){
+          bomba[in] = 1;
+          indice = in;
+          escreveEJsonPUT();
+        }
+>>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
         lastSendTimeBomba[indice] = millis(); 
       }
       else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){
@@ -328,10 +348,10 @@ void loop() {
   
   webSocket.loop(); server.handleClient();
 
-  tempoDeReenvioJson = callBack(*_escreveEJsonPUT,tempoDeReenvioJson,512);
-  millisAtualizacaoDisplay = callBack(*_escreveDisplay,millisAtualizacaoDisplay,755);///*horas, minuto*/
-  lastSendTimeBomba[0] = callBack(*_acionamentoBomba,lastSendTimeBomba[0],3070);
-  tempoEmCadaSlave = callBack(*_WaitDogSlave,tempoEmCadaSlave,10000);
+  tempoDeReenvioJson    = callBack(*_escreveEJsonPUT, tempoDeReenvioJson, 512);
+  millisAtualizaDisplay = callBack(*_escreveDisplay, millisAtualizaDisplay, 755);///*horas, minuto*/
+  millisVerificaBomba   = callBack(*_acionamentoBomba, millisVerificaBomba, 3070);
+  tempoEmCadaSlave      = callBack(*_WaitDogSlave, tempoEmCadaSlave, 10000);
   //intervaloEntreMensagens = callBack(*_sendMessage,intervaloEntreMensagens,5000);
   
   if(intervaloEntreMensagens + 5000 < millis()){
