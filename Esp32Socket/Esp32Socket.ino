@@ -28,19 +28,20 @@ const byte csPin = 18;          // LoRa radio chip select
 const byte resetPin = 14;       // LoRa radio reset
 
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x00;     // address of this device
+byte localAddress = 250;     // address of this device
 
 
 int timeZone = -3;
 byte indexHumidade =  1;
 
-long millisAtualizacaoDisplay = millis();
+long millisAtualizaDisplay    = millis();
 long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
+long millisVerificaBomba      = millis();
 long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
 
-SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
+SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
 String stringComunicacao = "";
 String stringComunicacao2 = "";
@@ -99,10 +100,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
     if(var == "HORA" + String(endrc))jsonDoc[endrc]["hora"] = val;
     if(var == "S" + String(endrc))jsonDoc[endrc]["s"] = val;
 
-    if(qantSlaves-1 == endrc){
+    if(var == "S" + String(qantSlaves-1)){
       String gravaJson = "";
       serializeJson(jsonDoc,gravaJson);
       writeFile(gravaJson,"/addr.json",false);
+      acionamentoBomba();
     }
   }
 }
@@ -220,6 +222,8 @@ void montaUmJsonIndex(String umidade, bool bomba){
     indice++;
 }
 
+
+
 void acionamentoBomba(){
     Date date = getDate();
     
@@ -233,7 +237,11 @@ void acionamentoBomba(){
       String ss = jsonDoc[in]["s"];
       duracao[in] = jsonDoc[in]["duracao"];
       if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
-        bomba[in] = 1;
+        if(bomba[in] == 0){
+          bomba[in] = 1;
+          indice = in;
+          escreveEJsonPUT();
+        }
         lastSendTimeBomba[indice] = millis(); 
       }
       else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){
@@ -349,10 +357,10 @@ void loop() {
   
   webSocket.loop(); server.handleClient();
 
-  tempoDeReenvioJson = callBack(*_escreveEJsonPUT,tempoDeReenvioJson,512);
-  millisAtualizacaoDisplay = callBack(*_escreveDisplay,millisAtualizacaoDisplay,755);///*horas, minuto*/
-  lastSendTimeBomba[0] = callBack(*_acionamentoBomba,lastSendTimeBomba[0],3070);
-  tempoEmCadaSlave = callBack(*_WaitDogSlave,tempoEmCadaSlave,10000);
+  tempoDeReenvioJson    = callBack(*_escreveEJsonPUT, tempoDeReenvioJson, 512);
+  millisAtualizaDisplay = callBack(*_escreveDisplay, millisAtualizaDisplay, 755);///*horas, minuto*/
+  millisVerificaBomba   = callBack(*_acionamentoBomba, millisVerificaBomba, 3070);
+  tempoEmCadaSlave      = callBack(*_WaitDogSlave, tempoEmCadaSlave, 10000);
   //intervaloEntreMensagens = callBack(*_sendMessage,intervaloEntreMensagens,5000);
   
   if(intervaloEntreMensagens + 5000 < millis()){
