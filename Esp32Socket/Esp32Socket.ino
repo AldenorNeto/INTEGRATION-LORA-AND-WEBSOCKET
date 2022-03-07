@@ -15,24 +15,22 @@
 #include "webpage.h"
 #include "corpo.h"
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+/*const char* ssid     = "Caetano";
+const char* password = "992920940";*/
 
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
-const byte csPin = 18;          // LoRa radio chip select
-const byte resetPin = 14;       // LoRa radio reset
+const byte csPin = 18;        // LoRa radio chip select
+const byte resetPin = 14;     // LoRa radio reset
 
 byte msgCount = 0;            // count of outgoing messages
-byte localAddress = 0x00;     // address of this device
-
+byte localAddress = 250;      // address of this device
 
 int timeZone = -3;
-byte indexHumidade =  1;
 
 long millisAtualizacaoDisplay = millis();
 long tempoEmCadaSlave         = millis();
@@ -40,7 +38,7 @@ long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
 
-SSD1306 display(0x3c, 4, 15, 0); //Cria e ajusta o Objeto display
+SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
 String stringComunicacao = "";
 String stringComunicacao2 = "";
@@ -49,30 +47,24 @@ StaticJsonDocument<2560> jsonDoc;
 
 struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;};
 
-//Socket UDP que a lib utiliza para recuperar dados sobre o horário
-WiFiUDP udp;
+WiFiUDP udp; //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 
-//Objeto responsável por recuperar dados sobre horário
-NTPClient ntpClient(
+NTPClient ntpClient( //Objeto responsável por recuperar dados sobre horário
     udp,                    //socket udp
-    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",*/  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
 WebServer server(80);
 WebSocketsServer webSocket = WebSocketsServer(81);
 
-byte indice = 1;
+byte indice = 0;
+byte indexHumidade = 0;
 
 byte qantSlaves = 4;
 bool bomba[30];
 String hora[30],s[30],umidade[30];
 int duracao[30];
-
-String JSONtxt;
-String jsonAddrArmaz;
-
-char socketAberto = '0';
 
 void handleRoot(){
   String pagHTMLconcat = "";
@@ -123,8 +115,7 @@ void setupNTP(){
         display.display();
         ntpClient.forceUpdate();delay(500);
     }
-    Serial.println();
-    Serial.println("PRIMEIRO UPDATE DO HORAsRIO REALIZADO");
+    Serial.println("\nUPDATE DO HORAsRIO REALIZADO");
 }
 
 void wifiConnectionTask(void* param){
@@ -145,20 +136,18 @@ void connectWiFi(){
         display.display();
         delay(500);
     }
-    
-    Serial.print("IP ");
-    Serial.println(WiFi.localIP().toString());
+    Serial.println("IP " + WiFi.localIP().toString());
 }
 
-bool writeFile(String values, String pathFile, bool appending) {
+bool writeFile(String values, String pathFile, bool appending){
   char *mode = "w";  //aberto para escrita (cria arquivo se não existir). Exclui o conteúdo e substitui o arquivo.
   if (appending) mode = "a";  //aberto para anexação (cria o arquivo se não existir)
   SPIFFS.begin(true);
   File wFile = SPIFFS.open(pathFile, mode);
-  if (!wFile) {
+  if(!wFile){
     Serial.println("- Falha ao escrever na pasta.");
     return false;
-  } else {
+  }else{
     wFile.println(values);
     Serial.println("- Gravado!");
   }
@@ -208,17 +197,11 @@ void webSocketInit(){
 }
 
 void escreveEJsonPUT(){
-  JSONtxt = "{\"I\":"+String(indice)+",";
-  montaUmJsonIndex(umidade[indice], bomba[indice]);
-  if(indice > qantSlaves) indice = 0;
-  Serial.println(JSONtxt);
-  webSocket.broadcastTXT(JSONtxt);
+  webSocket.broadcastTXT("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
+  Serial.println("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
+  indice++;
+  if(indice >= qantSlaves) indice = 0;
 } 
-
-void montaUmJsonIndex(String umidade, bool bomba){
-    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
-    indice++;
-}
 
 void acionamentoBomba(){
     Date date = getDate();
@@ -232,7 +215,7 @@ void acionamentoBomba(){
       //Serial.println(jsonDoc[in]["s"].toString()[date.dayOfWeek]);
       String ss = jsonDoc[in]["s"];
       duracao[in] = jsonDoc[in]["duracao"];
-      if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas + ":" + minuto)){
+      if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas+":"+minuto)){
         bomba[in] = 1;
         lastSendTimeBomba[indice] = millis(); 
       }
@@ -253,7 +236,7 @@ long callBack(void (*func)(), long variavel, int tempo){
 
 void WaitDogSlave(){
   indexHumidade++;
-  if(indexHumidade>5)indexHumidade=1;
+  if(indexHumidade >= qantSlaves)indexHumidade=0;
 }
 
 void escreveDisplay(){/*String horas, String minuto*/
@@ -286,26 +269,22 @@ void sendMessage(String outgoing,byte destination){
   msgCount++;                           // increment message ID
   
   Serial.println("ENVIADO " + String(outgoing) + " PARA " + String(destination));
-
   stringComunicacao = "ENVIADO " + String(outgoing);
   stringComunicacao2 = "PARA " + String(destination);
 }
 
-void onReceive(int packetSize) {
+void onReceive(int packetSize){
   if (packetSize == 0) return;          // if there's no packet, return
 
   int recipient = LoRa.read();          // recipient address
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
- 
   String incoming = "";
 
-  while (LoRa.available()) {
-    incoming += (char)LoRa.read();
-  }
+  while (LoRa.available())incoming += (char)LoRa.read();
  
-  if (incomingLength != incoming.length()) {   // check length for error
+  if (incomingLength != incoming.length()){   // check length for error
     Serial.println("Tamanho de mensagem não correspondente");
     return;                    
   }

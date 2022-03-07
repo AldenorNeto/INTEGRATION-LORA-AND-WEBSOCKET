@@ -4,7 +4,12 @@
 #include <SPI.h>
 #include <LoRa.h>
 
-#define RELE1 LED_BUILTIN
+#define RELE1    0
+#define RELE2    23
+#define divisor1 36
+#define divisor2 37
+#define sensor   38 
+
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -14,12 +19,11 @@ long lastSendTimeOLED   = millis();
 String outgoing;              // outgoing message
 bool senderSlave = false;
  
-byte msgCount = 0;            // count of outgoing messages
+byte msgCount = 0;         // count of outgoing messages
 byte localAddress = 1;     // address of this device
-byte Master = 250;      // destination to send to
+byte Master = 250;      
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
-
 
 byte Gsender; 
 String Gincoming = "";
@@ -30,8 +34,13 @@ void setup() {
   Serial.begin(9600);                   // initialize serial
   while (!Serial);
 
+  digitalWrite(RELE1,1);
+  digitalWrite(RELE2,1);
   pinMode(RELE1, OUTPUT);
-  pinMode(A0, INPUT);
+  pinMode(RELE2, OUTPUT);
+
+  pinMode(23, OUTPUT);
+  pinMode(divisor1, INPUT);
  
   // override the default CS, reset, and IRQ pins (optional)
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ pin
@@ -42,8 +51,6 @@ void setup() {
   }
  
   Serial.println("INICIANDO SLAVE LORA");
-  digitalWrite(RELE1,1);
-
   display.init();
   display.setFont(ArialMT_Plain_10); //10,16,24
   display.flipScreenVertically(); 
@@ -54,8 +61,7 @@ void loop(){
   
   //analise um pacote e chama onReceive com o resultado:
   onReceive(LoRa.parsePacket());
-  
-
+ 
 }
  
 void sendMessage(String outgoing) {
@@ -70,7 +76,6 @@ void sendMessage(String outgoing) {
 }
  
 void onReceive(int packetSize){
-
   if(packetSize == 0) return;          // if there's no packet, return
 
   // read packet header bytes:
@@ -81,9 +86,7 @@ void onReceive(int packetSize){
 
   String incoming = "";
  
-  while(LoRa.available()){
-    incoming += (char)LoRa.read();
-  }
+  while(LoRa.available())incoming += (char)LoRa.read();
  
   if(incomingLength != incoming.length()){   // check length for error
     Serial.println("error: message length does not match length");
@@ -91,20 +94,24 @@ void onReceive(int packetSize){
   }
 
   displayelogica(sender,recipient,incoming);
-    
-  if(recipient == localAddress){
 
+  if(recipient == localAddress){
     if(incoming == "1RELE1"){
       digitalWrite(RELE1,0);
-      sendMessage("1RELE1");
+      sendMessage("OK1RELE1");
     }else if(incoming == "1RELE0"){
       digitalWrite(RELE1,1);
-      sendMessage("1RELE0");
+      sendMessage("OK1RELE0");
+    }
+    if(incoming == "2RELE1"){
+      digitalWrite(RELE2,0);
+      sendMessage("OK2RELE1");
+    }else if(incoming == "2RELE0"){
+      digitalWrite(RELE2,1);
+      sendMessage("OK2RELE0");
     }
     if(incoming == "HQ")sendMessage("H" + String((analogRead(A0) * 100)/4095));
   }
-
-
  
   // if the recipient isn't this device or broadcast,
   if(recipient != localAddress && recipient != 0xFF){
@@ -125,8 +132,6 @@ void onReceive(int packetSize){
   
   senderSlave = true;
 }
-
-
 
 void displayelogica(byte sender, int recipient, String incoming){
 
