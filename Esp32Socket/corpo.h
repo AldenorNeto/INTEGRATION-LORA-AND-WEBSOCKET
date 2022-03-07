@@ -1,7 +1,7 @@
 String corpo PROGMEM (String appending, String txt, int duracao, String hora, String s, int indexClass){
 String r;
 r = String(R"=====(
-<tr><td class='titulo'><input type='text' value=' )=====")+ txt +String(R"=====('></td>
+<tr><td class='titulo'><input type='text' value=')=====")+ txt +String(R"=====('></td>
 <td><select class="duracao">
     <option value="1">5:00</option>
     <option value="2">10:00</option>

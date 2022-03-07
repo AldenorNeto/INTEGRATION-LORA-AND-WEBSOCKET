@@ -30,7 +30,7 @@ const byte resetPin = 14;     // LoRa radio reset
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 250;     // address of this device
 
->>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
+
 
 int timeZone = -3;
 
@@ -215,8 +215,6 @@ void montaUmJsonIndex(String umidade, bool bomba){
 }
 */
 
-
->>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
 void acionamentoBomba(){
     Date date = getDate();
     
@@ -235,8 +233,8 @@ void acionamentoBomba(){
           bomba[in] = 1;
           indice = in;
           escreveEJsonPUT();
+          sendMessage("1RELE1",in);
         }
->>>>>>> 981abf2122c988e6b7e4916d5f424d7122e4116c
         lastSendTimeBomba[indice] = millis(); 
       }
       else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){

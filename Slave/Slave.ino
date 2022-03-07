@@ -24,14 +24,10 @@ byte localAddress = 1;     // address of this device
 byte Master = 250;      
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
-
-byte Gsender; 
-String Gincoming = "";
-int Grecipient = 0;
  
 void setup() {
   
-  Serial.begin(9600);                   // initialize serial
+  Serial.begin(9600);
   while (!Serial);
 
   digitalWrite(RELE1,1);
@@ -41,27 +37,27 @@ void setup() {
 
   pinMode(23, OUTPUT);
   pinMode(divisor1, INPUT);
+  
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.flipScreenVertically(); 
+
  
   // override the default CS, reset, and IRQ pins (optional)
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ pin
  
   if(!LoRa.begin(915E6)){             // initialize ratio at 915 MHz
     Serial.println("INICIALIZAÇÃO LORA DO SLAVE NÃO FOI ESTABELECIDA");
+    
     while (true);                       // if failed, do nothing
   }
  
   Serial.println("INICIANDO SLAVE LORA");
-  display.init();
-  display.setFont(ArialMT_Plain_10); //10,16,24
-  display.flipScreenVertically(); 
 
 }
  
 void loop(){
-  
-  //analise um pacote e chama onReceive com o resultado:
-  onReceive(LoRa.parsePacket());
- 
+  onReceive(LoRa.parsePacket()); //analise um pacote e chama onReceive com o resultado:
 }
  
 void sendMessage(String outgoing) {
@@ -110,11 +106,11 @@ void onReceive(int packetSize){
       digitalWrite(RELE2,1);
       sendMessage("OK2RELE0");
     }
-    if(incoming == "HQ")sendMessage("H" + String((analogRead(A0) * 100)/4095));
+    if(incoming == "HQ")sendMessage("H" + String((analogRead(divisor1) * 100)/4095));
   }
  
   // if the recipient isn't this device or broadcast,
-  if(recipient != localAddress && recipient != 0xFF){
+  if(recipient != localAddress && recipient != Master){
     Serial.print("MESSAGEM PARA O SLAVE ");
     Serial.println(recipient);
     return;                             // skip rest of function
@@ -138,7 +134,7 @@ void displayelogica(byte sender, int recipient, String incoming){
   if(lastSendTimeOLED + 500 < millis()){
     display.drawString(0, 0, "IRRIGAÇÃO 4.0      SLAVE");
     display.drawString(0,15, "ADDR: " + String(localAddress));
-    display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
+    display.drawString(60,15, "UMID: " + String((analogRead(divisor1) * 100)/4095) + "%");
     if(sender == 5){
       display.drawString(0, 30, "MASTER:  " + incoming);
     }else{
@@ -152,7 +148,7 @@ void displayelogica(byte sender, int recipient, String incoming){
       display.drawString(0, 45, "PARA MIM");
       if(senderSlave){
         if(incoming == "HQ"){
-          String message = "H" + String((analogRead(A0) * 100)/4095);
+          String message = "H" + String((analogRead(divisor1) * 100)/4095);
           sendMessage(message);
           Serial.println("Enviado: " + message);
           //senderSlave = false; 
