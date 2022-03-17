@@ -20,7 +20,7 @@ r = String(R"=====(
     <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
     <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
 </div></div></div></td>
-<td><div class="umidade"><span class="umidad">0</span>%</div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
 <td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
 
 <script>

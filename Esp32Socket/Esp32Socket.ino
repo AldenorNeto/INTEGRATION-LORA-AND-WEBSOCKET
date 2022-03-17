@@ -30,8 +30,6 @@ const byte resetPin = 14;     // LoRa radio reset
 byte msgCount = 0;            // count of outgoing messages
 byte localAddress = 250;     // address of this device
 
-
-
 int timeZone = -3;
 
 long millisAtualizaDisplay    = millis();
@@ -64,10 +62,10 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 byte indice = 0;
 byte indexHumidade = 0;
 
-byte qantSlaves = 4;
-bool bomba[30];
-String hora[30],s[30],umidade[30];
-int duracao[30];
+byte qantSlaves = 5;
+bool bomba[10];
+String hora[10],s[10],umidade[10];
+int duracao[10], resetSlave[10];
 
 void handleRoot(){
   String pagHTMLconcat = "";
@@ -76,11 +74,9 @@ void handleRoot(){
   }
   pagHTMLconcat = webpageCont(pagHTMLconcat);
   server.send(200,"text/html",pagHTMLconcat);
-  Serial.println("#############################");
 }
 
-//evento de processo de função: novos dados recebidos do cliente
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
  
   if(type == WStype_TEXT){
@@ -215,6 +211,8 @@ void montaUmJsonIndex(String umidade, bool bomba){
 }
 */
 
+
+
 void acionamentoBomba(){
     Date date = getDate();
     
@@ -229,19 +227,27 @@ void acionamentoBomba(){
       duracao[in] = jsonDoc[in]["duracao"];
       
       if((ss[date.dayOfWeek] == '1')&&(jsonDoc[in]["hora"] == horas+":"+minuto)){
-        if(bomba[in] == 0){
+        if(!bomba[in]){
           bomba[in] = 1;
           indice = in;
           escreveEJsonPUT();
           sendMessage("1RELE1",in);
         }
-        lastSendTimeBomba[indice] = millis(); 
+        lastSendTimeBomba[indice] = millis();
       }
       else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){
+        if(bomba[in])resetSlave[in] = 1;
         bomba[in] = 0;
+        
       }
     }
-    sendMessage("1RELE" + String(bomba[indice]),indice);
+    if(resetSlave[indice])resetSlave[indice]++;
+    if(resetSlave[indice] > 5){
+      resetSlave[indice] = 0;
+      sendMessage("RESET1",1);
+    }else{
+      sendMessage("1RELE" + String(bomba[indice]),indice);
+    }
 }
 
 long callBack(void (*func)(), long variavel, int tempo){ 
@@ -312,8 +318,8 @@ void onReceive(int packetSize){
   /*Serial.println("Message ID: " + String(incomingMsgId));
   Serial.println("Message length: " + String(incomingLength));*/
   Serial.println("Messagem: " + incoming);
- /* Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr()));*/
+  Serial.println("RSSI: " + String(LoRa.packetRssi()));
+  /*Serial.println("Snr: " + String(LoRa.packetSnr()));*/
   Serial.println();
   
   for (int ind = 0; ind < qantSlaves; ind++){
@@ -339,6 +345,9 @@ void setup(){
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
   webSocketInit();
+
+  pinMode(16,OUTPUT);
+  digitalWrite(16,1);
 }
 
 void loop() {
