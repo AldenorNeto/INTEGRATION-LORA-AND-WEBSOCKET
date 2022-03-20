@@ -4,7 +4,12 @@
 #include <SPI.h>
 #include <LoRa.h>
 
-#define RELE1 23
+#define RELE1    17
+#define RELE2    23
+#define divisor1 36
+#define divisor2 37
+#define sensor   38 
+
  
 const int csPin = 18;          // LoRa radio chip select
 const int resetPin = 14;       // LoRa radio reset
@@ -14,24 +19,30 @@ long lastSendTimeOLED   = millis();
 String outgoing;              // outgoing message
 bool senderSlave = false;
  
-byte msgCount = 0;            // count of outgoing messages
+byte msgCount = 0;         // count of outgoing messages
 byte localAddress = 1;     // address of this device
-byte Master = 250;      // destination to send to
+byte Master = 250;
+
+byte sender; int recipient; String incoming;
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
-
-
-byte Gsender; 
-String Gincoming = "";
-int Grecipient = 0;
  
 void setup() {
   
-  Serial.begin(9600);                   // initialize serial
+  Serial.begin(9600);
   while (!Serial);
 
-  pinMode(RELE1, OUTPUT);
-  pinMode(A0, INPUT);
+  digitalWrite(RELE2,1);
+  pinMode(0, INPUT);
+  pinMode(RELE2, OUTPUT);
+
+  pinMode(23, OUTPUT);
+  pinMode(divisor1, INPUT);
+  
+  display.init();
+  display.setFont(ArialMT_Plain_10); //10,16,24
+  display.flipScreenVertically(); 
+
  
   // override the default CS, reset, and IRQ pins (optional)
   LoRa.setPins(csPin, resetPin, LORA_DEFAULT_DIO0_PIN);// set CS, reset, IRQ pin
@@ -40,22 +51,19 @@ void setup() {
     Serial.println("INICIALIZAÇÃO LORA DO SLAVE NÃO FOI ESTABELECIDA");
     while (true);                       // if failed, do nothing
   }
- 
   Serial.println("INICIANDO SLAVE LORA");
-  digitalWrite(RELE1,1);
-
-  display.init();
-  display.setFont(ArialMT_Plain_10); //10,16,24
-  display.flipScreenVertically(); 
-
 }
  
 void loop(){
+  onReceive(LoRa.parsePacket()); //analise um pacote e chama onReceive com o resultado:
+  if(lastSendTimeOLED  + 500 < millis()){
+    Serial.println( millis());
+    digitalWrite(16,digitalRead(0));
+    displayelogica(sender,recipient,incoming);
+    lastSendTimeOLED  = millis();
+  }
   
-  //analise um pacote e chama onReceive com o resultado:
-  onReceive(LoRa.parsePacket());
   
-
 }
  
 void sendMessage(String outgoing) {
@@ -70,44 +78,45 @@ void sendMessage(String outgoing) {
 }
  
 void onReceive(int packetSize){
-
   if(packetSize == 0) return;          // if there's no packet, return
 
   // read packet header bytes:
-  int recipient = LoRa.read();          // recipient address
-  byte sender = LoRa.read();            // sender address
+  recipient = LoRa.read();          // recipient address
+  sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
 
-  String incoming = "";
+  incoming = "";
  
-  while(LoRa.available()){
-    incoming += (char)LoRa.read();
-  }
+  while(LoRa.available())incoming += (char)LoRa.read();
  
   if(incomingLength != incoming.length()){   // check length for error
     Serial.println("error: message length does not match length");
     return;                             // skip rest of function
   }
 
-  displayelogica(sender,recipient,incoming);
-    
-  if(recipient == localAddress){
 
+
+  if(recipient == localAddress){
     if(incoming == "1RELE1"){
       digitalWrite(RELE1,0);
-      sendMessage("1RELE1");
+      sendMessage("OK1RELE1");
     }else if(incoming == "1RELE0"){
       digitalWrite(RELE1,1);
-      sendMessage("1RELE0");
+      sendMessage("OK1RELE0");
     }
-    if(incoming == "HQ")sendMessage("H" + String((analogRead(A0) * 100)/4095));
+    if(incoming == "2RELE1"){
+      digitalWrite(RELE2,0);
+      sendMessage("OK2RELE1");
+    }else if(incoming == "2RELE0"){
+      digitalWrite(RELE2,1);
+      sendMessage("OK2RELE0");
+    }
+    if(incoming == "HQ")sendMessage("H" + String((analogRead(divisor1) * 100)/4095));
   }
-
-
  
   // if the recipient isn't this device or broadcast,
-  if(recipient != localAddress && recipient != 0xFF){
+  if(recipient != localAddress && recipient != Master){
     Serial.print("MESSAGEM PARA O SLAVE ");
     Serial.println(recipient);
     return;                             // skip rest of function
@@ -126,15 +135,11 @@ void onReceive(int packetSize){
   senderSlave = true;
 }
 
-
-
 void displayelogica(byte sender, int recipient, String incoming){
-
-  if(lastSendTimeOLED + 500 < millis()){
     display.drawString(0, 0, "IRRIGAÇÃO 4.0      SLAVE");
     display.drawString(0,15, "ADDR: " + String(localAddress));
-    display.drawString(60,15, "UMID: " + String((analogRead(A0) * 100)/4095) + "%");
-    if(sender == 5){
+    display.drawString(60,15, "UMID: " + String((analogRead(divisor1) * 100)/4095) + "%");
+    if(sender == 250){
       display.drawString(0, 30, "MASTER:  " + incoming);
     }else{
       display.drawString(0, 30, "SLAVE " + String(sender) + ": " + incoming);
@@ -147,7 +152,7 @@ void displayelogica(byte sender, int recipient, String incoming){
       display.drawString(0, 45, "PARA MIM");
       if(senderSlave){
         if(incoming == "HQ"){
-          String message = "H" + String((analogRead(A0) * 100)/4095);
+          String message = "H" + String((analogRead(divisor1) * 100)/4095);
           sendMessage(message);
           Serial.println("Enviado: " + message);
           //senderSlave = false; 
@@ -156,7 +161,4 @@ void displayelogica(byte sender, int recipient, String incoming){
     }
     display.display();
     display.clear();
-    lastSendTimeOLED = millis();
  }
-
-}
