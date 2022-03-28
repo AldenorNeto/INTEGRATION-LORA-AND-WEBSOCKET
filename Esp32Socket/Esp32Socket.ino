@@ -37,7 +37,7 @@ long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long millisVerificaBomba      = millis();
-long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
+
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -65,15 +65,17 @@ byte qantSlaves = 5;
 bool bomba[10];
 String hora[10],s[10],umidade[10];
 int duracao[10], resetSlave[10];
+long lastSendTimeBomba[10];
 
-void handleRoot(){
-  String pagHTMLconcat = "";
-  for(byte slave = 0; slave < qantSlaves; slave++){
-    pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);
-  }
+String pagHTMLconcat = "";
+
+void ConcatWebPag(){
+  for(byte slave = 0; slave < qantSlaves; slave++){pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);}
   pagHTMLconcat = webpageCont(pagHTMLconcat);
-  server.send(200,"text/html",pagHTMLconcat);
+  Serial.println(pagHTMLconcat);
 }
+
+void handleRoot(){server.send(200,"text/html",pagHTMLconcat);}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
@@ -350,6 +352,7 @@ void setup(){
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
   webSocketInit();
+  ConcatWebPag();
 
   pinMode(16,OUTPUT);
   digitalWrite(16,1);

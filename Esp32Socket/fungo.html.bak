@@ -14,12 +14,12 @@
             <tr id="cabecalho"><td>LOCAL</td><td>MINUTOS</td><td>HORARIO</td><td>DIA</td><td>UMIDADE</td><td>IRRIGAR</td></tr>
         
 <tr><td class='titulo'><input type='text' value='jard esqrd F3'></td>
-<td><select class="duracao" value="2">
+<td><select class="duracao">
     <option value="1">5:00</option>
     <option value="2">10:00</option>
-    <option value="3">15:00</option>
-    <option value="4">20:00</option>
-    <option value="5">25:00</option>
+    <option value="3" selected="deselected">15:00</option>
+    <option value="4" select="selected">20:00</option>
+    <option value="5" select="deselected">25:00</option>
 </select></td>
 <td><input type="time" class="hora" value="15:15"></td>
 <td><div class="DATA"><div class="semana">
