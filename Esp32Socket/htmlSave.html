@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>IRRIGAÇÃO</title>
+      <link rel="stylesheet" href="backup.css">
+  </head>
+  <body onselectstart="return false" class="vsc-initialized">
+      <div class="container">
+          <h1><span>Grendene</span>IRRIGAÇÃO 4.0<div><i class="gg-drop-invert"></i></div></h1>
+          <button id="envioForm" onclick="fanONOFF()">✓</button><div id="loading"></div>
+          <table>
+              <tbody><tr id="cabecalho"><td>LOCAL</td><td>MINUTOS</td><td>HORARIO</td><td>DIA</td><td>UMIDADE</td><td>IRRIGAR</td></tr>
+          
+<tr><td class="titulo"><input type="text" value="jard esqrd fab 03"></td>
+<td><select class="duracao">
+    <option value="1">5:00</option>
+    <option value="2">10:00</option>
+    <option value="3">15:00</option>
+    <option value="4">20:00</option>
+    <option value="5">25:00</option>
+</select></td>
+<td><input type="time" class="hora"></td>
+<td><div class="DATA"><div class="semana">
+    <label><input type="checkbox" class="S0"><div class="dom">D</div></label>
+    <label><input type="checkbox" class="S1"><div class="seg">S</div></label>
+    <label><input type="checkbox" class="S2"><div class="ter">T</div></label>
+    <label><input type="checkbox" class="S3"><div class="qua">Q</div></label>
+</div><div class="semana">
+    <label><input type="checkbox" class="S4"><div class="qui">Q</div></label>
+    <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
+    <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
+</div></div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
+<td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
+<script defer="">
+    document.querySelectorAll('.duracao')[0].value = 3
+    document.querySelectorAll('.hora')[0].value = "10:50"
+    for(let ind=0; ind < 7; ind++){
+        document.querySelectorAll('.S'+ind)[0].checked = parseInt('1111111'[ind])}</script>
+<tr><td class="titulo"><input type="text" value="fab 01"></td>
+<td><select class="duracao">
+    <option value="1">5:00</option>
+    <option value="2">10:00</option>
+    <option value="3">15:00</option>
+    <option value="4">20:00</option>
+    <option value="5">25:00</option>
+</select></td>
+<td><input type="time" class="hora"></td>
+<td><div class="DATA"><div class="semana">
+    <label><input type="checkbox" class="S0"><div class="dom">D</div></label>
+    <label><input type="checkbox" class="S1"><div class="seg">S</div></label>
+    <label><input type="checkbox" class="S2"><div class="ter">T</div></label>
+    <label><input type="checkbox" class="S3"><div class="qua">Q</div></label>
+</div><div class="semana">
+    <label><input type="checkbox" class="S4"><div class="qui">Q</div></label>
+    <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
+    <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
+</div></div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
+<td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
+<script defer="">
+    document.querySelectorAll('.duracao')[1].value = 5
+    document.querySelectorAll('.hora')[1].value = "00:32"
+    for(let ind=0; ind < 7; ind++){
+        document.querySelectorAll('.S'+ind)[1].checked = parseInt('0111000'[ind])}</script>
+<tr><td class="titulo"><input type="text" value="fab 02"></td>
+<td><select class="duracao">
+    <option value="1">5:00</option>
+    <option value="2">10:00</option>
+    <option value="3">15:00</option>
+    <option value="4">20:00</option>
+    <option value="5">25:00</option>
+</select></td>
+<td><input type="time" class="hora"></td>
+<td><div class="DATA"><div class="semana">
+    <label><input type="checkbox" class="S0"><div class="dom">D</div></label>
+    <label><input type="checkbox" class="S1"><div class="seg">S</div></label>
+    <label><input type="checkbox" class="S2"><div class="ter">T</div></label>
+    <label><input type="checkbox" class="S3"><div class="qua">Q</div></label>
+</div><div class="semana">
+    <label><input type="checkbox" class="S4"><div class="qui">Q</div></label>
+    <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
+    <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
+</div></div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
+<td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
+<script defer="">
+    document.querySelectorAll('.duracao')[2].value = 2
+    document.querySelectorAll('.hora')[2].value = "00:47"
+    for(let ind=0; ind < 7; ind++){
+        document.querySelectorAll('.S'+ind)[2].checked = parseInt('0101010'[ind])}</script>
+<tr><td class="titulo"><input type="text" value="fab 03"></td>
+<td><select class="duracao">
+    <option value="1">5:00</option>
+    <option value="2">10:00</option>
+    <option value="3">15:00</option>
+    <option value="4">20:00</option>
+    <option value="5">25:00</option>
+</select></td>
+<td><input type="time" class="hora"></td>
+<td><div class="DATA"><div class="semana">
+    <label><input type="checkbox" class="S0"><div class="dom">D</div></label>
+    <label><input type="checkbox" class="S1"><div class="seg">S</div></label>
+    <label><input type="checkbox" class="S2"><div class="ter">T</div></label>
+    <label><input type="checkbox" class="S3"><div class="qua">Q</div></label>
+</div><div class="semana">
+    <label><input type="checkbox" class="S4"><div class="qui">Q</div></label>
+    <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
+    <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
+</div></div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
+<td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
+<script defer="">
+    document.querySelectorAll('.duracao')[3].value = 2
+    document.querySelectorAll('.hora')[3].value = "04:00"
+    for(let ind=0; ind < 7; ind++){
+        document.querySelectorAll('.S'+ind)[3].checked = parseInt('0111001'[ind])}</script>
+<tr><td class="titulo"><input type="text" value="fab 04"></td>
+<td><select class="duracao">
+    <option value="1">5:00</option>
+    <option value="2">10:00</option>
+    <option value="3">15:00</option>
+    <option value="4">20:00</option>
+    <option value="5">25:00</option>
+</select></td>
+<td><input type="time" class="hora"></td>
+<td><div class="DATA"><div class="semana">
+    <label><input type="checkbox" class="S0"><div class="dom">D</div></label>
+    <label><input type="checkbox" class="S1"><div class="seg">S</div></label>
+    <label><input type="checkbox" class="S2"><div class="ter">T</div></label>
+    <label><input type="checkbox" class="S3"><div class="qua">Q</div></label>
+</div><div class="semana">
+    <label><input type="checkbox" class="S4"><div class="qui">Q</div></label>
+    <label><input type="checkbox" class="S5"><div class="sex">S</div></label>
+    <label><input type="checkbox" class="S6"><div class="sab">S</div></label>
+</div></div></td>
+<td><div class="umidade"><span class="umidad"></span>%</div></td>
+<td><label class="estadoBomba"><input type="checkbox" class="bomba"><div></div></label></td></tr>
+<script defer="">
+    document.querySelectorAll('.duracao')[4].value = 5
+    document.querySelectorAll('.hora')[4].value = "04:00"
+    for(let ind=0; ind < 7; ind++){
+        document.querySelectorAll('.S'+ind)[4].checked = parseInt('0101001'[ind])}</script>
+      
+          </tbody></table>
+          <div id="conteiner_relogio">
+              <div><div class="relogio"><div id="relogioD"><span> 26/03/2022 </span></div><div id="relogioH"><span> 11:02 </span></div><div id="relogioS"><span> Sabado </span></div></div></div>
+          </div>
+      </div>
+  
+  <script defer="">
+  
+    const mostraTime = () => {
+      const redond = arrendado => arrendado < 10 ? arrendado= "0" + arrendado : arrendado
+      let arraySemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sabado"];
+      
+      document.getElementById("relogioD").innerHTML = ("<span> "+redond(new Date().getDate())+"/"+redond(new Date().getMonth() + 1)+"/"+new Date().getFullYear()+" </span>");
+      document.getElementById("relogioH").innerHTML = ("<span> "+redond(new Date().getHours())+":"+redond(new Date().getMinutes())+" </span>");
+      document.getElementById("relogioS").innerHTML = ("<span> "+arraySemana[new Date().getDay()] +" </span>");
+    }
+    
+    mostraTime();//console.log(window.location.hostname);
+    setInterval(mostraTime,10000);
+  
+    var json = 0
+    InitWebSocket()
+    function InitWebSocket(){
+      websock = new WebSocket('ws://'+window.location.hostname+':81/');
+      websock.onmessage = jsonMaster => {
+          jsonEsp = JSON.parse(jsonMaster.data);
+          document.getElementById('farofa').style.display='none';
+          json = 0;
+  
+          document.querySelectorAll('.umidad')[jsonEsp.I].innerHTML = jsonEsp.U.substring(1);
+          document.querySelectorAll('.bomba')[jsonEsp.I].checked = parseInt(jsonEsp.B);
+      }
+    }
+  
+    setInterval(() => {
+      json++
+      console.log(json);
+      if(json > 35){
+          console.log("Reconectando..");
+          location.reload();
+          json = 0;
+      };
+    },500);
+    
+    //var isOpen = ws => ws.readyState === ws.OPEN 
+    function fanONOFF(){   
+      for(let index = 0; index < document.querySelectorAll('.duracao').length; index++){
+          websock.send('TITULO'+index+'=' + String(document.querySelectorAll('.titulo input[type="text"]')[index].value));
+          websock.send('DURACAO'+index+'=' + String(document.querySelectorAll('.duracao')[index].value));
+          websock.send('HORA'+index+'=' + String(document.querySelectorAll('.hora')[index].value));
+          let vetor = '';
+          for(let ino = 0; ino < 7; ino++){
+              if(document.querySelectorAll('.S'+ino)[index].checked) vetor += '1';
+              else vetor += '0';
+          }
+          websock.send('S'+index+'='+vetor);
+      }
+    }
+  </script>
+  
+  </body></html>

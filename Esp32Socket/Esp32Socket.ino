@@ -24,6 +24,8 @@ const char* password = "992920940";
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
+const char* hostname = "esp32temp";
+
 const byte csPin = 18;        // LoRa radio chip select
 const byte resetPin = 14;     // LoRa radio reset
 
@@ -37,7 +39,7 @@ long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long millisVerificaBomba      = millis();
-long lastSendTimeBomba[6]     ={millis(),millis(),millis(),millis(),millis(),millis()};
+long lastSendTimeBomba[6];
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -78,7 +80,6 @@ void handleRoot(){
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
- 
   if(type == WStype_TEXT){
     byte separator = payloadString.indexOf('=');
     String var = payloadString.substring(0,separator);
@@ -100,15 +101,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
 }
 
 void lerJsonIrrigacao(){
-  for (int indice = 0; indice < qantSlaves; indice++){
-    duracao[indice] = jsonDoc[indice]["duracao"];
-  }
+  for (int indice = 0; indice < qantSlaves; indice++)duracao[indice] = jsonDoc[indice]["duracao"];
 }
 
 void setupNTP(){
     ntpClient.begin(); //Inicializa o client NTP
     Serial.println("FAZENDO UPDATE DO HORARIO"); //Espera pelo primeiro update online
-    
     while(!ntpClient.update()){
         Serial.print(",");
         display.drawString(100,0, "NTP");
@@ -128,8 +126,9 @@ void wifiConnectionTask(void* param){
 void connectWiFi(){
     Serial.println("Conetando");
     WiFi.mode(WIFI_STA);
+    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
+    WiFi.setHostname("node1");
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
-    
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
         Serial.print(".");
         display.drawString(60,15, "Wifi");
@@ -155,19 +154,13 @@ bool writeFile(String values, String pathFile, bool appending){
   return true;
 }
 
-
 String readFile(String pathFile){
   Serial.println("- Lendo: " + pathFile);
   SPIFFS.begin(true);
   File rFile = SPIFFS.open(pathFile, "r");
   String values;
-  if (!rFile) {
-    Serial.println("- Failed to open file.");
-  } else {
-    while (rFile.available()) {
-      values += rFile.readString();
-    }
-  }
+  if (!rFile)Serial.println("- Failed to open file.");
+  else while(rFile.available()) values += rFile.readString();
   rFile.close();
   Serial.println(values);
   return values;
@@ -201,17 +194,7 @@ void escreveEJsonPUT(){
   Serial.println("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
   indice++;
   if(indice >= qantSlaves) indice = 0;
-} 
-/*
-<<<<<<< HEAD
-=======
-void montaUmJsonIndex(String umidade, bool bomba){
-    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
-    indice++;
 }
-*/
-
-
 
 void acionamentoBomba(){
     Date date = getDate();
@@ -322,11 +305,7 @@ void onReceive(int packetSize){
   /*Serial.println("Snr: " + String(LoRa.packetSnr()));*/
   Serial.println();
   
-  for (int ind = 0; ind < qantSlaves; ind++){
-   if((sender == ind) && (String(incoming[0]) == "H")){
-     umidade[ind] = incoming;
-   }
-  }
+  for (int ind=0;ind<qantSlaves;ind++) if((sender == ind)&&(String(incoming[0])=="H")) umidade[ind] = incoming;
   
   stringComunicacao = "SLAVE " + String(sender) + ": " + String(incoming);
   stringComunicacao2 = "RESPONDEU";
@@ -339,7 +318,6 @@ void setup(){
   LoraBegin();
   connectWiFi();
   setupNTP();
-  
 
   String input = readFile("/addr.json");
   deserializeJson(jsonDoc, input);
