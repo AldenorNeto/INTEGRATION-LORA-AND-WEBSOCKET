@@ -15,11 +15,11 @@
 #include "webpage.h"
 #include "corpo.h"
 
-/*const char* ssid     = "Grendene.Coletores";
-const char* password = "ISO8804650216900479";*/
+const char* ssid     = "Grendene.Coletores";
+const char* password = "ISO8804650216900479";
 
-const char* ssid     = "Caetano";
-const char* password = "992920940";
+/*const char* ssid     = "Caetano";
+const char* password = "992920940";*/
 
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
@@ -39,7 +39,11 @@ long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long millisVerificaBomba      = millis();
+<<<<<<< HEAD
 long lastSendTimeBomba[6];
+=======
+
+>>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -51,10 +55,9 @@ StaticJsonDocument<2560> jsonDoc;
 struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;};
 
 WiFiUDP udp; //Socket UDP que a lib utiliza para recuperar dados sobre o horário
-
 NTPClient ntpClient( //Objeto responsável por recuperar dados sobre horário
     udp,                    //socket udp
-    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",  /*//URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -68,15 +71,17 @@ byte qantSlaves = 5;
 bool bomba[10];
 String hora[10],s[10],umidade[10];
 int duracao[10], resetSlave[10];
+long lastSendTimeBomba[10];
 
-void handleRoot(){
-  String pagHTMLconcat = "";
-  for(byte slave = 0; slave < qantSlaves; slave++){
-    pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);
-  }
+String pagHTMLconcat = "";
+
+void ConcatWebPag(){
+  for(byte slave = 0; slave < qantSlaves; slave++){pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);}
   pagHTMLconcat = webpageCont(pagHTMLconcat);
-  server.send(200,"text/html",pagHTMLconcat);
+  Serial.println(pagHTMLconcat);
 }
+
+void handleRoot(){server.send(200,"text/html",pagHTMLconcat);}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
@@ -96,6 +101,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
       serializeJson(jsonDoc,gravaJson);
       writeFile(gravaJson,"/addr.json",false);
       acionamentoBomba();
+      postJson(gravaJson);
     }
   }
 }
@@ -130,10 +136,10 @@ void connectWiFi(){
     WiFi.setHostname("node1");
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
-        Serial.print(".");
-        display.drawString(60,15, "Wifi");
-        display.display();
-        delay(500);
+      Serial.print(".");
+      display.drawString(60,15, "Wifi");
+      display.display();
+      delay(500);
     }
     Serial.println("IP " + WiFi.localIP().toString());
 }
@@ -143,10 +149,8 @@ bool writeFile(String values, String pathFile, bool appending){
   if (appending) mode = "a";  //aberto para anexação (cria o arquivo se não existir)
   SPIFFS.begin(true);
   File wFile = SPIFFS.open(pathFile, mode);
-  if(!wFile){
-    Serial.println("- Falha ao escrever na pasta.");
-    return false;
-  }else{
+  if(!wFile)return false;
+  else{
     wFile.println(values);
     Serial.println("- Gravado!");
   }
@@ -154,6 +158,22 @@ bool writeFile(String values, String pathFile, bool appending){
   return true;
 }
 
+<<<<<<< HEAD
+=======
+void postJson(String input){
+  HTTPClient http;
+  http.begin("https://na1.ai.dm-us.informaticacloud.com/active-bpel/public/rt/gKlSdumC0iIjZgAY6sxzAX/p_CALL_SAVE_JSON"); //Especificando URL
+  http.addHeader("Content-Type", "application/json");
+  input.replace("\"", "\\\"");
+  input[input.length()-1] = ' ';
+  input[input.length()-2] = ' ';
+  input = "{\"json\":\"" + input + "\"}";
+  int httpCode = http.POST(input);
+  Serial.println(String(httpCode) + ": " + String(http.getString()));
+  http.end(); //Libera o recurso
+}
+
+>>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 String readFile(String pathFile){
   Serial.println("- Lendo: " + pathFile);
   SPIFFS.begin(true);
@@ -189,16 +209,26 @@ void webSocketInit(){
   xTaskCreatePinnedToCore(wifiConnectionTask,"wifiConnectionTask",10000, NULL,NULL,NULL,0);
 }
 
-void escreveEJsonPUT(){
+void escreveJsonSocket(){
   webSocket.broadcastTXT("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
   Serial.println("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
   indice++;
   if(indice >= qantSlaves) indice = 0;
+<<<<<<< HEAD
 }
+=======
+} 
+
+/*<<<<<<< HEAD
+=======
+void montaUmJsonIndex(String umidade, bool bomba){
+    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
+    indice++;
+}*/
+>>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 
 void acionamentoBomba(){
     Date date = getDate();
-    
     String horas = String(date.hours);
     String minuto = String(date.minutes);
     if(date.hours < 10)horas = "0" + horas;
@@ -213,7 +243,7 @@ void acionamentoBomba(){
         if(!bomba[in]){
           bomba[in] = 1;
           indice = in;
-          escreveEJsonPUT();
+          escreveJsonSocket();
           sendMessage("1RELE1",in);
         }
         lastSendTimeBomba[indice] = millis();
@@ -221,16 +251,16 @@ void acionamentoBomba(){
       else if((millis() > ((duracao[in]) * 300000) + lastSendTimeBomba[indice])&&(bomba[in])){
         if(bomba[in])resetSlave[in] = 1;
         bomba[in] = 0;
-        
       }
     }
     if(resetSlave[indice])resetSlave[indice]++;
+    Serial.print(resetSlave[indice]);
+    Serial.print("  resetSlave[indice]  ");
+    Serial.println(indice);
     if(resetSlave[indice] > 5){
       resetSlave[indice] = 0;
-      sendMessage("RESET1",1);
-    }else{
-      sendMessage("1RELE" + String(bomba[indice]),indice);
-    }
+      sendMessage("RESET" + String(indice),1);
+    }else sendMessage("1RELE" + String(bomba[indice]),indice);
 }
 
 long callBack(void (*func)(), long variavel, int tempo){ 
@@ -323,17 +353,18 @@ void setup(){
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
   webSocketInit();
+  ConcatWebPag();
 
   pinMode(16,OUTPUT);
   digitalWrite(16,1);
 }
 
 void loop() {
-  void (*_escreveEJsonPUT)()=&escreveEJsonPUT, (*_escreveDisplay)()=&escreveDisplay, (*_acionamentoBomba)()=&acionamentoBomba, (*_WaitDogSlave)()=&WaitDogSlave;    //, (*_sendMessage)("HQ",indexHumidade)=&sendMessage; //
+  void (*_escreveJsonSocket)()=&escreveJsonSocket, (*_escreveDisplay)()=&escreveDisplay, (*_acionamentoBomba)()=&acionamentoBomba, (*_WaitDogSlave)()=&WaitDogSlave;    //, (*_sendMessage)("HQ",indexHumidade)=&sendMessage; //
   
   webSocket.loop(); server.handleClient();
 
-  tempoDeReenvioJson    = callBack(*_escreveEJsonPUT, tempoDeReenvioJson, 512);
+  tempoDeReenvioJson    = callBack(*_escreveJsonSocket, tempoDeReenvioJson, 512);
   millisAtualizaDisplay = callBack(*_escreveDisplay, millisAtualizaDisplay, 755);///*horas, minuto*/
   millisVerificaBomba   = callBack(*_acionamentoBomba, millisVerificaBomba, 3070);
   tempoEmCadaSlave      = callBack(*_WaitDogSlave, tempoEmCadaSlave, 10000);
