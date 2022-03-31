@@ -51,7 +51,7 @@ struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;
 WiFiUDP udp; //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 NTPClient ntpClient( //Objeto responsável por recuperar dados sobre horário
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",  /*//URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",  */ //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -72,10 +72,13 @@ String pagHTMLconcat = "";
 void ConcatWebPag(){
   for(byte slave = 0; slave < qantSlaves; slave++){pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);}
   pagHTMLconcat = webpageCont(pagHTMLconcat);
-  Serial.println(pagHTMLconcat);
 }
 
-void handleRoot(){server.send(200,"text/html",pagHTMLconcat);}
+void handleRoot(){
+  Serial.println("################################$%%%%%%JAVASCRIPT");
+  ConcatWebPag();
+  server.send(200,"text/html",pagHTMLconcat);
+}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
@@ -172,13 +175,8 @@ String readFile(String pathFile){
   SPIFFS.begin(true);
   File rFile = SPIFFS.open(pathFile, "r");
   String values;
-  if (!rFile) {
-    Serial.println("- Failed to open file.");
-  } else {
-    while (rFile.available()) {
-      values += rFile.readString();
-    }
-  }
+  if (!rFile)Serial.println("- Failed to open file.");
+  else{while(rFile.available()){values += rFile.readString();}}
   rFile.close();
   Serial.println(values);
   return values;
@@ -346,13 +344,11 @@ void setup(){
   LoraBegin();
   connectWiFi();
   setupNTP();
-  
 
   String input = readFile("/addr.json");
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
   webSocketInit();
-  ConcatWebPag();
 
   pinMode(16,OUTPUT);
   digitalWrite(16,1);

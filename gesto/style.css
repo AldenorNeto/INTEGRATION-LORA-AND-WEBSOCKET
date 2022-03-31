@@ -1,0 +1,14 @@
+.cardPoke{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid;
+    margin: 5px;
+    width: 90%;
+    padding: 0px 2px;
+    background-color: beige;
+}
+section{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
