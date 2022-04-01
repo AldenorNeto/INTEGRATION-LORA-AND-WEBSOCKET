@@ -8,7 +8,23 @@
     padding: 0px 2px;
     background-color: beige;
 }
+
 section{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
+
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: yellow;
+    -webkit-text-stroke: 2px blue;
+    font-size: calc(23px + 2.5vw);
+    margin: 5px;
+}
+
+span{margin: 0px 0px 0px 15px;}
+
+body{background-color: #f3faff;}

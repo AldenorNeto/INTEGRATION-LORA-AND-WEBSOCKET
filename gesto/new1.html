@@ -4,74 +4,18 @@
 		<meta charset="UTF-8">
 		<title>Elton</title>
 		<link rel="stylesheet" href="style.css">
+		<script src="script.js" defer></script>
 	</head>
 	<body>
 		<!--//consumir da lista pokeapi.co/
 		//Mostrar quantidade de dados carregados sera de 20 pokemons em ordem alfabetica;
 		//mostrar em uma pagina com oçoes de busca e carregar mais dados;
 		//os dadso a ser visualizados sera o Nome e tipo e img.-->
-		<main></b>
+		<main>
+			<h1>Pokédex Do Helton<span>1 - 20</span></h1>
 			<section class="pokemon"></section> <br>
-			<button onclick="verMenos()">ver menos</button>
-			<button onclick="verMais()">ver mais ></button>
+			<button onclick="verMenos()">Voltar</button>
+			<button onclick="verMais()">Proximo</button>
 		</main>
-	<script>
-
-const baseUrl = 'https://pokeapi.co/api/v2/pokemon/',	// API endpoint 
-      container = document.querySelector('.pokemon');	// Get Element pokemon 
-
-var pokemon, armazena = "",Armazena, ind = 0, uva = 0, indo = 1, vinte = 20; // Responsavel por guardar os dados recebidos da API
-
-// Função responsavel por fazer requisições para a API e inserir as respostas na variavel pokemon
-function requestPokeInfo(url, name){
-  	fetch(url + name)
-    .then(response => response.json())
-    .then(data => {
-    	pokemon = data;
-    })
-    .catch(err => console.log(err));
-}
-
-// Função responsavel por montar o HTML exibido na pagina
-function createCard () {
-  card = `
-    <div class="cardPoke">
-      <div class="pokemon-picture">
-        <img src="${pokemon.sprites.front_default}" alt="Sprite of ${pokemon.name}">
-      </div>
-      <div class="pokemon-info">
-          <p><b>Name:</b> ${pokemon.name}</p>
-          <p><b>Type:</b> ${pokemon.types.map(item => item.type.name).toString()}</p>
-          <p><b>Number:</b> ${pokemon.id}</p>
-      </div>
-    </div>`;
-	
-	return card;
-}
-		// Função que faz a chamada das principais funções e inicia o app
-	let startApp = pokeName => {
-		requestPokeInfo(baseUrl, pokeName);
-		Armazena = createCard();
-		armazena += Armazena;
-		container.innerHTML = armazena;
-	}
-
-	setInterval(() => {
-		if(ind <= vinte){
-			ind++;
-			if(uva == 0){
-				startApp(1);
-				uva = 1;
-			}
-			startApp(pokemon.id+1);
-		}
-	},10)
-
-	function verMais(){
-		vinte += 20;
-		armazena = "";
-	}
-
-</script>
-</body>
+	</body>
 </html>
