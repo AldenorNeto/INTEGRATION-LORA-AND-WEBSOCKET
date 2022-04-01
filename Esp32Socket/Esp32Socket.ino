@@ -39,11 +39,6 @@ long tempoEmCadaSlave         = millis();
 long intervaloEntreMensagens  = millis();
 long tempoDeReenvioJson       = millis();
 long millisVerificaBomba      = millis();
-<<<<<<< HEAD
-long lastSendTimeBomba[6];
-=======
-
->>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 
 SSD1306 display(0x3c, 4, 15, 16); //Cria e ajusta o Objeto display
 
@@ -57,7 +52,7 @@ struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;
 WiFiUDP udp; //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 NTPClient ntpClient( //Objeto responsável por recuperar dados sobre horário
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org",  /*//URL do server NTP
+    "10.2.0.1",/*"2.br.pool.ntp.org",  */ //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
@@ -78,10 +73,13 @@ String pagHTMLconcat = "";
 void ConcatWebPag(){
   for(byte slave = 0; slave < qantSlaves; slave++){pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);}
   pagHTMLconcat = webpageCont(pagHTMLconcat);
-  Serial.println(pagHTMLconcat);
 }
 
-void handleRoot(){server.send(200,"text/html",pagHTMLconcat);}
+void handleRoot(){
+  Serial.println("################################$%%%%%%JAVASCRIPT");
+  ConcatWebPag();
+  server.send(200,"text/html",pagHTMLconcat);
+}
 
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welength){  //evento de processo de função: novos dados recebidos do cliente
   String payloadString = (const char *)payload;
@@ -158,8 +156,6 @@ bool writeFile(String values, String pathFile, bool appending){
   return true;
 }
 
-<<<<<<< HEAD
-=======
 void postJson(String input){
   HTTPClient http;
   http.begin("https://na1.ai.dm-us.informaticacloud.com/active-bpel/public/rt/gKlSdumC0iIjZgAY6sxzAX/p_CALL_SAVE_JSON"); //Especificando URL
@@ -173,7 +169,6 @@ void postJson(String input){
   http.end(); //Libera o recurso
 }
 
->>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 String readFile(String pathFile){
   Serial.println("- Lendo: " + pathFile);
   SPIFFS.begin(true);
@@ -214,18 +209,7 @@ void escreveJsonSocket(){
   Serial.println("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
   indice++;
   if(indice >= qantSlaves) indice = 0;
-<<<<<<< HEAD
 }
-=======
-} 
-
-/*<<<<<<< HEAD
-=======
-void montaUmJsonIndex(String umidade, bool bomba){
-    JSONtxt += "\"U\":\""+umidade+"\",\"B\":"+bomba+"}";
-    indice++;
-}*/
->>>>>>> 1135ec215371cb43488a2a98caab9271025b90c4
 
 void acionamentoBomba(){
     Date date = getDate();
@@ -353,7 +337,6 @@ void setup(){
   deserializeJson(jsonDoc, input);
   lerJsonIrrigacao();
   webSocketInit();
-  ConcatWebPag();
 
   pinMode(16,OUTPUT);
   digitalWrite(16,1);
