@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="stylesheet" href="css.css" defer>
+</head>
+<body>
+    <div >
+    <div id="graficoLinhas">
+        <div id="AGelada" class="linhas"><canvas class="AGelada"></canvas></div>
+        <div id="AIndustrial" class="linhas"><canvas class="AIndustrial"></canvas></div>
+        <div id="CBaixa" class="linhas"><canvas class="CBaixa"></canvas></div>
+        <div id="CAlta" class="linhas"><canvas class="CAlta"></canvas></div>
+    </div>
+    <div style="display: flex;" >
+        <div id="containerAcelera"><div id="bombasH1">ROTAÇÃO BOMBAS HIDRAULICAS</div>
+            <div id="acelera"><canvas class="acelera"></canvas></div>
+            <div id="bombas">BOMBA 01</div>
+            <div id="acelera"><canvas class="acelera2"></canvas></div>
+            <div id="bombas">BOMBA 02</div>
+        </div>
+        <div id="coluna2" style="width: 100%;">
+            <div id="barras" style="width: 100%;"><canvas class="barras"></canvas></div>
+            <div class="linhasInjec"><canvas id="injecao"></canvas></div>
+        </div>
+        <div>
+            <div id="rosquinhas">CONSUMO DE FLUIDOS POR SETOR<div style="display: flex; justify-content: space-evenly;width: 100%;">
+                <div class="doughDiv"><canvas class="dough1"></canvas></div>
+                <div class="doughDiv"><canvas class="dough2"></canvas></div>
+                <div class="doughDiv"><canvas class="dough3"></canvas></div>
+            </div></div>
+            <div id="consumoParent">COSUMO ELÉTRICO<div style="display: flex; flex-direction: row; margin: 10px 0px; width: 100%; justify-content: space-around;">
+                <div class="consu">INJEC<canvas class="consumo"></canvas></div>
+                <div class="consu">2D<canvas class="consumo2"></canvas></div>
+                <div class="consu">MONTAG<canvas class="consumo3"></canvas></div>
+                <div class="consu">MANUT<canvas class="consumo4"></canvas></div>
+            </div></div>
+        </div>
+    </div>
+    </div>
+  
+
+    
+    <script src="js/injecao.js"></script>
+    <script src="js/velocimetro.js"></script>
+    <script src="js/doughnut.js"></script>
+    <script src="js/barrasConsumo.js"></script>
+    <script src="js/consumo.js"></script>
+    <script src="js/linhasBU.js"></script>
+
+
+</body>
+</html>
