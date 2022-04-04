@@ -1,4 +1,15 @@
-const random2 = () => parseInt(Math.random()*200)
+let variante = 0
+setInterval(() => {
+  Math.random() < 0.5 ? variante = 1 : variante = -1
+  acelera1.data.datasets[0].needleValue += variante
+  acelera1.update();
+}, 1100);
+
+setInterval(() => {
+  Math.random() < 0.5 ? variante = 1 : variante = -1
+  acelera2.data.datasets[0].needleValue += variante
+  acelera2.update();
+}, 900);
 
 const velocimetro = (multi,angulo) => {
   return {
@@ -32,7 +43,7 @@ const velocimetro = (multi,angulo) => {
         yAlign: "bottom",
         displayColors: false,
         callbacks: {
-          label: function (tooltipItem, data, value) {
+          label: function(tooltipItem) {
             return tooltipItem.label;
           },
         },
@@ -41,17 +52,15 @@ const velocimetro = (multi,angulo) => {
   },
   plugins: [{
     id: "gaugeNeedle",
-    afterDatasetDraw(chart, args, options) {
+    afterDatasetDraw(chart) {
       const {
         ctx,
-        config,
         data,
-        chartArea: { top, right, bottom, left, width, height },
+        chartArea: {width},
       } = chart;
       ctx.save();
       const needleValue = data.datasets[0].needleValue;
-      const dataTotal = data.datasets[0].data.reduce((a, b) => a + b, 0);
-  
+      
       if (needleValue <= 200) {
         var angle = Math.PI + (1 / 200) * needleValue * Math.PI;
       } else if (needleValue <= 10000) {
@@ -81,7 +90,7 @@ const velocimetro = (multi,angulo) => {
       ctx.lineTo(0, 15);
       ctx.fillStyle = "#fff";
       ctx.fill();
-
+  
       ctx.translate(-cx, -cy);
       ctx.beginPath();
       ctx.arc(cx, cy, 15, 0, 10);
@@ -100,5 +109,5 @@ const velocimetro = (multi,angulo) => {
   }
 }
 
-new Chart(document.getElementsByClassName("acelera"), velocimetro(0.3,random2()))
-new Chart(document.getElementsByClassName("acelera2"), velocimetro(0.25,random2()))
+let acelera1 = new Chart(document.getElementsByClassName("acelera1"), velocimetro(0.9,55))
+let acelera2 = new Chart(document.getElementsByClassName("acelera2"), velocimetro(0.3,120))

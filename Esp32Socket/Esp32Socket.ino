@@ -24,8 +24,6 @@ const char* password = "992920940";*/
 /*const char* ssid     = "Elisabeth_NossaNet";
 const char* password = "34sup2bc9";*/
 
-const char* hostname = "esp32temp";
-
 const byte csPin = 18;        // LoRa radio chip select
 const byte resetPin = 14;     // LoRa radio reset
 
@@ -68,16 +66,12 @@ String hora[10],s[10],umidade[10];
 int duracao[10], resetSlave[10];
 long lastSendTimeBomba[10];
 
-String pagHTMLconcat = "";
-
-void ConcatWebPag(){
-  for(byte slave = 0; slave < qantSlaves; slave++){pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);}
-  pagHTMLconcat = webpageCont(pagHTMLconcat);
-}
-
 void handleRoot(){
-  Serial.println("################################$%%%%%%JAVASCRIPT");
-  ConcatWebPag();
+  String pagHTMLconcat = "";
+  for(byte slave = 0; slave < qantSlaves; slave++){
+    pagHTMLconcat = corpo(pagHTMLconcat,jsonDoc[slave]["txt"],jsonDoc[slave]["duracao"],jsonDoc[slave]["hora"],jsonDoc[slave]["s"],slave);
+  }
+  pagHTMLconcat = webpageCont(pagHTMLconcat);
   server.send(200,"text/html",pagHTMLconcat);
 }
 
@@ -105,7 +99,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t welengt
 }
 
 void lerJsonIrrigacao(){
-  for (int indice = 0; indice < qantSlaves; indice++)duracao[indice] = jsonDoc[indice]["duracao"];
+for (int indice = 0; indice < qantSlaves; indice++)duracao[indice] = jsonDoc[indice]["duracao"];
 }
 
 void setupNTP(){
@@ -130,8 +124,6 @@ void wifiConnectionTask(void* param){
 void connectWiFi(){
     Serial.println("Conetando");
     WiFi.mode(WIFI_STA);
-    WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
-    WiFi.setHostname("node1");
     WiFi.begin(ssid, password); //Troque pelo nome e senha da sua rede WiFi
     while(WiFi.status() != WL_CONNECTED){ //Espera enquanto não estiver conectado
       Serial.print(".");
@@ -209,7 +201,7 @@ void escreveJsonSocket(){
   Serial.println("{\"I\":"+String(indice)+",\"U\":\""+umidade[indice]+"\",\"B\":"+bomba[indice]+"}");
   indice++;
   if(indice >= qantSlaves) indice = 0;
-}
+} 
 
 void acionamentoBomba(){
     Date date = getDate();
@@ -359,3 +351,4 @@ void loop() {
   }
   onReceive(LoRa.parsePacket());
 }
+

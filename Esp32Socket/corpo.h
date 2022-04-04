@@ -28,3 +28,4 @@ return appending + String(R"=====(
         document.querySelectorAll('.S'+ind)[)=====")+String(indexClass)+String(R"=====(].checked = parseInt(')=====")+s+R"=====('[ind])}
     </script>)====="; 
 }
+
