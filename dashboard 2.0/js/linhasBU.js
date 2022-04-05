@@ -1,5 +1,5 @@
 
-const randomConsu = () => parseInt(Math.random()*100)
+const randomConsu = () => parseInt(Math.random()*20)+40
 
 const randomConsuFor = () =>{
     let array = []
@@ -39,26 +39,32 @@ const linha = (nome,cor) =>{
             }
         },
         scales:{
-            x:{
+            x:{ 
+                
                 ticks:{
                     color:'white'
                 },
-                grid: {
-                  display: false
+                grid:{
+                    display: false
                 }
             },
             y:{
+                beginAtZero: true,
+                bounds:200,
+                    
                 ticks:{
-                    color:'white'
+                    color:'white',
+                    sampleSize:200
+
                 },
-                grid: {
-                 color:'#ffffff40'
+                grid:{
+                    color:'#ffffff40'
                 }
             }
             
         }
-    }}
-}
+    }
+}}
 let linhaBU = [,,,]
 linhaBU[0] = new Chart(document.getElementsByClassName("AGelada"), linha('Água Gelada','cyan'))
 linhaBU[1] = new Chart(document.getElementsByClassName("AIndustrial"), linha('Água Industrial','blue'))

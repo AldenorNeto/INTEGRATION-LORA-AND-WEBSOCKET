@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard F7</title>
     <script src="js/SRCcharts.min.js"></script>
+    <script src="js/jquery.js"></script>
+
     <link rel="stylesheet" href="css.css" defer>
 </head>
 <body>
     <div>
     <div id="graficoLinhas">
+        <div class="mediaSemana">
+        <div>Temperatura<div>75</div></div>
+        <div>Média Semanal<div>75</div></div>
+        </div>
         <div class="linhas"><canvas class="AGelada"></canvas></div>
         <div class="linhas"><canvas class="AIndustrial"></canvas></div>
         <div class="linhas"><canvas class="CBaixa"></canvas></div>
@@ -26,8 +32,6 @@
         <div id="coluna2" style="width: 60%; min-width: 30%;">
             <div id="barras" style="width: 100%;"><canvas class="barras"></canvas></div>
             <div class="linhasInjec"><canvas id="injecao"></canvas></div>
-            <div style="display: flex; background-color: aqua;"><div>75KVa</div><div>66KVa</div><div>64KVa</div><div>70KVa</div></div>
-            
         </div>
         <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-around; max-height: 3wv;">
             <div id="rosquinhas">CONSUMO DE FLUIDOS POR SETOR
@@ -38,21 +42,21 @@
                 </div>
             </div>
             
-                <div id="consumoParent">COSUMO ELÉTRICO 01
+                <div id="consumoParent">COSUMO ELÉTRICO
                     <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-around; height: 100%;">
-                        <div class="consu">INJEÇÃO   <canvas class="consumo1"></canvas></div>
-                        <div class="consu">2D        <canvas class="consumo2"></canvas></div>
-                        <div class="consu">MONTAGEM  <canvas class="consumo3"></canvas></div>
-                        <div class="consu">MANUTENÇÃO<canvas class="consumo4"></canvas></div>
+                        <div class="consu">INJEÇÃO   <canvas class="consumo1"></canvas><div class="consuNumerico"><span id="numerico1"></span> KVa</div></div>
+                        <div class="consu">2D        <canvas class="consumo2"></canvas><div class="consuNumerico"><span id="numerico2"></span> KVa</div></div>
+                        <div class="consu">MONTAGEM  <canvas class="consumo3"></canvas><div class="consuNumerico"><span id="numerico3"></span> KVa</div></div>
+                        <div class="consu">MANUTENÇÃO<canvas class="consumo4"></canvas><div class="consuNumerico"><span id="numerico4"></span> KVa</div></div>
                     </div>
                 </div>
-                <div id="consumoParent">COSUMO ELÉTRICO 02
+                <!--div id="consumoParent">COSUMO ELÉTRICO 02
                     <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-around; height: 100%;">
-                        <div class="consu">INJEC   <canvas class="consumo01"></canvas></div>
-                        <div class="consu">2D      <canvas class="consumo02"></canvas></div>
-                        <div class="consu">MONTAGEM<canvas class="consumo03"></canvas></div>
-                        <div class="consu">MANUT   <canvas class="consumo04"></canvas></div>
-                    </div>
+                        <div class="consuNumerico"><canvas class="consumo01"></canvas></div>
+                        <div class="consuNumerico"><canvas class="consumo02"></canvas></div>
+                        <div class="consuNumerico"><canvas class="consumo03"></canvas></div>
+                        <div class="consuNumerico"><canvas class="consumo04"></canvas></div>
+                    </div-->
                 </div>
         </div>
     </div>

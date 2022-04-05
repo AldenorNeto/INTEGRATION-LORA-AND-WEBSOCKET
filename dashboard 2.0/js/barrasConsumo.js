@@ -49,7 +49,7 @@ var barras = new Chart(document.getElementsByClassName("barras"), {
             title: {
               display: true,
               color:'white',
-              text:'CONSUMO SEMANAL DE ÁGUA TRATADA (L)'
+              text:'CONSUMO SEMANAL ÁGUA DE REÚSO (L)'
             },
             legend: {
               display: false

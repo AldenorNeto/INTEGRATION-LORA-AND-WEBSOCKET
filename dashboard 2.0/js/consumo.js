@@ -1,9 +1,13 @@
 const random = () => parseInt(Math.random()*30)+55
+
+
 let varia
 setInterval(() => {
-  ind > 6 ? ind = 0: ind++
+  ind > 4 ? ind = 0: ind++
   Math.random() < 0.5 ? varia = 1 : varia = -1
   let rando = consumo[ind].data.datasets[0].data[0] + varia
+  rando > 100 ? rando = 100 : 0
+  $("#numerico"+(ind+1)).text((consumo[ind].data.datasets[0].data[0]*aleatorio[ind]).toFixed(1))
   consumo[ind].data.datasets[0].data = [rando, -(rando)+100]
   consumo[ind].update();
 },250);
@@ -17,6 +21,7 @@ const cosumindo = (cor,XXX) => {
             backgroundColor: [cor,"#0000000c"],
             borderColor: "#00000000",
             cutout: "70%",
+            borderRadius: 10
           }]
       },
         options: {
@@ -50,13 +55,18 @@ const cosumindo = (cor,XXX) => {
         }]
       }
 }
-let consumo = [,,,,,,,],ind = 0
-consumo[4] = new Chart(document.getElementsByClassName("consumo1"),cosumindo("darkorange",random()));
-consumo[3] = new Chart(document.getElementsByClassName("consumo2"),cosumindo("#b23f19",random()));
-consumo[5] = new Chart(document.getElementsByClassName("consumo3"),cosumindo("#ce2a24",random()));
-consumo[6] = new Chart(document.getElementsByClassName("consumo4"),cosumindo("#da3c4b",random()));
-consumo[0] = new Chart(document.getElementsByClassName("consumo01"),cosumindo("darkorange",random()));
-consumo[7] = new Chart(document.getElementsByClassName("consumo02"),cosumindo("#b23f19",random()));
-consumo[1] = new Chart(document.getElementsByClassName("consumo03"),cosumindo("#ce2a24",random()));
-consumo[2] = new Chart(document.getElementsByClassName("consumo04"),cosumindo("#da3c4b",random()));
 
+let consumo = [,,,,,,,],ind = 0, cores = ["darkorange","#b23f19","#ce2a24","#da3c4b"], aleatorio = [1.458,2.792,1.989,1.112]
+consumo[2] = new Chart(document.getElementsByClassName("consumo1"),cosumindo(cores[0],random()));
+consumo[1] = new Chart(document.getElementsByClassName("consumo2"),cosumindo(cores[1],random()));
+consumo[3] = new Chart(document.getElementsByClassName("consumo3"),cosumindo(cores[2],random()));
+consumo[0] = new Chart(document.getElementsByClassName("consumo4"),cosumindo(cores[3],random()));
+
+$("#numerico1").text((consumo[0].data.datasets[0].data[0]*aleatorio[0]).toFixed(1))
+$("#numerico1").parent().css('color',cores[0])
+$("#numerico2").text((consumo[1].data.datasets[0].data[0]*aleatorio[1]).toFixed(1))
+$("#numerico2").parent().css('color',cores[1])
+$("#numerico3").text((consumo[2].data.datasets[0].data[0]*aleatorio[2]).toFixed(1))
+$("#numerico3").parent().css('color',cores[2])
+$("#numerico4").text((consumo[3].data.datasets[0].data[0]*aleatorio[3]).toFixed(1))
+$("#numerico4").parent().css('color',cores[3])

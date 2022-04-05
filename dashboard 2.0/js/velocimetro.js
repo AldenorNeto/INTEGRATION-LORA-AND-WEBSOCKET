@@ -15,7 +15,7 @@ const velocimetro = (multi,angulo) => {
   return {
     type: "doughnut",
     data:{
-      labels: ["Safe", "Risky", "High Risk"],
+      labels: ["OK", "RISCO", "ALTO RISCO"],
       datasets: [{
         label: "Gauge",
         data: [120, 50, 30],
