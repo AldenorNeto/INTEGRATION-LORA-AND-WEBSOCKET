@@ -1,8 +1,10 @@
-const random3 = () => parseInt(Math.random()*10)+45
-var laco = [random3(),random3(),random3(),random3(),random3(),random3(),random3()]
+const random3 = () => parseInt(Math.random()*10)+50
+var laco = [5,random3(),random3(),random3(),random3(),random3(),random3()-10]
+
+laco[new Date().getDay()] = parseInt(Math.random()*4)+17
 
 setInterval(() => {
-    barras.data.datasets[0].data = [random3(),random3(),random3(),random3(),random3(),random3(),random3()]
+    barras.data.datasets[0].data[new Date().getDay()] = parseInt(Math.random()*4)+17
     barras.update();
 }, 1500);
 
@@ -18,7 +20,7 @@ var barras = new Chart(document.getElementsByClassName("barras"), {
         },
         {
             label:'Previsão',
-            data: [45,55,50,60,50,55,45],
+            data: [4,55,53,57,53,55,45],
             backgroundColor:['#ffbb00'],
             categoryPercentage:0.6,
         }]

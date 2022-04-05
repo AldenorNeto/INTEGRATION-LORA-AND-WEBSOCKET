@@ -3,9 +3,17 @@ const randomConsu = () => parseInt(Math.random()*100)
 
 const randomConsuFor = () =>{
     let array = []
-    for (let i = 0; i < 18; i++)array.push(randomConsu())
+    for(let i = 0; i<18; i++)array.push(randomConsu())
     return array
 }
+
+setInterval(() => {
+    for(let index = 0; index < 4; index++){
+      linhaBU[index].data.datasets[0].data.shift() 
+      linhaBU[index].data.datasets[0].data.push(randomConsu()) 
+      linhaBU[index].update('none');
+    }
+},4810);
 
 const linha = (nome,cor) =>{
     return {type: 'line',
@@ -51,8 +59,8 @@ const linha = (nome,cor) =>{
         }
     }}
 }
-
-new Chart(document.getElementsByClassName("AGelada"), linha('Água Gelada','cyan'))
-new Chart(document.getElementsByClassName("AIndustrial"), linha('Água Industrial','blue'))
-new Chart(document.getElementsByClassName("CBaixa"), linha('Compd. Alta P.','#00a600'))
-new Chart(document.getElementsByClassName("CAlta"), linha('Compd. Baixa P.','#e1ff00'))
+let linhaBU = [,,,]
+linhaBU[0] = new Chart(document.getElementsByClassName("AGelada"), linha('Água Gelada','cyan'))
+linhaBU[1] = new Chart(document.getElementsByClassName("AIndustrial"), linha('Água Industrial','blue'))
+linhaBU[2] = new Chart(document.getElementsByClassName("CBaixa"), linha('Compd. Alta P.','#00a600'))
+linhaBU[3] = new Chart(document.getElementsByClassName("CAlta"), linha('Compd. Baixa P.','#e1ff00'))
