@@ -49,10 +49,18 @@ var barras = new Chart(document.getElementsByClassName("barras"), {
             title: {
               display: true,
               color:'white',
+              font:'sans-serif',
               text:'CONSUMO SEMANAL ÁGUA DE REÚSO (L)'
             },
             legend: {
-              display: false
+                align:'end',
+                labels: {
+                    usePointStyle: true,
+                    color:'white',
+                    font:{
+                        size: 9,
+                    }
+                }
             }
         }
     }

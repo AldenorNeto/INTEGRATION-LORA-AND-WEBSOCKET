@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,49 +7,53 @@
     <title>Dashboard F7</title>
     <script src="js/SRCcharts.min.js"></script>
     <script src="js/jquery.js"></script>
-
     <link rel="stylesheet" href="css.css" defer>
 </head>
 <body>
     <div>
-    <div id="graficoLinhas">
-        <div class="linhaBUPai"><div class="linhas"><canvas class="AGelada"></canvas></div>
-        <div class="mediaSemana"><div>Temperatura:<div style="font-size: 450%; width: max-content;">75º</div></div>
-        <div>Média Semanal:<div>75.6 ºc</div></div></div></div>
-    
-        <div class="linhaBUPai"><div class="linhas"><canvas class="AIndustrial"></canvas></div>
-        <div class="mediaSemana"><div>Temperatura:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 80%;"> ºc</span></div></div>
-        <div>Média Semanal:<div>75.6 ºc</div></div></div></div>
-
-        <div class="linhaBUPai"><div class="linhas"><canvas class="CBaixa"></canvas></div>
-        <div class="mediaSemana"><div>Pressão:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 50%;"> Bar</span></div></div>
-        <div>Média Semanal:<div>75.6 Bar</div></div></div></div>
-
-        <div class="linhaBUPai"><div class="linhas"><canvas class="CAlta"></canvas></div>
-        <div class="mediaSemana"><div>Pressão:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 40%;"> Bar</span></div></div>
-        <div>Média Semanal:<div style="font-size: 200%;">75.6 Bar</div></div></div></div>
-    </div>
-    <div style="display: flex;">
-        <div id="containerAcelera"><div id="bombasH1">ROTAÇÃO BOMBAS HIDRAULICAS</div>
-            <div id="acelera"><canvas class="acelera1"></canvas></div>
-            <div id="bombas">BOMBA 01</div>
-            <div id="acelera"><canvas class="acelera2"></canvas></div>
-            <div id="bombas">BOMBA 02</div>
+        <div id="graficoLinhas">
+            <div class="linhaBUPai"><div class="linhas"><canvas class="AGelada"></canvas></div>
+            <div class="mediaSemana"><div>Temperatura:<div class="valorlinhaBU"><section></section><div>ºc</div></div></div>
+            <div>Média Semanal:<div class="valorlinhaBUmedia">4.1 ºc</div></div></div></div>
+            <div class="spaceBetween"></div>
+            <div class="linhaBUPai"><div class="linhas"><canvas class="AIndustrial"></canvas></div>
+            <div class="mediaSemana"><div>Temperatura:<div class="valorlinhaBU"><section></section><div>ºc</div></div></div>
+            <div>Média Semanal:<div class="valorlinhaBUmedia">25.2 ºc</div></div></div></div>
+            <div class="spaceBetween"></div>
+            <div class="linhaBUPai"><div class="linhas"><canvas class="CBaixa"></canvas></div>
+            <div class="mediaSemana"><div>Pressão:<div class="valorlinhaBU"><section></section><div>bar</div></div></div>
+            <div>Média Semanal:<div class="valorlinhaBUmedia">13.8 bar</div></div></div></div>
+            <div class="spaceBetween"></div>
+            <div class="linhaBUPai"><div class="linhas"><canvas class="CAlta"></canvas></div>
+            <div class="mediaSemana"><div>Pressão:<div class="valorlinhaBU"><section></section><div>bar</div></div></div>
+            <div>Média Semanal:<div class="valorlinhaBUmedia">7.9 bar</div></div></div></div>
         </div>
-        <div id="coluna2" style="width: 60%; min-width: 30%;">
-            <div id="barras" style="width: 100%;"><canvas class="barras"></canvas></div>
-            <div class="linhasInjec"><canvas id="injecao"></canvas></div>
-        </div>
-        <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-around; max-height: 3wv;">
-            <div id="rosquinhas">CONSUMO DE FLUIDOS POR SETOR
-                <div style="display: flex; justify-content: space-evenly;width: 100%;">
-                    <div class="doughDiv"><canvas class="dough1"></canvas></div>
-                    <div class="doughDiv"><canvas class="dough2"></canvas></div>
-                    <div class="doughDiv"><canvas class="dough3"></canvas></div>
-                </div>
+        <div style="display: flex;">
+            <div id="containerAcelera"><div id="bombasH1">ROTAÇÃO BOMBAS HIDRAULICAS</div>
+                <div id="acelera"><canvas class="acelera1"></canvas></div>
+                <div id="bombas">BOMBA 01</div>
+                <div id="acelera"><canvas class="acelera2"></canvas></div>
+                <div id="bombas">BOMBA 02</div>
             </div>
-            
-                <div id="consumoParent">COSUMO ELÉTRICO
+            <div id="coluna2">
+                <div id="barras"><canvas class="barras"></canvas></div>
+                <div class="linhasInjec"><canvas id="injecao"></canvas></div>
+            </div>
+            <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-around; max-height: 3wv;">
+                <div id="rosquinhas"><div>CONSUMO DE FLUIDOS POR SETOR</div>
+                    <div style="display: flex; width: 98%;">
+                        <section style="display: flex; align-items: center; font-size: 10px;"><div class="legendaDoug"></div><span></span></section>
+                        <section style="display: flex; align-items: center; font-size: 10px;"><div class="legendaDoug"></div><span></span></section>
+                        <section style="display: flex; align-items: center; font-size: 10px;"><div class="legendaDoug"></div><span></span></section>
+                        <section style="display: flex; align-items: center; font-size: 10px;"><div class="legendaDoug"></div><span></span></section>
+                    </div>
+                    <div style="display: flex; justify-content: space-evenly; width: 100%;">
+                        <div class="doughDiv"><canvas class="dough1"></canvas></div>
+                        <div class="doughDiv"><canvas class="dough2"></canvas></div>
+                        <div class="doughDiv"><canvas class="dough3"></canvas></div>
+                    </div>
+                </div>
+                <div id="consumoParent">COSUMO ELÉTRICO POR SETOR
                     <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-around; height: 100%;">
                         <div class="consu">INJEÇÃO   <canvas class="consumo1"></canvas><div class="consuNumerico"><span id="numerico1"></span> KVa</div></div>
                         <div class="consu">2D        <canvas class="consumo2"></canvas><div class="consuNumerico"><span id="numerico2"></span> KVa</div></div>
@@ -57,14 +61,7 @@
                         <div class="consu">MANUTENÇÃO<canvas class="consumo4"></canvas><div class="consuNumerico"><span id="numerico4"></span> KVa</div></div>
                     </div>
                 </div>
-                <!--div id="consumoParent">COSUMO ELÉTRICO 02
-                    <div style="display: flex; flex-direction: row; width: 100%; justify-content: space-around; height: 100%;">
-                        <div class="consuNumerico"><canvas class="consumo01"></canvas></div>
-                        <div class="consuNumerico"><canvas class="consumo02"></canvas></div>
-                        <div class="consuNumerico"><canvas class="consumo03"></canvas></div>
-                        <div class="consuNumerico"><canvas class="consumo04"></canvas></div>
-                    </div-->
-                </div>
+            </div>
         </div>
     </div>
     </div>

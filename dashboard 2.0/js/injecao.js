@@ -52,8 +52,9 @@ let injecao = new Chart(ctx,{
       plugins: {
         title: {
           display: true,
+          font:'sans-serif',
           text: 'CONSUMO DE FLUIDOS INJEÇÃO',
-        color:'white'
+          color:'white'
         },
         legend: {
           display: false

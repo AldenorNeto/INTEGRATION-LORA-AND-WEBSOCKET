@@ -3,7 +3,7 @@ const random = () => parseInt(Math.random()*30)+55
 
 let varia
 setInterval(() => {
-  ind > 4 ? ind = 0: ind++
+  ind > 2 ? ind = 0: ind++
   Math.random() < 0.5 ? varia = 1 : varia = -1
   let rando = consumo[ind].data.datasets[0].data[0] + varia
   rando > 100 ? rando = 100 : 0

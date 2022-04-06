@@ -9,28 +9,40 @@ setInterval(() => {
     dough[inde].update();
 },2000);
 
-const doughnut = dough => {
+const doughnut = (dough,titulo) => {
     return {
         type: 'doughnut',
         data: {
-            labels:['INJEÇÃO','2D','MONTAGEM','MANUTENÇÃO'],
+            labels: labelDoung,
             datasets:[{
                 data: dough,
-                backgroundColor:['#63f1b6','#0063f7','#fbff2b','#32dc32'],
+                backgroundColor:coresDoung,
                 cutout: "30%"
             }]
         },
         options:{
             plugins: {
+                title: {
+                    display: true,
+                    color:'white',
+                    font:'sans-serif',
+                    text:titulo,
+                    position:'bottom'
+                  },
                 legend: {
-                  display: false
+                    display:false,
                 }
             }
         }
     }
 }
 
-var dough = [,,]
-dough[0] = new Chart(document.getElementsByClassName("dough1"), doughnut(DOUG()))
-dough[1] = new Chart(document.getElementsByClassName("dough2"), doughnut(DOUG()))
-dough[2] = new Chart(document.getElementsByClassName("dough3"), doughnut(DOUG()))
+var dough = [], coresDoung = ['#63f1b6','#0063f7','#fbff2b','#32dc32'], labelDoung = ['INJEÇÃO','2D','MONTAGEM','MANUTENÇÃO']
+for (let index in coresDoung){
+    $('.legendaDoug:eq('+index+')').css('background', coresDoung[index])
+    console.log($('.legendaDoug:eq('+index+')').parent().children("span").text(labelDoung[index]))
+    
+}
+dough[0] = new Chart($(".dough1"), doughnut(DOUG(),'PRIMEIRO TURNO'))
+dough[1] = new Chart($(".dough2"), doughnut(DOUG(),'SEGUNDO TURNO'))
+dough[2] = new Chart($(".dough3"), doughnut(DOUG(),'TERCEIRO TURNO'))
