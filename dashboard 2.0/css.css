@@ -53,13 +53,28 @@ body{
     color: #00000000;
 }
 
+.linhaBUPai{
+    display: flex;
+    flex-direction: row;
+    width: 24.4%;
+    background-color: #272727;
+}
 .linhas{
-    width: 15%;
+    width: 70%;
 }
 #graficoLinhas{
-    background-color: #272727;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+}
+.mediaSemana{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 10px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 0.7vw;
+    font-weight: 600;
 }
 
 .consu{
@@ -113,14 +128,4 @@ body{
     font-size: 18px;
     margin-top: 10px;
     margin-bottom: -20px;
-}
-
-.mediaSemana{
-    background-color: brown;
-    padding: 10px;
-    margin: 10px;
-    color: #fff;
-    font-family: sans-serif;
-    font-size: 0.7vw;
-    font-weight: 600;
 }

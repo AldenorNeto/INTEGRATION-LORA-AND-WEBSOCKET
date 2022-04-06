@@ -15,24 +15,18 @@ const velocimetro = (multi,angulo) => {
   return {
     type: "doughnut",
     data:{
-      labels: ["OK", "RISCO", "ALTO RISCO"],
+      labels: ["OK","RISCO","ALTO RISCO"],
       datasets: [{
         label: "Gauge",
         data: [120, 50, 30],
-        backgroundColor: [
-          "#00fc15",
-          "yellow",
-          "red",
-        ],
+        backgroundColor: ["#00fc15","yellow","red",],
         needleValue: angulo,
         borderColor: "white",
         borderWidth: 1,
         cutout: "70%",
         circumference: 180,
         rotation: 270,
-        borderRadius: 1,
-      },
-    ],
+      }],
   },
   options: {
     plugins: {

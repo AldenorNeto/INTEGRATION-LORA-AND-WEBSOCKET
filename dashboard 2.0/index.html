@@ -13,16 +13,23 @@
 <body>
     <div>
     <div id="graficoLinhas">
-        <div class="mediaSemana">
-        <div>Temperatura<div>75</div></div>
-        <div>Média Semanal<div>75</div></div>
-        </div>
-        <div class="linhas"><canvas class="AGelada"></canvas></div>
-        <div class="linhas"><canvas class="AIndustrial"></canvas></div>
-        <div class="linhas"><canvas class="CBaixa"></canvas></div>
-        <div class="linhas"><canvas class="CAlta"></canvas></div>
+        <div class="linhaBUPai"><div class="linhas"><canvas class="AGelada"></canvas></div>
+        <div class="mediaSemana"><div>Temperatura:<div style="font-size: 450%; width: max-content;">75º</div></div>
+        <div>Média Semanal:<div>75.6 ºc</div></div></div></div>
+    
+        <div class="linhaBUPai"><div class="linhas"><canvas class="AIndustrial"></canvas></div>
+        <div class="mediaSemana"><div>Temperatura:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 80%;"> ºc</span></div></div>
+        <div>Média Semanal:<div>75.6 ºc</div></div></div></div>
+
+        <div class="linhaBUPai"><div class="linhas"><canvas class="CBaixa"></canvas></div>
+        <div class="mediaSemana"><div>Pressão:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 50%;"> Bar</span></div></div>
+        <div>Média Semanal:<div>75.6 Bar</div></div></div></div>
+
+        <div class="linhaBUPai"><div class="linhas"><canvas class="CAlta"></canvas></div>
+        <div class="mediaSemana"><div>Pressão:<div style="font-size: 400%; width: max-content;">75<span style="font-size: 40%;"> Bar</span></div></div>
+        <div>Média Semanal:<div style="font-size: 200%;">75.6 Bar</div></div></div></div>
     </div>
-    <div style="display: flex; ">
+    <div style="display: flex;">
         <div id="containerAcelera"><div id="bombasH1">ROTAÇÃO BOMBAS HIDRAULICAS</div>
             <div id="acelera"><canvas class="acelera1"></canvas></div>
             <div id="bombas">BOMBA 01</div>
