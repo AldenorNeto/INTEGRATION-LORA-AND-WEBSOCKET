@@ -139,7 +139,11 @@ body{
 
 #bombas{
     color: white;
+<<<<<<< HEAD
     margin-top: 9px;
+=======
+    margin-top: 10px;
+>>>>>>> 21940e892bf62edc3a276a71a2337bd9835dc4eb
     margin-left: 3px;
     font-family: sans-serif;
 }
