@@ -23,7 +23,7 @@ const DOUG = () => [randomD(),randomD(),randomD(),randomD()]
 let inde = 0,vari = 0, dough:any
 setInterval(() => {
     inde>1?inde=0:inde++
-    Math.random() < 0.5 ? vari = 1 : vari = -1
+    Math.random() < 0.55 ? vari = 1 : vari = -1
         dough.data.datasets[0].data[2] += vari
         dough.data.datasets[0].data[1] += vari
         dough.update();

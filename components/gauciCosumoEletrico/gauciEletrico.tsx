@@ -25,9 +25,9 @@ let varia
 setInterval(() => {
   Math.random() < 0.5 ? varia = 1 : varia = -1
   let rando = consumo.data.datasets[0].data[0] + varia
-  if(elementoNumero)elementoNumero.innerText = (consumo.data.datasets[0].data[0]*2.34).toFixed(1)
   consumo.data.datasets[0].data = [rando, -(rando)+100]
   consumo.update();
+  if(elementoNumero)elementoNumero.innerText = (consumo.data.datasets[0].data[0]*2.34).toFixed(1)
 },800+(Math.random()*500));
 
 let consumo = new Chart(Elemento,{
