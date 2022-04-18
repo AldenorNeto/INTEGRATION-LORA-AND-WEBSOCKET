@@ -1,0 +1,38 @@
+.linhaBUPai{
+    display: flex;
+    flex-direction: row;
+    width: 23%;
+    padding: 10px;
+    background-color: #272727;
+    flex-grow: 1;
+}
+
+.linhas{
+  width: 70%;
+}
+
+.mediaSemana{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 0.7vw;
+  font-weight: 600;
+  flex-grow: 1;
+}
+
+.valorlinhaBUmedia{
+    font-size: 150%;
+}
+
+.mediaSemana div .valorlinhaBU{
+  display: flex;
+  align-items: center;
+  font-size: 450%;
+}
+
+.mediaSemana div .valorlinhaBU div{
+  height: fit-content;
+  font-size: 50%;
+}
