@@ -18,8 +18,7 @@ return(
 </>
 )
 
-
-function montaGrafico(Elemento: HTMLCanvasElement | null, Legenda: any, ){
+function montaGrafico(Elemento: HTMLCanvasElement | null, Legenda: any): void{
 
     const randomConsu = (pesoindex: number) => (Math.random()*((pesoindex/5)))+pesoindex
     const randomConsuFor = (pesoInd: number) =>{
@@ -28,19 +27,15 @@ function montaGrafico(Elemento: HTMLCanvasElement | null, Legenda: any, ){
         return array
     }
     let randomConsumo
-    
-    for(let index = 0; index < 4; index++){
-        randomConsumo = randomConsu(props.media)
-        randomConsumo<10?randomConsumo = randomConsumo.toFixed(1) : randomConsumo = randomConsumo.toFixed(0)
-        Legenda.innerText = randomConsumo
+    for(let index=0;index<4;index++){
+        Legenda.innerText = randomConsu(props.media).toFixed(0)
     }
     
     setInterval(() => {
         randomConsumo = randomConsu(props.media)
         linhaBU.data.datasets[0].data.shift() 
         linhaBU.data.datasets[0].data.push(randomConsumo)
-        randomConsumo<10?randomConsumo = randomConsumo.toFixed(1) : randomConsumo = randomConsumo.toFixed(0)
-        Legenda.innerText = randomConsumo
+        Legenda.innerText = randomConsumo.toFixed(0)
         linhaBU.update('none');
     },4810);
 

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {useRef, useLayoutEffect} from 'react';
-import Chart from "../SRCcharts";
+import Chart from "../../SRCcharts";
 import style from './velocimetroBomba.module.scss'
 
 export default function Valocimetro(props:any): JSX.Element{
@@ -14,7 +14,6 @@ return(
 <div className={style.bombas}>{props.children}</div>
 </>
 )
-
 
 function velocimetroGauce(Elemento: HTMLCanvasElement | null) {
 

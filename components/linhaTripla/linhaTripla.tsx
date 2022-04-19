@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {useRef, useLayoutEffect} from 'react';
-import Chart from "../SRCcharts";
+import Chart from "../../SRCcharts";
 import style from './linhaTripla.module.scss'
 
 export default function LinhaTripla(props:any): JSX.Element{

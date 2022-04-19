@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {useRef, useLayoutEffect} from 'react';
-import Chart from "../SRCcharts";
+import Chart from "../../SRCcharts";
 import style from './gauciEletrico.module.scss'
 
 export default function GauciEletrico(props:any): JSX.Element{

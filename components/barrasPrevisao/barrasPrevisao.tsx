@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {useRef, useLayoutEffect} from 'react';
-import Chart from "../SRCcharts";
+import Chart from "../../SRCcharts";
 import style from './barrasPrevisao.module.scss'
 
 export default function BarrasPrevisao(props:any): JSX.Element{
