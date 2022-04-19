@@ -1,0 +1,67 @@
+#DoughnutCorpo{
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+#coluna2{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 10px 0px 10px;
+  max-width: 30vw;
+  min-width: 30%;
+}
+
+#containerAcelera{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #272727;
+  min-width: 20%;
+  padding: 10px 0px;
+  color: #fff;
+}
+
+#graficoLinhas{
+  display: flex;
+  justify-content: space-between;
+}
+
+#consumoParent{
+  display: flex;
+  background-color: #272727;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: white;
+  padding-top: 10px;
+  font-weight: 500;
+  font-family: sans-serif;
+  font-size: 18px;
+  width: 100%;
+  height: fit-content;
+}
+
+#coluna3, #gauceContainer{
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+#coluna3{flex-direction: column;}
+
+#bodyDahsboard{
+  display: flex;
+  padding-top: 10px;
+}
+
+#corpoVelocimetro{
+  width:100%;
+  min-width: 20vw;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  margin-top:-20px;
+}
