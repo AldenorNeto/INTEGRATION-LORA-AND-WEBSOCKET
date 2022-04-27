@@ -18,12 +18,6 @@
 const char* ssid     = "Grendene.Coletores";
 const char* password = "ISO8804650216900479";
 
-/*const char* ssid     = "Caetano";
-const char* password = "992920940";*/
-
-/*const char* ssid     = "Elisabeth_NossaNet";
-const char* password = "34sup2bc9";*/
-
 const byte csPin = 18;        // LoRa radio chip select
 const byte resetPin = 14;     // LoRa radio reset
 
@@ -50,7 +44,7 @@ struct Date{int dayOfWeek; int day; int month; int year; int hours; int minutes;
 WiFiUDP udp; //Socket UDP que a lib utiliza para recuperar dados sobre o horário
 NTPClient ntpClient( //Objeto responsável por recuperar dados sobre horário
     udp,                    //socket udp
-    "10.2.0.1",/*"2.br.pool.ntp.org", */  //URL do server NTP
+    /*"10.2.0.1",*/"2.br.pool.ntp.org",  //URL do server NTP
     timeZone*3600,          //Deslocamento do horário em relacão ao GMT 0
     60000);                 //Intervalo entre verificações online
 
